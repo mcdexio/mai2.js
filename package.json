@@ -23,8 +23,11 @@
   "bugs": {
     "url": "https://github.com/mcdexio/mai2.js/issues"
   },
-  "license": "LGPL",
+  "license": "GPLv3",
   "devDependencies": {
+    "@types/jest": "^24.0.25",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.3.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.4",
     "webpack": "^4.41.5",
@@ -33,5 +36,9 @@
   "dependencies": {
     "bignumber.js": "^9.0.0",
     "ethers": "^4.0.43"
+  },
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage"
   }
 }

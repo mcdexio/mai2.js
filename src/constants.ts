@@ -8,7 +8,7 @@ export enum SUPPORTED_CHAIN_ID {
   Ropsten = 3
 }
 
-export const PERPETUAL_DECIMALS = 18
+export const DECIMALS = 18
 
 export const FUNDING_TIME = 28800
 
