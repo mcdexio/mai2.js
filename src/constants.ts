@@ -15,15 +15,18 @@ export const FUNDING_TIME = 28800
 export const PERPETUAL_ABI: string = JSON.stringify(PerpetualABI)
 export const ERC20_ABI: string = JSON.stringify(ERC20ABI)
 
-export enum POSITION_SIDE {
-  Long,
-  Short
+export enum SIDE {
+  Buy,
+  Sell
 }
 
 export const _CHAIN_ID_NAME: { [key: number]: string } = {
   [SUPPORTED_CHAIN_ID.Mainnet]: 'homestead',
   [SUPPORTED_CHAIN_ID.Ropsten]: 'ropsten'
 }
+
+export const _E = new BigNumber('2.718281828459045235')
+export const _0_1: BigNumber = new BigNumber('0.1')
 export const _0: BigNumber = new BigNumber('0')
 export const _1: BigNumber = new BigNumber('1')
 export const _10: BigNumber = new BigNumber('10')

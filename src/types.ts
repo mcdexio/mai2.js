@@ -1,6 +1,6 @@
 import { BigNumber } from "bignumber.js"
 import { ethers } from "ethers"
-import { SUPPORTED_CHAIN_ID, POSITION_SIDE } from './constants'
+import { SUPPORTED_CHAIN_ID, SIDE } from './constants'
 
 export type BigNumberish = BigNumber | ethers.utils.BigNumber | string | number
 
@@ -96,7 +96,7 @@ export interface FundingResult {
 
 export interface AccountStorage {
   cashBalance: BigNumber
-  positionSide: POSITION_SIDE
+  positionSide: SIDE
   positionSize: BigNumber
   entryValue: BigNumber
   entrySocialLoss: BigNumber
@@ -124,8 +124,21 @@ export interface AccountComputed {
   isSafe: boolean
 }
 
-export interface AccountDetails extends AccountStorage, AccountComputed { }
+export interface AccountDetails {
+  accountStorage: AccountStorage
+  accountComputed: AccountComputed
+}
 
+export interface PoolComputed {
+  availableMargin: BigNumber
+  impactAskPrice: BigNumber
+  impactBidPrice: BigNumber
+  fairPrice: BigNumber
+}
+
+export interface PoolDetails extends AccountDetails {
+  poolComputed: PoolComputed
+}
 
 //// internal-only interfaces
 export interface _ChainIdAndProvider {
