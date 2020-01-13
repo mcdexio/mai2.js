@@ -1,0 +1,37 @@
+{
+  "name": "mai2.js",
+  "version": "1.0.0",
+  "description": "Mai Protocol v2 JavaScript API",
+  "homepage": "http://",
+  "author": "Liu Jie <jie@mcarlo.com> (https://github.com/jie85)",
+  "contributors": [],
+  "keywords": [
+    "mai",
+    "protocol",
+    "mcdex"
+  ],
+  "main": "./dist/mai2.js",
+  "jsnext:main": "./dist/mai2.js",
+  "typings": "./src/mai2.ts",
+  "engines": {
+    "node": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mcdexio/mai2.js"
+  },
+  "bugs": {
+    "url": "https://github.com/mcdexio/mai2.js/issues"
+  },
+  "license": "LGPL",
+  "devDependencies": {
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.4",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.0.0",
+    "ethers": "^4.0.43"
+  }
+}
