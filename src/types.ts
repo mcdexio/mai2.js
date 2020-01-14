@@ -53,8 +53,8 @@ export interface GovParams {
   liquidationSafetyFactor: BigNumber
   liquidationPenaltyRate: BigNumber
   penaltyFundRate: BigNumber
-  makerFeeRate: BigNumber
-  takerFeeRate: BigNumber
+  makerDevRate: BigNumber
+  takerDevRate: BigNumber
   oracleAddress: string
   markPremiumLimit: BigNumber
   fundingDampener: BigNumber
