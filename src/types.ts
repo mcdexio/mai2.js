@@ -1,5 +1,5 @@
-import { BigNumber } from "bignumber.js"
-import { ethers } from "ethers"
+import { BigNumber } from 'bignumber.js'
+import { ethers } from 'ethers'
 import { SUPPORTED_CHAIN_ID, SIDE } from './constants'
 
 export type BigNumberish = BigNumber | ethers.utils.BigNumber | string | number
@@ -67,7 +67,7 @@ export interface GovParams {
 }
 
 export interface PerpetualStorage {
-  collateralTokenAddress: string,
+  collateralTokenAddress: string
   totalSize: BigNumber
   longSocialLossPerContract: BigNumber
   shortSocialLossPerContract: BigNumber
