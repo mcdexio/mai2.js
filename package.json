@@ -6,9 +6,9 @@
 	"author": "Liu Jie <jie@mcarlo.com> (https://github.com/jie85)",
 	"contributors": [],
 	"keywords": [ "mai", "protocol", "mcdex" ],
-	"main": "./dist/mai2.js",
-	"jsnext:main": "./dist/mai2.js",
-	"typings": "./src/mai2.ts",
+	"main": "./dist/index.js",
+	"jsnext:main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
 	"engines": {
 		"node": "*"
 	},
@@ -25,12 +25,7 @@
 		"jest": "^24.9.0",
 		"prettier": "^1.19.1",
 		"ts-jest": "^24.3.0",
-		"ts-loader": "^6.2.1",
-		"tslint": "^5.20.1",
-		"tslint-config-prettier": "^1.18.0",
-		"typescript": "^3.7.4",
-		"webpack": "^4.41.5",
-		"webpack-cli": "^3.3.10"
+		"typescript": "^3.7.4"
 	},
 	"dependencies": {
 		"bignumber.js": "^9.0.0",

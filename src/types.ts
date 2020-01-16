@@ -46,8 +46,8 @@ export interface PerpetualContract {
 }
 
 export interface GovParams {
-  withdrawalLockBlockCount: BigNumber
-  brokerLockBlockCount: BigNumber
+  withdrawalLockBlockCount: number
+  brokerLockBlockCount: number
   intialMargin: BigNumber
   maintenanceMargin: BigNumber
   liquidationSafetyFactor: BigNumber
@@ -106,7 +106,7 @@ export interface AccountStorage {
 
 export interface WithdrawalApplication {
   amount: BigNumber
-  height: BigNumber
+  height: number
 }
 
 export interface AccountComputed {

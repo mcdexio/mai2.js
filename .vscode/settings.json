@@ -1,5 +1,17 @@
 {
-    "editor.formatOnSave": true,
-    "javascript.format.semicolons": "remove",
-    "typescript.format.semicolons": "remove"
+  "editor.formatOnSave": true,
+  "javascript.format.semicolons": "remove",
+  "typescript.format.semicolons": "remove",
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+  "scss.completion.completePropertyWithSemicolon": false,
+  "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "vue"
+  ],
+  "vetur.format.options.tabSize": 2,
+  "vetur.format.options.useTabs": false
 }
