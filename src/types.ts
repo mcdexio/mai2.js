@@ -58,8 +58,8 @@ export interface GovParams {
   oracleAddress: string
   markPremiumLimit: BigNumber
   fundingDampener: BigNumber
-  minPoolSize: BigNumber
-  poolFeePercent: BigNumber
+  minAMMSize: BigNumber
+  ammFeeRate: BigNumber
   fairPriceAmount: BigNumber
   fairPriceMaxGap: BigNumber
   emaAlpha: BigNumber
@@ -111,16 +111,19 @@ export interface WithdrawalApplication {
 
 export interface AccountComputed {
   entryPrice: BigNumber
+  positionValue: BigNumber
   positionMargin: BigNumber
   maintenanceMargin: BigNumber
   socialLoss: BigNumber
   fundingLoss: BigNumber
-  upnl1: BigNumber
-  upnl2: BigNumber
+  pnl1: BigNumber
+  pnl2: BigNumber
+  roe: BigNumber
   liquidationPrice: BigNumber
   marginBalance: BigNumber
   availableMargin: BigNumber
   withdrawableBalance: BigNumber
+  leverage: BigNumber
   isSafe: boolean
 }
 
@@ -129,15 +132,26 @@ export interface AccountDetails {
   accountComputed: AccountComputed
 }
 
-export interface PoolComputed {
+export interface AMMComputed {
   availableMargin: BigNumber
   impactAskPrice: BigNumber
   impactBidPrice: BigNumber
   fairPrice: BigNumber
+  ammPrice: BigNumber
 }
 
-export interface PoolDetails extends AccountDetails {
-  poolComputed: PoolComputed
+export interface AMMDetails extends AccountDetails {
+  ammComputed: AMMComputed
+}
+
+export interface Depth {
+  price: BigNumber
+  amount: BigNumber
+}
+
+export interface AMMDepth {
+  bids: Array<Depth>
+  asks: Array<Depth>
 }
 
 //// internal-only interfaces

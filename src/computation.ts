@@ -11,10 +11,13 @@ import {
   FundingParams,
   FundingResult,
   PerpetualStorage,
-  PoolDetails
+  AMMDetails,
+  Depth,
+  AMMDepth,
+  BigNumberish
 } from './types'
-import { _0, _1, FUNDING_TIME, SIDE } from './constants'
-import { bigLog, bigLn } from './utils'
+import { _0, _1, FUNDING_TIME, SIDE, _0_1 } from './constants'
+import { bigLog, bigLn, normalizeBigNumberish } from './utils'
 
 interface _AccumulatedFundingResult {
   acc: BigNumber
@@ -27,10 +30,7 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
   const v0 = f.lastEMAPremium
 
   //vt = (LastEMAPremium - LastPremium) * Pow(a, n) + LastPremium
-  const vt = f.lastEMAPremium
-    .minus(f.lastPremium)
-    .times(a.pow(n))
-    .plus(f.lastPremium)
+  const vt = f.lastEMAPremium.minus(f.lastPremium).times(a.pow(n)).plus(f.lastPremium)
   //vLimit = GovMarkPremiumLimit * LastIndexPrice
   const vLimit = f.lastIndexPrice.times(g.markPremiumLimit)
   const vNegLimit = vLimit.negated()
@@ -44,36 +44,23 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
   const tFunc = (y: BigNumber) => bigLog(a, y.minus(f.lastPremium).div(v0.minus(f.lastPremium)))
   const tt1 = f.lastEMAPremium.minus(f.lastPremium)
   const rFunc = (x: BigNumber, y: BigNumber) =>
-    tt1
-      .times(a.pow(y).minus(a.pow(x)))
-      .div(bigLn(a))
-      .plus(f.lastPremium.times(y.minus(x)))
+    tt1.times(a.pow(y).minus(a.pow(x))).div(bigLn(a)).plus(f.lastPremium.times(y.minus(x)))
   let acc: BigNumber
   if (v0.isLessThanOrEqualTo(vNegLimit)) {
     if (vt.isLessThanOrEqualTo(vNegLimit)) {
       acc = vNegLimit.plus(vDampener).times(n)
     } else if (vt.isLessThanOrEqualTo(vNegDampener)) {
       const t1 = tFunc(vNegLimit)
-      acc = vNegLimit
-        .times(t1)
-        .plus(rFunc(t1, n))
-        .plus(vDampener.times(n))
+      acc = vNegLimit.times(t1).plus(rFunc(t1, n)).plus(vDampener.times(n))
     } else if (vt.isLessThanOrEqualTo(vDampener)) {
       const t1 = tFunc(vNegLimit)
       const t2 = tFunc(vNegDampener)
-      acc = vNegLimit
-        .times(t1)
-        .plus(rFunc(t1, t2))
-        .plus(vDampener.times(t2))
+      acc = vNegLimit.times(t1).plus(rFunc(t1, t2)).plus(vDampener.times(t2))
     } else if (vt.isLessThanOrEqualTo(vLimit)) {
       const t1 = tFunc(vNegLimit)
       const t2 = tFunc(vNegDampener)
       const t3 = tFunc(vDampener)
-      acc = vNegLimit
-        .times(t1)
-        .plus(rFunc(t1, t2))
-        .plus(rFunc(t3, n))
-        .plus(vDampener.times(t2.minus(n).plus(t3)))
+      acc = vNegLimit.times(t1).plus(rFunc(t1, t2)).plus(rFunc(t3, n)).plus(vDampener.times(t2.minus(n).plus(t3)))
     } else {
       const t1 = tFunc(vNegLimit)
       const t2 = tFunc(vNegDampener)
@@ -88,9 +75,7 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
   } else if (v0.isLessThanOrEqualTo(vNegDampener)) {
     if (vt.isLessThanOrEqualTo(vNegLimit)) {
       const t4 = tFunc(vNegLimit)
-      acc = rFunc(_0, t4)
-        .plus(vNegLimit.times(n.minus(t4)))
-        .plus(vDampener.times(n))
+      acc = rFunc(_0, t4).plus(vNegLimit.times(n.minus(t4))).plus(vDampener.times(n))
     } else if (vt.isLessThanOrEqualTo(vNegDampener)) {
       acc = rFunc(_0, n).plus(vDampener.times(n))
     } else if (vt.isLessThanOrEqualTo(vDampener)) {
@@ -99,9 +84,7 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
     } else if (vt.isLessThanOrEqualTo(vLimit)) {
       const t2 = tFunc(vNegDampener)
       const t3 = tFunc(vDampener)
-      acc = rFunc(_0, t2)
-        .plus(rFunc(t3, n))
-        .plus(vDampener.times(t2.minus(n).plus(t3)))
+      acc = rFunc(_0, t2).plus(rFunc(t3, n)).plus(vDampener.times(t2.minus(n).plus(t3)))
     } else {
       const t2 = tFunc(vNegDampener)
       const t3 = tFunc(vDampener)
@@ -115,9 +98,7 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
     if (vt.isLessThanOrEqualTo(vNegLimit)) {
       const t3 = tFunc(vNegDampener)
       const t4 = tFunc(vNegLimit)
-      acc = rFunc(t3, t4)
-        .plus(vNegLimit.times(n.minus(t4)))
-        .plus(vDampener.times(n.minus(t3)))
+      acc = rFunc(t3, t4).plus(vNegLimit.times(n.minus(t4))).plus(vDampener.times(n.minus(t3)))
     } else if (vt.isLessThanOrEqualTo(vNegDampener)) {
       const t3 = tFunc(vNegDampener)
       acc = rFunc(t3, n).plus(vDampener.times(n.minus(t3)))
@@ -129,9 +110,7 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
     } else {
       const t3 = tFunc(vDampener)
       const t4 = tFunc(vLimit)
-      acc = rFunc(t3, t4)
-        .plus(vLimit.times(n.minus(t4)))
-        .plus(vNegDampener.times(n.minus(t3)))
+      acc = rFunc(t3, t4).plus(vLimit.times(n.minus(t4))).plus(vNegDampener.times(n.minus(t3)))
     }
   } else if (v0.isLessThanOrEqualTo(vLimit)) {
     if (vt.isLessThanOrEqualTo(vNegLimit)) {
@@ -145,9 +124,7 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
     } else if (vt.isLessThanOrEqualTo(vNegDampener)) {
       const t2 = tFunc(vDampener)
       const t3 = tFunc(vNegDampener)
-      acc = rFunc(_0, t2)
-        .plus(rFunc(t3, n))
-        .plus(vDampener.times(n.minus(t3).minus(t2)))
+      acc = rFunc(_0, t2).plus(rFunc(t3, n)).plus(vDampener.times(n.minus(t3).minus(t2)))
     } else if (vt.isLessThanOrEqualTo(vDampener)) {
       const t2 = tFunc(vDampener)
       acc = rFunc(_0, t2).plus(vNegDampener.times(t2))
@@ -155,9 +132,7 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
       acc = rFunc(_0, n).plus(vNegDampener.times(n))
     } else {
       const t4 = tFunc(vLimit)
-      acc = rFunc(_0, t4)
-        .plus(vLimit.times(n.minus(t4)))
-        .plus(vNegDampener.times(n))
+      acc = rFunc(_0, t4).plus(vLimit.times(n.minus(t4))).plus(vNegDampener.times(n))
     }
   } else {
     if (vt.isLessThanOrEqualTo(vNegLimit)) {
@@ -174,24 +149,14 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
       const t1 = tFunc(vLimit)
       const t2 = tFunc(vDampener)
       const t3 = tFunc(vNegDampener)
-      acc = vLimit
-        .times(t1)
-        .plus(rFunc(t1, t2))
-        .plus(rFunc(t3, n))
-        .plus(vDampener.times(n.minus(t3).minus(t2)))
+      acc = vLimit.times(t1).plus(rFunc(t1, t2)).plus(rFunc(t3, n)).plus(vDampener.times(n.minus(t3).minus(t2)))
     } else if (vt.isLessThanOrEqualTo(vDampener)) {
       const t1 = tFunc(vLimit)
       const t2 = tFunc(vDampener)
-      acc = vLimit
-        .times(t1)
-        .plus(rFunc(t1, t2))
-        .plus(vNegDampener.times(t2))
+      acc = vLimit.times(t1).plus(rFunc(t1, t2)).plus(vNegDampener.times(t2))
     } else if (vt.isLessThanOrEqualTo(vLimit)) {
       const t1 = tFunc(vLimit)
-      acc = vLimit
-        .times(t1)
-        .plus(rFunc(t1, n))
-        .plus(vNegDampener.times(n))
+      acc = vLimit.times(t1).plus(rFunc(t1, n)).plus(vNegDampener.times(n))
     } else {
       acc = vLimit.minus(vDampener).times(n)
     }
@@ -254,49 +219,50 @@ export function funding(
 }
 
 export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStorage): AccountDetails {
-  const entryPrice = s.positionSize.isZero ? _0 : s.entryValue.div(s.positionSize)
-  const positionMargin = s.entryValue.times(g.intialMargin)
+  const entryPrice = s.positionSize.isZero() ? _0 : s.entryValue.div(s.positionSize)
   const markPrice = p.fundingParams.lastIndexPrice.plus(p.fundingParams.lastEMAPremium)
+  const positionValue = markPrice.times(s.positionSize)
+  const positionMargin = markPrice.times(s.positionSize).times(g.intialMargin)
   const maintenanceMargin = markPrice.times(s.positionSize).times(g.maintenanceMargin)
   const shortFundingLoss = p.fundingParams.accumulatedFundingPerContract.times(
     s.positionSize.minus(s.entryFoundingLoss)
   )
-  let socialLoss, fundingLoss, upnl1, liquidationPrice: BigNumber
+  let socialLoss, fundingLoss, pnl1, liquidationPrice: BigNumber
   if (s.positionSide === SIDE.Buy) {
     socialLoss = p.longSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
     fundingLoss = shortFundingLoss.negated()
-    upnl1 = markPrice.times(s.positionSize).minus(s.entryValue)
+    pnl1 = markPrice.times(s.positionSize).minus(s.entryValue)
     const t = s.positionSize.times(g.maintenanceMargin).minus(s.positionSize)
-    liquidationPrice = s.cashBalance
-      .minus(s.entryValue)
-      .minus(socialLoss)
-      .minus(fundingLoss)
-      .div(t)
+    liquidationPrice = s.cashBalance.minus(s.entryValue).minus(socialLoss).minus(fundingLoss).div(t)
+    if (liquidationPrice.isNegative()) {
+      liquidationPrice = _0
+    }
   } else {
     socialLoss = p.shortSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
     fundingLoss = shortFundingLoss
-    upnl1 = s.entryValue.minus(markPrice.times(s.positionSize))
+    pnl1 = s.entryValue.minus(markPrice.times(s.positionSize))
     const t = s.positionSize.times(g.maintenanceMargin).plus(s.positionSize)
-    liquidationPrice = s.cashBalance
-      .plus(s.entryValue)
-      .minus(socialLoss)
-      .minus(fundingLoss)
-      .div(t)
+    liquidationPrice = s.cashBalance.plus(s.entryValue).minus(socialLoss).minus(fundingLoss).div(t)
   }
-  const upnl2 = upnl1.plus(socialLoss).plus(fundingLoss)
-  const marginBalance = s.cashBalance.plus(upnl2)
+  const pnl2 = pnl1.plus(socialLoss).plus(fundingLoss)
+  const marginBalance = s.cashBalance.plus(pnl2)
+  const roe = pnl2.div(s.cashBalance)
   const availableMargin = marginBalance.minus(positionMargin).minus(s.withdrawalApplication.amount)
   const withdrawableBalance = BigNumber.min(marginBalance.minus(positionMargin), s.withdrawalApplication.amount)
   const isSafe = maintenanceMargin.isGreaterThanOrEqualTo(marginBalance)
+  const leverage = positionValue.div(marginBalance)
   const accountComputed = {
     entryPrice,
+    positionValue,
     positionMargin,
+    leverage,
     maintenanceMargin,
     socialLoss,
     fundingLoss,
-    upnl1,
+    pnl1,
+    pnl2,
     liquidationPrice,
-    upnl2,
+    roe,
     marginBalance,
     availableMargin,
     withdrawableBalance,
@@ -305,13 +271,13 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
   return { accountStorage: s, accountComputed }
 }
 
-export function computePool(poolAccount: AccountStorage, g: GovParams, p: PerpetualStorage): PoolDetails {
-  const accountDetails = computeAccount(poolAccount, g, p)
+export function computeAMM(ammAccount: AccountStorage, g: GovParams, p: PerpetualStorage): AMMDetails {
+  const accountDetails = computeAccount(ammAccount, g, p)
   const loss = accountDetails.accountComputed.socialLoss.plus(accountDetails.accountComputed.fundingLoss)
-  const availableMargin = poolAccount.cashBalance.minus(poolAccount.entryValue).minus(loss)
+  const availableMargin = ammAccount.cashBalance.minus(ammAccount.entryValue).minus(loss)
 
   const x = availableMargin
-  const y = poolAccount.positionSize
+  const y = ammAccount.positionSize
 
   let impactAskPrice: BigNumber
   const impactAskPriceCap = availableMargin.div(y).times(_1.plus(g.fairPriceMaxGap))
@@ -323,22 +289,42 @@ export function computePool(poolAccount: AccountStorage, g: GovParams, p: Perpet
   }
   const impactBidPrice = BigNumber.max(x.div(y.plus(g.fairPriceAmount)), impactBidPriceCap)
   const fairPrice = impactBidPrice.plus(impactAskPrice).div(2)
+  const ammPrice = x.div(y)
 
-  const poolComputed = { availableMargin, impactAskPrice, impactBidPrice, fairPrice }
+  const ammComputed = { availableMargin, impactAskPrice, impactBidPrice, fairPrice, ammPrice }
 
-  return { ...accountDetails, poolComputed }
+  return { ...accountDetails, ammComputed }
 }
 
-export function computePoolPrice(pool: PoolDetails, side: SIDE, amount: BigNumber): BigNumber {
-  const x = pool.poolComputed.availableMargin
-  const y = pool.accountStorage.positionSize
+export function computeAMMPrice(amm: AMMDetails, side: SIDE, amount: BigNumberish): BigNumber {
+  const normalizedAmount = normalizeBigNumberish(amount)
+  const x = amm.ammComputed.availableMargin
+  const y = amm.accountStorage.positionSize
 
   if (side === SIDE.Buy) {
-    if (amount.isGreaterThanOrEqualTo(y)) {
-      throw Error(`buy amount '${amount}' is larger than the pool's position size '${y}'`)
+    if (normalizedAmount.isGreaterThanOrEqualTo(y)) {
+      throw Error(`buy amount '${normalizedAmount}' is larger than the amm's position size '${y}'`)
     }
-    return x.div(y.minus(amount))
+    return x.div(y.minus(normalizedAmount))
   } else {
-    return x.div(y.plus(amount))
+    return x.div(y.plus(normalizedAmount))
   }
+}
+
+export function computeAMMDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSamples: number = 20): AMMDepth {
+  let asks: Array<Depth> = [ { price: amm.ammComputed.ammPrice, amount: _0 } ]
+  let bids: Array<Depth> = [ { price: amm.ammComputed.ammPrice, amount: _0 } ]
+  const normalizedStep = normalizeBigNumberish(step)
+
+  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
+    const price = computeAMMPrice(amm, SIDE.Sell, amount)
+    bids.unshift({ price, amount })
+  }
+
+  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
+    const price = computeAMMPrice(amm, SIDE.Buy, amount)
+    asks.push({ price, amount })
+  }
+
+  return { bids, asks }
 }
