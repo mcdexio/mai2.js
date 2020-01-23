@@ -14,37 +14,57 @@ import {
   AMMDetails,
   Depth,
   AMMDepth,
-  BigNumberish
+  BigNumberish,
+  FundingGovParams
 } from './types'
 import { _0, _1, FUNDING_TIME, SIDE, _0_1 } from './constants'
-import { bigLog, bigLn, normalizeBigNumberish } from './utils'
+import { bigLog, normalizeBigNumberish } from './utils'
 
 interface _AccumulatedFundingResult {
   acc: BigNumber
   emaPremium: BigNumber
 }
 
-function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: number): _AccumulatedFundingResult {
+export function _tFunc(y: BigNumber, a2: BigNumber, lastPremium: BigNumber, v0: BigNumber): BigNumber {
+  return bigLog(a2, y.minus(lastPremium).div(v0.minus(lastPremium))).dp(0, BigNumber.ROUND_UP)
+}
+
+export function _rFunc(
+  x: BigNumber,
+  y: BigNumber,
+  a: BigNumber,
+  a2: BigNumber,
+  lastPremium: BigNumber,
+  v0: BigNumber
+): BigNumber {
+  const tt1 = v0.minus(lastPremium)
+  return tt1.times(a2.pow(x).minus(a2.pow(y))).div(a).plus(lastPremium.times(y.minus(x)))
+}
+
+export function computeAccumulatedFunding(
+  f: FundingParams,
+  g: FundingGovParams,
+  timestamp: number
+): _AccumulatedFundingResult {
   const n = new BigNumber(timestamp - f.lastFundingTimestamp)
   const a = g.emaAlpha
+  const a2 = _1.minus(g.emaAlpha)
   const v0 = f.lastEMAPremium
 
-  //vt = (LastEMAPremium - LastPremium) * Pow(a, n) + LastPremium
-  const vt = f.lastEMAPremium.minus(f.lastPremium).times(a.pow(n)).plus(f.lastPremium)
+  //vt = (LastEMAPremium - LastPremium) * Pow(a2, n) + LastPremium
+  const vt = f.lastEMAPremium.minus(f.lastPremium).times(a2.pow(n)).plus(f.lastPremium)
   //vLimit = GovMarkPremiumLimit * LastIndexPrice
   const vLimit = f.lastIndexPrice.times(g.markPremiumLimit)
   const vNegLimit = vLimit.negated()
   //vDampener = GovFundingDampener * LastIndexPrice
   const vDampener = f.lastIndexPrice.times(g.fundingDampener)
   const vNegDampener = vDampener.negated()
-  //T(y) = Log(a, (y - LastPremium) / (v0 - LastPremium)) ，get time t
-  //R(x, y) = (LastEMAPremium - LastPremium) * (Pow(a, x) - Pow(a, y)) / (1 - a) + LastPremium * (y - x) ，get accumulative from x to y
+  //T(y) = Log(a2, (y - LastPremium) / (v0 - LastPremium)) ，get time t
+  //R(x, y) = (LastEMAPremium - LastPremium) * (Pow(a2, x) - Pow(a2, y)) / a + LastPremium * (y - x) ，get accumulative from x to y
 
   // if lastEMAPremium == lastPremeium, we do not need tFunc() actually
-  const tFunc = (y: BigNumber) => bigLog(a, y.minus(f.lastPremium).div(v0.minus(f.lastPremium)))
-  const tt1 = f.lastEMAPremium.minus(f.lastPremium)
-  const rFunc = (x: BigNumber, y: BigNumber) =>
-    tt1.times(a.pow(y).minus(a.pow(x))).div(bigLn(a)).plus(f.lastPremium.times(y.minus(x)))
+  const tFunc = (y: BigNumber) => _tFunc(y, a2, f.lastPremium, v0)
+  const rFunc = (x: BigNumber, y: BigNumber) => _rFunc(x, y, a, a2, f.lastPremium, v0)
   let acc: BigNumber
   if (v0.isLessThanOrEqualTo(vNegLimit)) {
     if (vt.isLessThanOrEqualTo(vNegLimit)) {
@@ -161,9 +181,29 @@ function computeAccumulatedFunding(f: FundingParams, g: GovParams, timestamp: nu
       acc = vLimit.minus(vDampener).times(n)
     }
   }
-  acc = acc.div(f.lastIndexPrice).div(FUNDING_TIME)
+
   const emaPremium = vt
   return { acc, emaPremium }
+}
+
+export function computeInstantFunding(f: FundingParams, g: GovParams): FundingResult {
+  const timestamp = f.lastFundingTimestamp
+  const accumulatedFundingPerContract = f.accumulatedFundingPerContract
+  const emaPremium = f.lastEMAPremium
+  const markPrice = f.lastIndexPrice.plus(emaPremium)
+  let premiumRate = emaPremium.div(f.lastIndexPrice)
+  if (premiumRate.isGreaterThan(g.markPremiumLimit)) {
+    premiumRate = g.markPremiumLimit
+  } else if (premiumRate.isLessThan(g.markPremiumLimit.negated())) {
+    premiumRate = g.markPremiumLimit.negated()
+  }
+  let fundingRate = _0
+  if (premiumRate.isGreaterThan(g.fundingDampener)) {
+    fundingRate = premiumRate.minus(g.fundingDampener)
+  } else if (premiumRate.isLessThan(g.fundingDampener.negated())) {
+    fundingRate = premiumRate.plus(g.fundingDampener)
+  }
+  return { timestamp, accumulatedFundingPerContract, emaPremium, markPrice, premiumRate, fundingRate }
 }
 
 export function computeFunding(f: FundingParams, g: GovParams, timestamp: number): FundingResult {
@@ -171,7 +211,8 @@ export function computeFunding(f: FundingParams, g: GovParams, timestamp: number
     throw Error(`funding timestamp '${timestamp}' is early than last funding timestamp '${f.lastFundingTimestamp}'`)
   }
 
-  const { acc, emaPremium } = computeAccumulatedFunding(f, g, timestamp)
+  let { acc, emaPremium } = computeAccumulatedFunding(f, g, timestamp)
+  acc = acc.div(f.lastIndexPrice).div(FUNDING_TIME)
 
   const accumulatedFundingPerContract = f.accumulatedFundingPerContract.plus(acc)
   const markPrice = f.lastIndexPrice.plus(emaPremium)
@@ -279,19 +320,8 @@ export function computeAMM(ammAccount: AccountStorage, g: GovParams, p: Perpetua
   const x = availableMargin
   const y = ammAccount.positionSize
 
-  let impactAskPrice: BigNumber
-  const impactAskPriceCap = availableMargin.div(y).times(_1.plus(g.fairPriceMaxGap))
-  const impactBidPriceCap = availableMargin.div(y).times(_1.minus(g.fairPriceMaxGap))
-  if (y.isLessThanOrEqualTo(g.fairPriceAmount)) {
-    impactAskPrice = impactAskPriceCap
-  } else {
-    impactAskPrice = BigNumber.min(x.div(y.minus(g.fairPriceAmount)), impactAskPriceCap)
-  }
-  const impactBidPrice = BigNumber.max(x.div(y.plus(g.fairPriceAmount)), impactBidPriceCap)
-  const fairPrice = impactBidPrice.plus(impactAskPrice).div(2)
-  const ammPrice = x.div(y)
-
-  const ammComputed = { availableMargin, impactAskPrice, impactBidPrice, fairPrice, ammPrice }
+  const fairPrice = x.div(y)
+  const ammComputed = { availableMargin, fairPrice }
 
   return { ...accountDetails, ammComputed }
 }
@@ -312,8 +342,8 @@ export function computeAMMPrice(amm: AMMDetails, side: SIDE, amount: BigNumberis
 }
 
 export function computeAMMDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSamples: number = 20): AMMDepth {
-  let asks: Array<Depth> = [ { price: amm.ammComputed.ammPrice, amount: _0 } ]
-  let bids: Array<Depth> = [ { price: amm.ammComputed.ammPrice, amount: _0 } ]
+  let asks: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
+  let bids: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
   const normalizedStep = normalizeBigNumberish(step)
 
   for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {

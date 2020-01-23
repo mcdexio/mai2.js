@@ -45,7 +45,13 @@ export interface PerpetualContract {
   contract: ethers.Contract
 }
 
-export interface GovParams {
+export interface FundingGovParams {
+  markPremiumLimit: BigNumber
+  fundingDampener: BigNumber
+  emaAlpha: BigNumber
+}
+
+export interface GovParams extends FundingGovParams {
   withdrawalLockBlockCount: number
   brokerLockBlockCount: number
   intialMargin: BigNumber
@@ -56,14 +62,7 @@ export interface GovParams {
   makerDevRate: BigNumber
   takerDevRate: BigNumber
   oracleAddress: string
-  markPremiumLimit: BigNumber
-  fundingDampener: BigNumber
-  minAMMSize: BigNumber
   ammFeeRate: BigNumber
-  fairPriceAmount: BigNumber
-  fairPriceMaxGap: BigNumber
-  emaAlpha: BigNumber
-  updatePremiumPrize: BigNumber
 }
 
 export interface PerpetualStorage {
@@ -134,10 +133,7 @@ export interface AccountDetails {
 
 export interface AMMComputed {
   availableMargin: BigNumber
-  impactAskPrice: BigNumber
-  impactBidPrice: BigNumber
   fairPrice: BigNumber
-  ammPrice: BigNumber
 }
 
 export interface AMMDetails extends AccountDetails {
