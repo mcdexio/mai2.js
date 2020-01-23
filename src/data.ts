@@ -28,12 +28,8 @@ export async function getGovParams(perpetualContract: ethers.Contract): Promise<
     oracleAddress: '',
     markPremiumLimit: p,
     fundingDampener: p,
-    minAMMSize: p,
     ammFeeRate: p,
-    fairPriceAmount: p,
-    fairPriceMaxGap: p,
-    emaAlpha: p,
-    updatePremiumPrize: p
+    emaAlpha: p
   }
 }
 /*
