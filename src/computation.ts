@@ -247,21 +247,28 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
   const maintenanceMargin = markPrice.times(s.positionSize).times(g.maintenanceMargin)
   const longFundingLoss = f.accumulatedFundingPerContract.times(s.positionSize).minus(s.entryFoundingLoss)
   let socialLoss, fundingLoss, pnl1, liquidationPrice: BigNumber
-  if (s.positionSide === SIDE.Buy) {
-    socialLoss = p.longSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
-    fundingLoss = longFundingLoss
-    pnl1 = markPrice.times(s.positionSize).minus(s.entryValue)
-    const t = s.positionSize.times(g.maintenanceMargin).minus(s.positionSize)
-    liquidationPrice = s.cashBalance.minus(s.entryValue).minus(socialLoss).minus(fundingLoss).div(t)
-    if (liquidationPrice.isNegative()) {
-      liquidationPrice = _0
-    }
+  if (s.positionSize.isZero()) {
+    socialLoss = _0
+    fundingLoss = _0
+    pnl1 = _0
+    liquidationPrice = _0
   } else {
-    socialLoss = p.shortSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
-    fundingLoss = longFundingLoss.negated()
-    pnl1 = s.entryValue.minus(markPrice.times(s.positionSize))
-    const t = s.positionSize.times(g.maintenanceMargin).plus(s.positionSize)
-    liquidationPrice = s.cashBalance.plus(s.entryValue).minus(socialLoss).minus(fundingLoss).div(t)
+    if (s.positionSide === SIDE.Buy) {
+      socialLoss = p.longSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
+      fundingLoss = longFundingLoss
+      pnl1 = markPrice.times(s.positionSize).minus(s.entryValue)
+      const t = s.positionSize.times(g.maintenanceMargin).minus(s.positionSize)
+      liquidationPrice = s.cashBalance.minus(s.entryValue).minus(socialLoss).minus(fundingLoss).div(t)
+      if (liquidationPrice.isNegative()) {
+        liquidationPrice = _0
+      }
+    } else {
+      socialLoss = p.shortSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
+      fundingLoss = longFundingLoss.negated()
+      pnl1 = s.entryValue.minus(markPrice.times(s.positionSize))
+      const t = s.positionSize.times(g.maintenanceMargin).plus(s.positionSize)
+      liquidationPrice = s.cashBalance.plus(s.entryValue).minus(socialLoss).minus(fundingLoss).div(t)
+    }
   }
   const pnl2 = pnl1.minus(socialLoss).minus(fundingLoss)
   const marginBalance = s.cashBalance.plus(pnl2)
