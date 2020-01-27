@@ -186,27 +186,7 @@ export function computeAccumulatedFunding(
   return { acc, emaPremium }
 }
 
-export function computeInstantFunding(f: FundingParams, g: GovParams): FundingResult {
-  const timestamp = f.lastFundingTimestamp
-  const accumulatedFundingPerContract = f.accumulatedFundingPerContract
-  const emaPremium = f.lastEMAPremium
-  const markPrice = f.lastIndexPrice.plus(emaPremium)
-  let premiumRate = emaPremium.div(f.lastIndexPrice)
-  if (premiumRate.isGreaterThan(g.markPremiumLimit)) {
-    premiumRate = g.markPremiumLimit
-  } else if (premiumRate.isLessThan(g.markPremiumLimit.negated())) {
-    premiumRate = g.markPremiumLimit.negated()
-  }
-  let fundingRate = _0
-  if (premiumRate.isGreaterThan(g.fundingDampener)) {
-    fundingRate = premiumRate.minus(g.fundingDampener)
-  } else if (premiumRate.isLessThan(g.fundingDampener.negated())) {
-    fundingRate = premiumRate.plus(g.fundingDampener)
-  }
-  return { timestamp, accumulatedFundingPerContract, emaPremium, markPrice, premiumRate, fundingRate }
-}
-
-export function computeFunding(f: FundingParams, g: GovParams, timestamp: number): FundingResult {
+export function computeFunding(f: FundingParams, g: FundingGovParams, timestamp: number): FundingResult {
   if (timestamp < f.lastFundingTimestamp) {
     throw Error(`funding timestamp '${timestamp}' is early than last funding timestamp '${f.lastFundingTimestamp}'`)
   }
@@ -234,7 +214,7 @@ export function computeFunding(f: FundingParams, g: GovParams, timestamp: number
 
 export function updateFundingParams(
   f: FundingParams,
-  g: GovParams,
+  g: FundingGovParams,
   timestamp: number,
   newIndexPrice: BigNumber,
   newFairPrice: BigNumber
@@ -250,7 +230,7 @@ export function updateFundingParams(
 
 export function funding(
   p: PerpetualStorage,
-  g: GovParams,
+  g: FundingGovParams,
   timestamp: number,
   newIndexPrice: BigNumber,
   newFairPrice: BigNumber
@@ -259,19 +239,17 @@ export function funding(
   return { ...p, fundingParams: newFundingParams }
 }
 
-export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStorage): AccountDetails {
+export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStorage, f: FundingResult): AccountDetails {
   const entryPrice = s.positionSize.isZero() ? _0 : s.entryValue.div(s.positionSize)
-  const markPrice = p.fundingParams.lastIndexPrice.plus(p.fundingParams.lastEMAPremium)
+  const markPrice = f.markPrice
   const positionValue = markPrice.times(s.positionSize)
   const positionMargin = markPrice.times(s.positionSize).times(g.intialMargin)
   const maintenanceMargin = markPrice.times(s.positionSize).times(g.maintenanceMargin)
-  const shortFundingLoss = p.fundingParams.accumulatedFundingPerContract.times(
-    s.positionSize.minus(s.entryFoundingLoss)
-  )
+  const longFundingLoss = f.accumulatedFundingPerContract.times(s.positionSize).minus(s.entryFoundingLoss)
   let socialLoss, fundingLoss, pnl1, liquidationPrice: BigNumber
   if (s.positionSide === SIDE.Buy) {
     socialLoss = p.longSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
-    fundingLoss = shortFundingLoss.negated()
+    fundingLoss = longFundingLoss
     pnl1 = markPrice.times(s.positionSize).minus(s.entryValue)
     const t = s.positionSize.times(g.maintenanceMargin).minus(s.positionSize)
     liquidationPrice = s.cashBalance.minus(s.entryValue).minus(socialLoss).minus(fundingLoss).div(t)
@@ -280,17 +258,20 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
     }
   } else {
     socialLoss = p.shortSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
-    fundingLoss = shortFundingLoss
+    fundingLoss = longFundingLoss.negated()
     pnl1 = s.entryValue.minus(markPrice.times(s.positionSize))
     const t = s.positionSize.times(g.maintenanceMargin).plus(s.positionSize)
     liquidationPrice = s.cashBalance.plus(s.entryValue).minus(socialLoss).minus(fundingLoss).div(t)
   }
-  const pnl2 = pnl1.plus(socialLoss).plus(fundingLoss)
+  const pnl2 = pnl1.minus(socialLoss).minus(fundingLoss)
   const marginBalance = s.cashBalance.plus(pnl2)
   const roe = pnl2.div(s.cashBalance)
-  const availableMargin = marginBalance.minus(positionMargin).minus(s.withdrawalApplication.amount)
-  const withdrawableBalance = BigNumber.min(marginBalance.minus(positionMargin), s.withdrawalApplication.amount)
-  const isSafe = maintenanceMargin.isGreaterThanOrEqualTo(marginBalance)
+  const availableMargin = BigNumber.max(_0, marginBalance.minus(positionMargin).minus(s.withdrawalApplication.amount))
+  const withdrawableBalance = BigNumber.max(
+    _0,
+    BigNumber.min(marginBalance.minus(positionMargin), s.withdrawalApplication.amount)
+  )
+  const isSafe = maintenanceMargin.isLessThanOrEqualTo(marginBalance)
   const leverage = positionValue.div(marginBalance)
   const accountComputed = {
     entryPrice,
@@ -312,8 +293,13 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
   return { accountStorage: s, accountComputed }
 }
 
-export function computeAMM(ammAccount: AccountStorage, g: GovParams, p: PerpetualStorage): AMMDetails {
-  const accountDetails = computeAccount(ammAccount, g, p)
+export function computeAMM(
+  ammAccount: AccountStorage,
+  g: GovParams,
+  p: PerpetualStorage,
+  f: FundingResult
+): AMMDetails {
+  const accountDetails = computeAccount(ammAccount, g, p, f)
   const loss = accountDetails.accountComputed.socialLoss.plus(accountDetails.accountComputed.fundingLoss)
   const availableMargin = ammAccount.cashBalance.minus(ammAccount.entryValue).minus(loss)
 

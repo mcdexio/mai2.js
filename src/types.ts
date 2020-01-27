@@ -21,7 +21,7 @@ export function isLowLevelProvider(
     return false
   } else {
     const provider: ethers.providers.Provider = chainIdOrProvider as ethers.providers.Provider
-    return !ethers.providers.Provider.isProvider(provider)
+    return ethers.providers.Provider.isProvider(provider)
   }
 }
 
