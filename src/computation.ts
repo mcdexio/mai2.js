@@ -15,7 +15,8 @@ import {
   Depth,
   AMMDepth,
   BigNumberish,
-  FundingGovParams
+  FundingGovParams,
+  AccountComputed
 } from './types'
 import { _0, _1, FUNDING_TIME, SIDE, _0_1 } from './constants'
 import { bigLog, normalizeBigNumberish } from './utils'
@@ -246,12 +247,14 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
   const positionMargin = markPrice.times(s.positionSize).times(g.intialMargin)
   const maintenanceMargin = markPrice.times(s.positionSize).times(g.maintenanceMargin)
   const longFundingLoss = f.accumulatedFundingPerContract.times(s.positionSize).minus(s.entryFoundingLoss)
-  let socialLoss, fundingLoss, pnl1, liquidationPrice: BigNumber
+  let socialLoss, fundingLoss, pnl1, liquidationPrice, inverseEntryPrice, inverseLiquidationPrice: BigNumber
   if (s.positionSize.isZero()) {
     socialLoss = _0
     fundingLoss = _0
     pnl1 = _0
     liquidationPrice = _0
+    inverseEntryPrice = _0
+    inverseLiquidationPrice = _0
   } else {
     if (s.positionSide === SIDE.Buy) {
       socialLoss = p.longSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
@@ -269,6 +272,8 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
       const t = s.positionSize.times(g.maintenanceMargin).plus(s.positionSize)
       liquidationPrice = s.cashBalance.plus(s.entryValue).minus(socialLoss).minus(fundingLoss).div(t)
     }
+    inverseEntryPrice = _1.div(entryPrice)
+    inverseLiquidationPrice = _1.div(liquidationPrice)
   }
   const pnl2 = pnl1.minus(socialLoss).minus(fundingLoss)
   const marginBalance = s.cashBalance.plus(pnl2)
@@ -280,7 +285,9 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
   )
   const isSafe = maintenanceMargin.isLessThanOrEqualTo(marginBalance)
   const leverage = positionValue.div(marginBalance)
-  const accountComputed = {
+  const inverseSide = s.positionSide === SIDE.Buy ? SIDE.Sell : SIDE.Buy
+
+  const accountComputed: AccountComputed = {
     entryPrice,
     positionValue,
     positionMargin,
@@ -295,7 +302,10 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
     marginBalance,
     availableMargin,
     withdrawableBalance,
-    isSafe
+    isSafe,
+    inverseSide,
+    inverseEntryPrice,
+    inverseLiquidationPrice
   }
   return { accountStorage: s, accountComputed }
 }
@@ -314,7 +324,8 @@ export function computeAMM(
   const y = ammAccount.positionSize
 
   const fairPrice = x.div(y)
-  const ammComputed = { availableMargin, fairPrice }
+  const inverseFairPrice = y.div(x)
+  const ammComputed = { availableMargin, fairPrice, inverseFairPrice }
 
   return { ...accountDetails, ammComputed }
 }
@@ -334,6 +345,21 @@ export function computeAMMPrice(amm: AMMDetails, side: SIDE, amount: BigNumberis
   }
 }
 
+export function computeAMMInversePrice(amm: AMMDetails, side: SIDE, amount: BigNumberish): BigNumber {
+  const normalizedAmount = normalizeBigNumberish(amount)
+  const x = amm.ammComputed.availableMargin
+  const y = amm.accountStorage.positionSize
+
+  if (side === SIDE.Sell) {
+    if (normalizedAmount.isGreaterThanOrEqualTo(y)) {
+      throw Error(`sell inverse amount '${normalizedAmount}' is larger than the amm's position size '${y}'`)
+    }
+    return y.minus(normalizedAmount).div(x)
+  } else {
+    return y.plus(normalizedAmount).div(x)
+  }
+}
+
 export function computeAMMDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSamples: number = 20): AMMDepth {
   let asks: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
   let bids: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
@@ -346,6 +372,24 @@ export function computeAMMDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSam
 
   for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
     const price = computeAMMPrice(amm, SIDE.Buy, amount)
+    asks.push({ price, amount })
+  }
+
+  return { bids, asks }
+}
+
+export function computeAMMInverseDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSamples: number = 20): AMMDepth {
+  let asks: Array<Depth> = [ { price: amm.ammComputed.inverseFairPrice, amount: _0 } ]
+  let bids: Array<Depth> = [ { price: amm.ammComputed.inverseFairPrice, amount: _0 } ]
+  const normalizedStep = normalizeBigNumberish(step)
+
+  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
+    const price = computeAMMInversePrice(amm, SIDE.Sell, amount)
+    bids.unshift({ price, amount })
+  }
+
+  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
+    const price = computeAMMInversePrice(amm, SIDE.Buy, amount)
     asks.push({ price, amount })
   }
 

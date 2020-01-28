@@ -8,7 +8,9 @@ import {
   funding,
   computeAMM,
   computeAMMPrice,
-  computeAMMDepth
+  computeAMMDepth,
+  computeAMMInversePrice,
+  computeAMMInverseDepth
 } from '../src/computation'
 import { DECIMALS, _0, _1, SIDE, FUNDING_TIME } from '../src/constants'
 import {
@@ -27,8 +29,12 @@ function getBN(s: string): BigNumber {
 const expectError = new BigNumber('1e-12')
 
 function expectAlmostEqual(expectNumber: BigNumber, actualNumber: BigNumber) {
-  let err = expectNumber.minus(actualNumber).abs()
-  expect(err.isLessThan(expectError)).toBeTruthy()
+  if (expectNumber.isFinite() && actualNumber.isFinite()) {
+    let err = expectNumber.minus(actualNumber).abs()
+    expect(err.isLessThan(expectError)).toBeTruthy()
+  } else {
+    expect(expectNumber.isEqualTo(actualNumber)).toBeTruthy()
+  }
 }
 
 function expectEqual(expectNumber: BigNumber, actualNumber: BigNumber) {
@@ -394,7 +400,10 @@ describe('computeAccount', function() {
     availableMargin: new BigNumber('22083.059278122046'),
     withdrawableBalance: new BigNumber('10'),
     leverage: new BigNumber('0.676060984555183532'),
-    isSafe: true
+    isSafe: true,
+    inverseSide: SIDE.Sell,
+    inverseEntryPrice: new BigNumber('0.000999900009999'),
+    inverseLiquidationPrice: new BigNumber(Infinity)
   }
 
   const accountStorage2: AccountStorage = {
@@ -425,7 +434,10 @@ describe('computeAccount', function() {
     availableMargin: new BigNumber('13083.059278122046'),
     withdrawableBalance: new BigNumber('10'),
     leverage: new BigNumber('1.090117138031777'),
-    isSafe: true
+    isSafe: true,
+    inverseSide: SIDE.Sell,
+    inverseEntryPrice: new BigNumber('0.000999900009999'),
+    inverseLiquidationPrice: new BigNumber('0.001649965679955')
   }
 
   const accountStorage3: AccountStorage = {
@@ -456,7 +468,10 @@ describe('computeAccount', function() {
     availableMargin: _0,
     withdrawableBalance: _0,
     leverage: new BigNumber('52.72348985500976'),
-    isSafe: false
+    isSafe: false,
+    inverseSide: SIDE.Buy,
+    inverseEntryPrice: new BigNumber('0.0009999000099990001'),
+    inverseLiquidationPrice: new BigNumber('0.00014794992887820734')
   }
 
   const accountStorage4: AccountStorage = {
@@ -487,7 +502,10 @@ describe('computeAccount', function() {
     availableMargin: new BigNumber('9990'),
     withdrawableBalance: new BigNumber('10'),
     leverage: _0,
-    isSafe: true
+    isSafe: true,
+    inverseSide: SIDE.Sell,
+    inverseEntryPrice: _0,
+    inverseLiquidationPrice: _0
   }
 
   const successCases: Array<ComputeAccountCase> = [
@@ -550,15 +568,15 @@ describe('computeAccount', function() {
       expectAlmostEqual(expectedOutput.pnl1, computed.pnl1)
       expectAlmostEqual(expectedOutput.pnl2, computed.pnl2)
       expectAlmostEqual(expectedOutput.roe, computed.roe)
-
       expectAlmostEqual(expectedOutput.liquidationPrice, computed.liquidationPrice)
-
       expectAlmostEqual(expectedOutput.marginBalance, computed.marginBalance)
-
       expectAlmostEqual(expectedOutput.availableMargin, computed.availableMargin)
       expectAlmostEqual(expectedOutput.withdrawableBalance, computed.withdrawableBalance)
       expectAlmostEqual(expectedOutput.leverage, computed.leverage)
       expect(computed.isSafe).toEqual(expectedOutput.isSafe)
+      expect(computed.inverseSide).toEqual(expectedOutput.inverseSide)
+      expectAlmostEqual(expectedOutput.inverseEntryPrice, computed.inverseEntryPrice)
+      expectAlmostEqual(expectedOutput.inverseLiquidationPrice, computed.inverseLiquidationPrice)
     })
   })
 })
@@ -587,6 +605,7 @@ describe('amm', function() {
     // 10000 - 2300.23 - 0.13 - 23.90996909375
     expectAlmostEqual(new BigNumber(7675.73003090625), ammDetails.ammComputed.availableMargin)
     expectAlmostEqual(new BigNumber(3337.273926480978), ammDetails.ammComputed.fairPrice)
+    expectAlmostEqual(new BigNumber(1 / 3337.273926480978), ammDetails.ammComputed.inverseFairPrice)
   })
 
   it(`computeAMMPrice.buyTooLarge`, function() {
@@ -611,30 +630,63 @@ describe('amm', function() {
     expect(depth.bids.length).toEqual(4)
     expect(depth.asks.length).toEqual(4)
 
-    expectAlmostEqual(new BigNumber(3337.273926480978), depth.bids[3].price)
-    expectAlmostEqual(new BigNumber(0), depth.bids[3].amount)
-    expectAlmostEqual(new BigNumber(3198.2208462109375), depth.bids[2].price)
-    expectAlmostEqual(new BigNumber(0.1), depth.bids[2].amount)
-    expectAlmostEqual(new BigNumber(3070.2920123625), depth.bids[1].price)
-    expectAlmostEqual(new BigNumber(0.2), depth.bids[1].amount)
     expectAlmostEqual(new BigNumber(2952.20385804086538), depth.bids[0].price)
     expectAlmostEqual(new BigNumber(0.3), depth.bids[0].amount)
-
+    expectAlmostEqual(new BigNumber(3070.2920123625), depth.bids[1].price)
+    expectAlmostEqual(new BigNumber(0.2), depth.bids[1].amount)
+    expectAlmostEqual(new BigNumber(3198.2208462109375), depth.bids[2].price)
+    expectAlmostEqual(new BigNumber(0.1), depth.bids[2].amount)
+    expectAlmostEqual(new BigNumber(3337.273926480978), depth.bids[3].price)
+    expectAlmostEqual(new BigNumber(0), depth.bids[3].amount)
     expectAlmostEqual(new BigNumber(3337.273926480978), depth.asks[0].price)
     expectAlmostEqual(new BigNumber(0), depth.asks[0].amount)
-
     expectAlmostEqual(new BigNumber(3488.968195866477), depth.asks[1].price)
     expectAlmostEqual(new BigNumber(0.1), depth.asks[1].amount)
-
     expectAlmostEqual(new BigNumber(3655.109538526786), depth.asks[2].price)
     expectAlmostEqual(new BigNumber(0.2), depth.asks[2].amount)
-
     expectAlmostEqual(new BigNumber(3837.865015453125), depth.asks[3].price)
     expectAlmostEqual(new BigNumber(0.3), depth.asks[3].amount)
   })
 
   it('computeAMMDepthDefault', function() {
     const depth = computeAMMDepth(ammDetails)
+
+    expect(depth.bids.length).toEqual(21)
+    expect(depth.asks.length).toEqual(21)
+  })
+
+  it(`computeAMMInversePrice.sellTooLarge`, function() {
+    expect((): void => {
+      computeAMMInversePrice(ammDetails, SIDE.Sell, 4)
+    }).toThrow()
+  })
+
+  it('computeAMMInverseDepth', function() {
+    const depth = computeAMMInverseDepth(ammDetails, 0.1, 3)
+
+    expect(depth.bids.length).toEqual(4)
+    expect(depth.asks.length).toEqual(4)
+
+    expectAlmostEqual(new BigNumber(1 / 3837.865015453125), depth.bids[0].price)
+    expectAlmostEqual(new BigNumber(0.3), depth.bids[0].amount)
+    expectAlmostEqual(new BigNumber(1 / 3655.109538526786), depth.bids[1].price)
+    expectAlmostEqual(new BigNumber(0.2), depth.bids[1].amount)
+    expectAlmostEqual(new BigNumber(1 / 3488.968195866477), depth.bids[2].price)
+    expectAlmostEqual(new BigNumber(0.1), depth.bids[2].amount)
+    expectAlmostEqual(new BigNumber(1 / 3337.273926480978), depth.bids[3].price)
+    expectAlmostEqual(new BigNumber(0), depth.bids[3].amount)
+    expectAlmostEqual(new BigNumber(1 / 3337.273926480978), depth.asks[0].price)
+    expectAlmostEqual(new BigNumber(0), depth.asks[0].amount)
+    expectAlmostEqual(new BigNumber(1 / 3198.2208462109375), depth.asks[1].price)
+    expectAlmostEqual(new BigNumber(0.1), depth.asks[1].amount)
+    expectAlmostEqual(new BigNumber(1 / 3070.2920123625), depth.asks[2].price)
+    expectAlmostEqual(new BigNumber(0.2), depth.asks[2].amount)
+    expectAlmostEqual(new BigNumber(1 / 2952.20385804086538), depth.asks[3].price)
+    expectAlmostEqual(new BigNumber(0.3), depth.asks[3].amount)
+  })
+
+  it('computeAMMInverseDepthDefault', function() {
+    const depth = computeAMMInverseDepth(ammDetails)
 
     expect(depth.bids.length).toEqual(21)
     expect(depth.asks.length).toEqual(21)

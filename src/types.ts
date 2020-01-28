@@ -7,24 +7,6 @@ export type BigNumberish = BigNumber | ethers.utils.BigNumber | string | number
 //// types for on-chain, submitted, and normalized data
 export type ChainIdOrProvider = SUPPORTED_CHAIN_ID | ethers.providers.AsyncSendable | ethers.providers.Provider
 
-// type guard for ChainIdOrProvider
-export function isChainId(chainIdOrProvider: ChainIdOrProvider): chainIdOrProvider is SUPPORTED_CHAIN_ID {
-  const chainId: SUPPORTED_CHAIN_ID = chainIdOrProvider as SUPPORTED_CHAIN_ID
-  return typeof chainId === 'number'
-}
-
-// type guard for ChainIdOrProvider
-export function isLowLevelProvider(
-  chainIdOrProvider: ChainIdOrProvider
-): chainIdOrProvider is ethers.providers.AsyncSendable {
-  if (isChainId(chainIdOrProvider)) {
-    return false
-  } else {
-    const provider: ethers.providers.Provider = chainIdOrProvider as ethers.providers.Provider
-    return ethers.providers.Provider.isProvider(provider)
-  }
-}
-
 export interface Token {
   chainId?: SUPPORTED_CHAIN_ID
   address?: string
@@ -124,6 +106,9 @@ export interface AccountComputed {
   withdrawableBalance: BigNumber
   leverage: BigNumber
   isSafe: boolean
+  inverseSide: SIDE
+  inverseEntryPrice: BigNumber
+  inverseLiquidationPrice: BigNumber
 }
 
 export interface AccountDetails {
@@ -134,6 +119,7 @@ export interface AccountDetails {
 export interface AMMComputed {
   availableMargin: BigNumber
   fairPrice: BigNumber
+  inverseFairPrice: BigNumber
 }
 
 export interface AMMDetails extends AccountDetails {
