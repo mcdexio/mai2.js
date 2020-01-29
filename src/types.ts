@@ -81,7 +81,7 @@ export interface AccountStorage {
   positionSize: BigNumber
   entryValue: BigNumber
   entrySocialLoss: BigNumber
-  entryFoundingLoss: BigNumber
+  entryFundingLoss: BigNumber
   withdrawalApplication: WithdrawalApplication
 }
 
@@ -103,6 +103,7 @@ export interface AccountComputed {
   liquidationPrice: BigNumber
   marginBalance: BigNumber
   availableMargin: BigNumber
+  maxWithdrawable: BigNumber
   withdrawableBalance: BigNumber
   leverage: BigNumber
   isSafe: boolean

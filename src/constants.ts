@@ -17,7 +17,8 @@ export const ERC20_ABI: string = JSON.stringify(ERC20ABI)
 
 export enum SIDE {
   Buy,
-  Sell
+  Sell,
+  Flat
 }
 
 export const _CHAIN_ID_NAME: { [key: number]: string } = {

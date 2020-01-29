@@ -397,7 +397,8 @@ describe('computeAccount', function() {
     roe: new BigNumber('1.36949847500349122'),
     liquidationPrice: _0,
     marginBalance: new BigNumber('23694.9847500349122'),
-    availableMargin: new BigNumber('22083.059278122046'),
+    maxWithdrawable: new BigNumber('22093.05927812204597'),
+    availableMargin: new BigNumber('22083.05927812204597'),
     withdrawableBalance: new BigNumber('10'),
     leverage: new BigNumber('0.676060984555183532'),
     isSafe: true,
@@ -431,7 +432,8 @@ describe('computeAccount', function() {
     roe: new BigNumber('13.6949847500349122'),
     liquidationPrice: new BigNumber('606.07321239988558'),
     marginBalance: new BigNumber('14694.9847500349122'),
-    availableMargin: new BigNumber('13083.059278122046'),
+    maxWithdrawable: new BigNumber('13093.05927812204598'),
+    availableMargin: new BigNumber('13083.05927812204598'),
     withdrawableBalance: new BigNumber('10'),
     leverage: new BigNumber('1.090117138031777'),
     isSafe: true,
@@ -465,6 +467,7 @@ describe('computeAccount', function() {
     roe: new BigNumber('-0.97829748214535087'),
     liquidationPrice: new BigNumber('6759.0434654632505176'),
     marginBalance: new BigNumber('303.8352499650878'),
+    maxWithdrawable: _0,
     availableMargin: _0,
     withdrawableBalance: _0,
     leverage: new BigNumber('52.72348985500976'),
@@ -476,7 +479,7 @@ describe('computeAccount', function() {
 
   const accountStorage4: AccountStorage = {
     cashBalance: new BigNumber('10000'),
-    positionSide: SIDE.Buy,
+    positionSide: SIDE.Flat,
     positionSize: _0,
     entryValue: _0,
     entrySocialLoss: _0,
@@ -500,10 +503,11 @@ describe('computeAccount', function() {
     liquidationPrice: _0,
     marginBalance: new BigNumber('10000'),
     availableMargin: new BigNumber('9990'),
+    maxWithdrawable: new BigNumber('10000'),
     withdrawableBalance: new BigNumber('10'),
     leverage: _0,
     isSafe: true,
-    inverseSide: SIDE.Sell,
+    inverseSide: SIDE.Flat,
     inverseEntryPrice: _0,
     inverseLiquidationPrice: _0
   }
@@ -571,6 +575,7 @@ describe('computeAccount', function() {
       expectAlmostEqual(expectedOutput.liquidationPrice, computed.liquidationPrice)
       expectAlmostEqual(expectedOutput.marginBalance, computed.marginBalance)
       expectAlmostEqual(expectedOutput.availableMargin, computed.availableMargin)
+      expectAlmostEqual(expectedOutput.maxWithdrawable, computed.maxWithdrawable)
       expectAlmostEqual(expectedOutput.withdrawableBalance, computed.withdrawableBalance)
       expectAlmostEqual(expectedOutput.leverage, computed.leverage)
       expect(computed.isSafe).toEqual(expectedOutput.isSafe)
@@ -655,6 +660,13 @@ describe('amm', function() {
     expect(depth.asks.length).toEqual(21)
   })
 
+  it('computeAMMDepthTooLarge', function() {
+    const depth = computeAMMDepth(ammDetails, 1)
+
+    expect(depth.bids.length).toEqual(21)
+    expect(depth.asks.length).toEqual(3)
+  })
+
   it(`computeAMMInversePrice.sellTooLarge`, function() {
     expect((): void => {
       computeAMMInversePrice(ammDetails, SIDE.Sell, 4)
@@ -689,6 +701,13 @@ describe('amm', function() {
     const depth = computeAMMInverseDepth(ammDetails)
 
     expect(depth.bids.length).toEqual(21)
+    expect(depth.asks.length).toEqual(21)
+  })
+
+  it('computeAMMInverseDepthTooLarge', function() {
+    const depth = computeAMMInverseDepth(ammDetails, 1)
+
+    expect(depth.bids.length).toEqual(3)
     expect(depth.asks.length).toEqual(21)
   })
 })

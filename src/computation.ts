@@ -246,15 +246,17 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
   const positionValue = markPrice.times(s.positionSize)
   const positionMargin = markPrice.times(s.positionSize).times(g.intialMargin)
   const maintenanceMargin = markPrice.times(s.positionSize).times(g.maintenanceMargin)
-  const longFundingLoss = f.accumulatedFundingPerContract.times(s.positionSize).minus(s.entryFoundingLoss)
+  const longFundingLoss = f.accumulatedFundingPerContract.times(s.positionSize).minus(s.entryFundingLoss)
   let socialLoss, fundingLoss, pnl1, liquidationPrice, inverseEntryPrice, inverseLiquidationPrice: BigNumber
-  if (s.positionSize.isZero()) {
+  let inverseSide: SIDE
+  if (s.positionSide === SIDE.Flat) {
     socialLoss = _0
     fundingLoss = _0
     pnl1 = _0
     liquidationPrice = _0
     inverseEntryPrice = _0
     inverseLiquidationPrice = _0
+    inverseSide = SIDE.Flat
   } else {
     if (s.positionSide === SIDE.Buy) {
       socialLoss = p.longSocialLossPerContract.times(s.positionSize).minus(s.entrySocialLoss)
@@ -274,18 +276,16 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
     }
     inverseEntryPrice = _1.div(entryPrice)
     inverseLiquidationPrice = _1.div(liquidationPrice)
+    inverseSide = s.positionSide === SIDE.Buy ? SIDE.Sell : SIDE.Buy
   }
   const pnl2 = pnl1.minus(socialLoss).minus(fundingLoss)
   const marginBalance = s.cashBalance.plus(pnl2)
   const roe = pnl2.div(s.cashBalance)
-  const availableMargin = BigNumber.max(_0, marginBalance.minus(positionMargin).minus(s.withdrawalApplication.amount))
-  const withdrawableBalance = BigNumber.max(
-    _0,
-    BigNumber.min(marginBalance.minus(positionMargin), s.withdrawalApplication.amount)
-  )
+  const maxWithdrawable = BigNumber.max(_0, marginBalance.minus(positionMargin))
+  const availableMargin = BigNumber.max(_0, maxWithdrawable.minus(s.withdrawalApplication.amount))
+  const withdrawableBalance = BigNumber.min(maxWithdrawable, s.withdrawalApplication.amount)
   const isSafe = maintenanceMargin.isLessThanOrEqualTo(marginBalance)
   const leverage = positionValue.div(marginBalance)
-  const inverseSide = s.positionSide === SIDE.Buy ? SIDE.Sell : SIDE.Buy
 
   const accountComputed: AccountComputed = {
     entryPrice,
@@ -300,6 +300,7 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
     liquidationPrice,
     roe,
     marginBalance,
+    maxWithdrawable,
     availableMargin,
     withdrawableBalance,
     isSafe,
@@ -345,6 +346,27 @@ export function computeAMMPrice(amm: AMMDetails, side: SIDE, amount: BigNumberis
   }
 }
 
+export function computeAMMDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSamples: number = 20): AMMDepth {
+  let asks: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
+  let bids: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
+  const normalizedStep = normalizeBigNumberish(step)
+
+  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
+    const price = computeAMMPrice(amm, SIDE.Sell, amount)
+    bids.unshift({ price, amount })
+  }
+
+  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
+    if (amount.isGreaterThanOrEqualTo(amm.accountStorage.positionSize)) {
+      break
+    }
+    const price = computeAMMPrice(amm, SIDE.Buy, amount)
+    asks.push({ price, amount })
+  }
+
+  return { bids, asks }
+}
+
 export function computeAMMInversePrice(amm: AMMDetails, side: SIDE, amount: BigNumberish): BigNumber {
   const normalizedAmount = normalizeBigNumberish(amount)
   const x = amm.ammComputed.availableMargin
@@ -360,30 +382,15 @@ export function computeAMMInversePrice(amm: AMMDetails, side: SIDE, amount: BigN
   }
 }
 
-export function computeAMMDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSamples: number = 20): AMMDepth {
-  let asks: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
-  let bids: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
-  const normalizedStep = normalizeBigNumberish(step)
-
-  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
-    const price = computeAMMPrice(amm, SIDE.Sell, amount)
-    bids.unshift({ price, amount })
-  }
-
-  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
-    const price = computeAMMPrice(amm, SIDE.Buy, amount)
-    asks.push({ price, amount })
-  }
-
-  return { bids, asks }
-}
-
 export function computeAMMInverseDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSamples: number = 20): AMMDepth {
   let asks: Array<Depth> = [ { price: amm.ammComputed.inverseFairPrice, amount: _0 } ]
   let bids: Array<Depth> = [ { price: amm.ammComputed.inverseFairPrice, amount: _0 } ]
   const normalizedStep = normalizeBigNumberish(step)
 
   for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
+    if (amount.isGreaterThanOrEqualTo(amm.accountStorage.positionSize)) {
+      break
+    }
     const price = computeAMMInversePrice(amm, SIDE.Sell, amount)
     bids.unshift({ price, amount })
   }
@@ -394,4 +401,190 @@ export function computeAMMInverseDepth(amm: AMMDetails, step: BigNumberish = _0_
   }
 
   return { bids, asks }
+}
+
+export function computeDecreasePosition(
+  p: PerpetualStorage,
+  f: FundingResult,
+  a: AccountStorage,
+  price: BigNumber,
+  amount: BigNumber
+): AccountStorage {
+  const size = a.positionSize
+  const side = a.positionSide
+  let entryValue = a.entryValue
+  let entrySocialLoss = a.entrySocialLoss
+  let entryFundingLoss = a.entryFundingLoss
+  if (!price.isPositive() || !amount.isPositive()) {
+    throw Error(`bad price ${price} or amount ${amount}`)
+  }
+  if (size.isLessThan(amount)) {
+    throw Error(`position size ${size} is less than amount ${amount}`)
+  }
+  let rpnl1, socialLoss, fundingLoss: BigNumber
+  if (side === SIDE.Buy) {
+    rpnl1 = price.times(amount).minus(entryValue.times(amount).div(size))
+    socialLoss = p.longSocialLossPerContract.minus(entrySocialLoss.div(size)).times(amount)
+    fundingLoss = f.accumulatedFundingPerContract.minus(entryFundingLoss.div(size)).times(amount)
+  } else if (side === SIDE.Sell) {
+    rpnl1 = entryValue.times(amount).div(size).minus(price.times(amount))
+    socialLoss = p.shortSocialLossPerContract.minus(entrySocialLoss.div(size)).times(amount)
+    fundingLoss = f.accumulatedFundingPerContract.minus(entryFundingLoss.div(size)).times(amount).negated()
+  } else {
+    rpnl1 = _0
+    socialLoss = _0
+    fundingLoss = _0
+  }
+  const rpnl2 = rpnl1.minus(socialLoss).minus(fundingLoss)
+  const positionSize = size.minus(amount)
+  const positionSide = positionSize.isZero() ? SIDE.Flat : side
+  entrySocialLoss = entryFundingLoss.times(positionSize).div(size)
+  entryFundingLoss = entryFundingLoss.times(positionSize).div(size)
+  entryValue = entryValue.times(positionSize).div(size)
+  const cashBalance = a.cashBalance.plus(rpnl2)
+
+  return { ...a, entryValue, positionSide, positionSize, entrySocialLoss, entryFundingLoss, cashBalance }
+}
+
+export function computeIncreasePosition(
+  p: PerpetualStorage,
+  f: FundingResult,
+  a: AccountStorage,
+  side: SIDE,
+  price: BigNumber,
+  amount: BigNumber
+): AccountStorage {
+  let positionSize = a.positionSize
+  let positionSide = a.positionSide
+  let entryValue = a.entryValue
+  let entrySocialLoss = a.entrySocialLoss
+  let entryFundingLoss = a.entryFundingLoss
+  if (!price.isPositive() || !amount.isPositive()) {
+    throw Error(`bad price ${price} or amount ${amount}`)
+  }
+  if (side == SIDE.Flat) {
+    throw Error(`bad increase side ${side}`)
+  }
+  if (positionSide != SIDE.Flat && positionSide != side) {
+    throw Error(`bad increase side ${side} where position side is ${positionSide}`)
+  }
+
+  positionSide = side
+  entryValue = entryValue.plus(price.times(amount))
+  positionSize = positionSize.plus(amount)
+  if (side == SIDE.Buy) {
+    entrySocialLoss = entrySocialLoss.plus(p.longSocialLossPerContract.times(amount))
+  } else {
+    entrySocialLoss = entrySocialLoss.plus(p.shortSocialLossPerContract.times(amount))
+  }
+  entryFundingLoss = entryFundingLoss.plus(f.accumulatedFundingPerContract.times(amount))
+
+  return { ...a, positionSide, entryValue, positionSize, entrySocialLoss, entryFundingLoss }
+}
+
+export function computeFee(price: BigNumberish, amount: BigNumberish, feeRate: BigNumberish): BigNumber {
+  const normalizedPrice = normalizeBigNumberish(price)
+  const normalizedAmount = normalizeBigNumberish(amount)
+  const normalizedFeeRate = normalizeBigNumberish(feeRate)
+  if (!normalizedPrice.isPositive() || !normalizedAmount.isPositive()) {
+    throw Error(`bad price ${normalizedPrice} or amount ${normalizedAmount}`)
+  }
+  return normalizedPrice.times(normalizedAmount).times(normalizedFeeRate)
+}
+
+export function computeTrade(
+  p: PerpetualStorage,
+  f: FundingResult,
+  a: AccountStorage,
+  side: SIDE,
+  price: BigNumberish,
+  amount: BigNumberish,
+  feeRate: BigNumberish
+): AccountStorage {
+  const normalizedPrice = normalizeBigNumberish(price)
+  const normalizedAmount = normalizeBigNumberish(amount)
+  const normalizedFeeRate = normalizeBigNumberish(feeRate)
+  if (!normalizedPrice.isPositive() || !normalizedAmount.isPositive()) {
+    throw Error(`bad price ${normalizedPrice} or amount ${normalizedAmount}`)
+  }
+  let storage: AccountStorage = a
+  let toDecrease, toIncrease: BigNumber
+  if (a.positionSize.isPositive() && a.positionSide != side) {
+    toDecrease = BigNumber.min(a.positionSize, normalizedAmount)
+    toIncrease = normalizedAmount.minus(toDecrease)
+  } else {
+    toDecrease = _0
+    toIncrease = normalizedAmount
+  }
+
+  if (toDecrease.isPositive()) {
+    storage = computeDecreasePosition(p, f, storage, normalizedPrice, toDecrease)
+  }
+  if (toIncrease.isPositive()) {
+    storage = computeIncreasePosition(p, f, storage, side, normalizedPrice, toIncrease)
+  }
+  const fee = computeFee(normalizedPrice, normalizedAmount, normalizedFeeRate)
+  storage.cashBalance = storage.cashBalance.minus(fee)
+  return storage
+}
+
+export interface TradeCost {
+  account: AccountDetails
+  marginCost: BigNumber
+  toDeposit: BigNumber
+  fee: BigNumber
+}
+
+export function computeTradeCost(
+  g: GovParams,
+  p: PerpetualStorage,
+  f: FundingResult,
+  a: AccountDetails,
+  side: SIDE,
+  price: BigNumberish,
+  amount: BigNumberish,
+  leverage: BigNumberish,
+  feeRate: BigNumberish
+): TradeCost {
+  const normalizedLeverage = normalizeBigNumberish(leverage)
+  if (!normalizedLeverage.isPositive()) {
+    throw Error(`bad leverage ${normalizedLeverage}`)
+  }
+  const accountStorage = computeTrade(p, f, a.accountStorage, side, price, amount, feeRate)
+  const account = computeAccount(accountStorage, g, p, f)
+  const positionMargin = accountStorage.positionSize.times(f.markPrice).div(normalizedLeverage)
+  const marginCost = BigNumber.max(_0, positionMargin.minus(a.accountComputed.positionMargin))
+  const toDeposit = positionMargin.minus(account.accountComputed.marginBalance)
+  const fee = computeFee(price, amount, feeRate)
+
+  return { account, marginCost, toDeposit, fee }
+}
+
+export interface AMMTradeCost extends TradeCost {
+  price: BigNumber
+}
+
+export function computAMMTradeCost(
+  amm: AMMDetails,
+  g: GovParams,
+  p: PerpetualStorage,
+  f: FundingResult,
+  a: AccountDetails,
+  side: SIDE,
+  amount: BigNumberish,
+  leverage: BigNumberish
+): AMMTradeCost {
+  const feeRate = g.ammFeeRate.plus(g.takerDevRate)
+  const price = computeAMMPrice(amm, side, amount)
+  const cost = computeTradeCost(g, p, f, a, side, price, amount, leverage, feeRate)
+  return { ...cost, price }
+}
+
+export function computeDepositByLeverage(a: AccountDetails, f: FundingResult, leverage: BigNumberish): BigNumber {
+  const normalizedLeverage = normalizeBigNumberish(leverage)
+  if (!normalizedLeverage.isPositive()) {
+    throw Error(`bad leverage ${normalizedLeverage}`)
+  }
+  const positionMargin = a.accountStorage.positionSize.times(f.markPrice).div(normalizedLeverage)
+  return positionMargin.minus(a.accountComputed.marginBalance)
 }
