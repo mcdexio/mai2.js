@@ -415,7 +415,10 @@ export function computeDecreasePosition(
   let entryValue = a.entryValue
   let entrySocialLoss = a.entrySocialLoss
   let entryFundingLoss = a.entryFundingLoss
-  if (!price.isPositive() || !amount.isPositive()) {
+  if (side === SIDE.Flat) {
+    throw Error(`bad side ${side} to decrease.`)
+  }
+  if (price.isLessThanOrEqualTo(_0) || amount.isLessThanOrEqualTo(_0)) {
     throw Error(`bad price ${price} or amount ${amount}`)
   }
   if (size.isLessThan(amount)) {
@@ -426,14 +429,10 @@ export function computeDecreasePosition(
     rpnl1 = price.times(amount).minus(entryValue.times(amount).div(size))
     socialLoss = p.longSocialLossPerContract.minus(entrySocialLoss.div(size)).times(amount)
     fundingLoss = f.accumulatedFundingPerContract.minus(entryFundingLoss.div(size)).times(amount)
-  } else if (side === SIDE.Sell) {
+  } else {
     rpnl1 = entryValue.times(amount).div(size).minus(price.times(amount))
     socialLoss = p.shortSocialLossPerContract.minus(entrySocialLoss.div(size)).times(amount)
     fundingLoss = f.accumulatedFundingPerContract.minus(entryFundingLoss.div(size)).times(amount).negated()
-  } else {
-    rpnl1 = _0
-    socialLoss = _0
-    fundingLoss = _0
   }
   const rpnl2 = rpnl1.minus(socialLoss).minus(fundingLoss)
   const positionSize = size.minus(amount)
@@ -459,7 +458,7 @@ export function computeIncreasePosition(
   let entryValue = a.entryValue
   let entrySocialLoss = a.entrySocialLoss
   let entryFundingLoss = a.entryFundingLoss
-  if (!price.isPositive() || !amount.isPositive()) {
+  if (price.isLessThanOrEqualTo(_0) || amount.isLessThanOrEqualTo(_0)) {
     throw Error(`bad price ${price} or amount ${amount}`)
   }
   if (side == SIDE.Flat) {
@@ -486,7 +485,7 @@ export function computeFee(price: BigNumberish, amount: BigNumberish, feeRate: B
   const normalizedPrice = normalizeBigNumberish(price)
   const normalizedAmount = normalizeBigNumberish(amount)
   const normalizedFeeRate = normalizeBigNumberish(feeRate)
-  if (!normalizedPrice.isPositive() || !normalizedAmount.isPositive()) {
+  if (normalizedPrice.isLessThanOrEqualTo(_0) || normalizedAmount.isLessThanOrEqualTo(_0)) {
     throw Error(`bad price ${normalizedPrice} or amount ${normalizedAmount}`)
   }
   return normalizedPrice.times(normalizedAmount).times(normalizedFeeRate)
@@ -517,10 +516,10 @@ export function computeTrade(
     toIncrease = normalizedAmount
   }
 
-  if (toDecrease.isPositive()) {
+  if (toDecrease.isGreaterThan(_0)) {
     storage = computeDecreasePosition(p, f, storage, normalizedPrice, toDecrease)
   }
-  if (toIncrease.isPositive()) {
+  if (toIncrease.isGreaterThan(_0)) {
     storage = computeIncreasePosition(p, f, storage, side, normalizedPrice, toIncrease)
   }
   const fee = computeFee(normalizedPrice, normalizedAmount, normalizedFeeRate)

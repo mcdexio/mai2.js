@@ -10,35 +10,30 @@ import {
   computeAMMPrice,
   computeAMMDepth,
   computeAMMInversePrice,
-  computeAMMInverseDepth
+  computeAMMInverseDepth,
+  computeDecreasePosition,
+  computeIncreasePosition,
+  computeFee,
+  computeTradeCost
 } from '../src/computation'
-import { DECIMALS, _0, _1, SIDE, FUNDING_TIME } from '../src/constants'
+import { DECIMALS, _0, _1, SIDE, FUNDING_TIME, _1000, _0_1, _0_01 } from '../src/constants'
 import {
+  BigNumberish,
   FundingGovParams,
   FundingParams,
   PerpetualStorage,
   AccountStorage,
   GovParams,
-  AccountComputed
+  AccountComputed,
+  AccountDetails
 } from '../src/types'
+import { normalizeBigNumberish } from '../src/utils'
+import { extendExpect } from './helper'
+
+extendExpect()
 
 function getBN(s: string): BigNumber {
   return new BigNumber(s).shiftedBy(-DECIMALS)
-}
-
-const expectError = new BigNumber('1e-12')
-
-function expectAlmostEqual(expectNumber: BigNumber, actualNumber: BigNumber) {
-  if (expectNumber.isFinite() && actualNumber.isFinite()) {
-    let err = expectNumber.minus(actualNumber).abs()
-    expect(err.isLessThan(expectError)).toBeTruthy()
-  } else {
-    expect(expectNumber.isEqualTo(actualNumber)).toBeTruthy()
-  }
-}
-
-function expectEqual(expectNumber: BigNumber, actualNumber: BigNumber) {
-  expect(expectNumber.isEqualTo(actualNumber)).toBeTruthy()
 }
 
 describe('funding', function() {
@@ -93,8 +88,7 @@ describe('funding', function() {
       getBN('-70000000000000000000')
     )
 
-    const err = i.minus(getBN('-460083547083783088496')).abs()
-    expect(err.isLessThan(expectError)).toBeTruthy()
+    expect(i).toApproximate(getBN('-460083547083783088496'))
   })
 
   // integrateOnFundingCurve(x, y, v0, lastPremium)
@@ -114,8 +108,7 @@ describe('funding', function() {
       getBN('-70000000000000000000'),
       getBN('70000000000000000000')
     )
-
-    expectAlmostEqual(getBN('460083547083783088496'), i)
+    expect(i).toApproximate(getBN('460083547083783088496'))
   })
 
   const getAccumulatedFundingCase1IndexPrice = '7000000000000000000000'
@@ -251,8 +244,8 @@ describe('funding', function() {
 
       const { acc, emaPremium } = computeAccumulatedFunding(fundingParams, gov, timestamp)
 
-      expectAlmostEqual(expectedAcc, acc)
-      expectAlmostEqual(expectedVT, emaPremium)
+      expect(acc).toApproximate(expectedAcc)
+      expect(emaPremium).toApproximate(expectedVT)
     })
   })
 
@@ -293,10 +286,10 @@ describe('funding', function() {
       const newStroage = funding(perpetualStorage, gov, timestamp, newIndexPrice, newFariPrice)
       const newParams = newStroage.fundingParams
 
-      expectAlmostEqual(expectedNewParams.accumulatedFundingPerContract, newParams.accumulatedFundingPerContract)
-      expectAlmostEqual(expectedNewParams.lastEMAPremium, newParams.lastEMAPremium)
-      expectEqual(expectedNewParams.lastPremium, newParams.lastPremium)
-      expectEqual(expectedNewParams.lastIndexPrice, newParams.lastIndexPrice)
+      expect(newParams.accumulatedFundingPerContract).toApproximate(expectedNewParams.accumulatedFundingPerContract)
+      expect(newParams.lastEMAPremium).toApproximate(expectedNewParams.lastEMAPremium)
+      expect(newParams.lastPremium).toBeBigNumber(expectedNewParams.lastPremium)
+      expect(newParams.lastIndexPrice).toBeBigNumber(expectedNewParams.lastIndexPrice)
       expect(expectedNewParams.lastFundingTimestamp).toEqual(newParams.lastFundingTimestamp)
     })
   })
@@ -361,6 +354,58 @@ const perpetualStorage: PerpetualStorage = {
   fundingParams: fundingParams
 }
 
+const accountStorage1: AccountStorage = {
+  cashBalance: new BigNumber('10000'),
+  positionSide: SIDE.Buy,
+  positionSize: new BigNumber('2.3'),
+  entryValue: new BigNumber('2300.23'),
+  entrySocialLoss: new BigNumber('0.1'),
+  entryFundingLoss: new BigNumber('-0.91'),
+  withdrawalApplication: {
+    amount: new BigNumber('10'),
+    height: 123
+  }
+}
+
+const accountStorage2: AccountStorage = {
+  cashBalance: new BigNumber('1000'),
+  positionSide: SIDE.Buy,
+  positionSize: new BigNumber('2.3'),
+  entryValue: new BigNumber('2300.23'),
+  entrySocialLoss: new BigNumber('0.1'),
+  entryFundingLoss: new BigNumber('-0.91'),
+  withdrawalApplication: {
+    amount: new BigNumber('10'),
+    height: 123
+  }
+}
+
+const accountStorage3: AccountStorage = {
+  cashBalance: new BigNumber('14000'),
+  positionSide: SIDE.Sell,
+  positionSize: new BigNumber('2.3'),
+  entryValue: new BigNumber('2300.23'),
+  entrySocialLoss: new BigNumber('0.1'),
+  entryFundingLoss: new BigNumber('-0.91'),
+  withdrawalApplication: {
+    amount: new BigNumber('10'),
+    height: 123
+  }
+}
+
+const accountStorage4: AccountStorage = {
+  cashBalance: new BigNumber('10000'),
+  positionSide: SIDE.Flat,
+  positionSize: _0,
+  entryValue: _0,
+  entrySocialLoss: _0,
+  entryFundingLoss: _0,
+  withdrawalApplication: {
+    amount: new BigNumber('10'),
+    height: 123
+  }
+}
+
 describe('computeAccount', function() {
   interface ComputeAccountCase {
     input: {
@@ -370,19 +415,6 @@ describe('computeAccount', function() {
       timestamp: number
     }
     expectedOuput: AccountComputed
-  }
-
-  const accountStorage1: AccountStorage = {
-    cashBalance: new BigNumber('10000'),
-    positionSide: SIDE.Buy,
-    positionSize: new BigNumber('2.3'),
-    entryValue: new BigNumber('2300.23'),
-    entrySocialLoss: new BigNumber('0.1'),
-    entryFoundingLoss: new BigNumber('-0.91'),
-    withdrawalApplication: {
-      amount: new BigNumber('10'),
-      height: 123
-    }
   }
 
   const expectOutput1: AccountComputed = {
@@ -407,19 +439,6 @@ describe('computeAccount', function() {
     inverseLiquidationPrice: new BigNumber(Infinity)
   }
 
-  const accountStorage2: AccountStorage = {
-    cashBalance: new BigNumber('1000'),
-    positionSide: SIDE.Buy,
-    positionSize: new BigNumber('2.3'),
-    entryValue: new BigNumber('2300.23'),
-    entrySocialLoss: new BigNumber('0.1'),
-    entryFoundingLoss: new BigNumber('-0.91'),
-    withdrawalApplication: {
-      amount: new BigNumber('10'),
-      height: 123
-    }
-  }
-
   const expectOutput2: AccountComputed = {
     entryPrice: new BigNumber('1000.1'),
     positionValue: new BigNumber('16019.2547191286622'),
@@ -442,19 +461,6 @@ describe('computeAccount', function() {
     inverseLiquidationPrice: new BigNumber('0.001649965679955')
   }
 
-  const accountStorage3: AccountStorage = {
-    cashBalance: new BigNumber('14000'),
-    positionSide: SIDE.Sell,
-    positionSize: new BigNumber('2.3'),
-    entryValue: new BigNumber('2300.23'),
-    entrySocialLoss: new BigNumber('0.1'),
-    entryFoundingLoss: new BigNumber('-0.91'),
-    withdrawalApplication: {
-      amount: new BigNumber('10'),
-      height: 123
-    }
-  }
-
   const expectOutput3: AccountComputed = {
     entryPrice: new BigNumber('1000.1'),
     positionValue: new BigNumber('16019.2547191286622'),
@@ -475,19 +481,6 @@ describe('computeAccount', function() {
     inverseSide: SIDE.Buy,
     inverseEntryPrice: new BigNumber('0.0009999000099990001'),
     inverseLiquidationPrice: new BigNumber('0.00014794992887820734')
-  }
-
-  const accountStorage4: AccountStorage = {
-    cashBalance: new BigNumber('10000'),
-    positionSide: SIDE.Flat,
-    positionSize: _0,
-    entryValue: _0,
-    entrySocialLoss: _0,
-    entryFoundingLoss: _0,
-    withdrawalApplication: {
-      amount: new BigNumber('10'),
-      height: 123
-    }
   }
 
   const expectOutput4: AccountComputed = {
@@ -563,25 +556,25 @@ describe('computeAccount', function() {
         fundingResult
       )
       const computed = accountDetails.accountComputed
-      expectEqual(expectedOutput.entryPrice, computed.entryPrice)
-      expectAlmostEqual(expectedOutput.positionValue, computed.positionValue)
-      expectAlmostEqual(expectedOutput.positionMargin, computed.positionMargin)
-      expectAlmostEqual(expectedOutput.maintenanceMargin, computed.maintenanceMargin)
-      expectEqual(expectedOutput.socialLoss, computed.socialLoss)
-      expectAlmostEqual(expectedOutput.fundingLoss, computed.fundingLoss)
-      expectAlmostEqual(expectedOutput.pnl1, computed.pnl1)
-      expectAlmostEqual(expectedOutput.pnl2, computed.pnl2)
-      expectAlmostEqual(expectedOutput.roe, computed.roe)
-      expectAlmostEqual(expectedOutput.liquidationPrice, computed.liquidationPrice)
-      expectAlmostEqual(expectedOutput.marginBalance, computed.marginBalance)
-      expectAlmostEqual(expectedOutput.availableMargin, computed.availableMargin)
-      expectAlmostEqual(expectedOutput.maxWithdrawable, computed.maxWithdrawable)
-      expectAlmostEqual(expectedOutput.withdrawableBalance, computed.withdrawableBalance)
-      expectAlmostEqual(expectedOutput.leverage, computed.leverage)
+      expect(computed.entryPrice).toBeBigNumber(expectedOutput.entryPrice)
+      expect(computed.positionValue).toApproximate(expectedOutput.positionValue)
+      expect(computed.positionMargin).toApproximate(expectedOutput.positionMargin)
+      expect(computed.maintenanceMargin).toApproximate(expectedOutput.maintenanceMargin)
+      expect(computed.socialLoss).toBeBigNumber(expectedOutput.socialLoss)
+      expect(computed.fundingLoss).toApproximate(expectedOutput.fundingLoss)
+      expect(computed.pnl1).toApproximate(expectedOutput.pnl1)
+      expect(computed.pnl2).toApproximate(expectedOutput.pnl2)
+      expect(computed.roe).toApproximate(expectedOutput.roe)
+      expect(computed.liquidationPrice).toApproximate(expectedOutput.liquidationPrice)
+      expect(computed.marginBalance).toApproximate(expectedOutput.marginBalance)
+      expect(computed.availableMargin).toApproximate(expectedOutput.availableMargin)
+      expect(computed.maxWithdrawable).toApproximate(expectedOutput.maxWithdrawable)
+      expect(computed.withdrawableBalance).toApproximate(expectedOutput.withdrawableBalance)
+      expect(computed.leverage).toApproximate(expectedOutput.leverage)
       expect(computed.isSafe).toEqual(expectedOutput.isSafe)
       expect(computed.inverseSide).toEqual(expectedOutput.inverseSide)
-      expectAlmostEqual(expectedOutput.inverseEntryPrice, computed.inverseEntryPrice)
-      expectAlmostEqual(expectedOutput.inverseLiquidationPrice, computed.inverseLiquidationPrice)
+      expect(computed.inverseEntryPrice).toApproximate(expectedOutput.inverseEntryPrice)
+      expect(computed.inverseLiquidationPrice).toApproximate(expectedOutput.inverseLiquidationPrice)
     })
   })
 })
@@ -595,7 +588,7 @@ describe('amm', function() {
     positionSize: new BigNumber('2.3'),
     entryValue: new BigNumber('2300.23'),
     entrySocialLoss: new BigNumber('0.1'),
-    entryFoundingLoss: new BigNumber('-0.91'),
+    entryFundingLoss: new BigNumber('-0.91'),
     withdrawalApplication: {
       amount: new BigNumber('10'),
       height: 123
@@ -608,9 +601,9 @@ describe('amm', function() {
     //socialLoss: new BigNumber('0.13'),
     //fundingLoss: new BigNumber('23.90996909375'), // 9.9999865625 * 2.3 -(-0.91)
     // 10000 - 2300.23 - 0.13 - 23.90996909375
-    expectAlmostEqual(new BigNumber(7675.73003090625), ammDetails.ammComputed.availableMargin)
-    expectAlmostEqual(new BigNumber(3337.273926480978), ammDetails.ammComputed.fairPrice)
-    expectAlmostEqual(new BigNumber(1 / 3337.273926480978), ammDetails.ammComputed.inverseFairPrice)
+    expect(ammDetails.ammComputed.availableMargin).toApproximate(new BigNumber(7675.73003090625))
+    expect(ammDetails.ammComputed.fairPrice).toApproximate(new BigNumber(3337.273926480978))
+    expect(ammDetails.ammComputed.inverseFairPrice).toApproximate(new BigNumber(1 / 3337.273926480978))
   })
 
   it(`computeAMMPrice.buyTooLarge`, function() {
@@ -621,12 +614,12 @@ describe('amm', function() {
 
   it(`computeAMMPrice.buy`, function() {
     const price = computeAMMPrice(ammDetails, SIDE.Buy, 0.5)
-    expectAlmostEqual(new BigNumber(4264.294461614583333), price)
+    expect(price).toApproximate(new BigNumber(4264.294461614583333))
   })
 
   it(`computeAMMPrice.sell`, function() {
     const price = computeAMMPrice(ammDetails, SIDE.Sell, 0.5)
-    expectAlmostEqual(new BigNumber(2741.332153895089), price)
+    expect(price).toApproximate(new BigNumber(2741.332153895089))
   })
 
   it('computeAMMDepth', function() {
@@ -635,22 +628,22 @@ describe('amm', function() {
     expect(depth.bids.length).toEqual(4)
     expect(depth.asks.length).toEqual(4)
 
-    expectAlmostEqual(new BigNumber(2952.20385804086538), depth.bids[0].price)
-    expectAlmostEqual(new BigNumber(0.3), depth.bids[0].amount)
-    expectAlmostEqual(new BigNumber(3070.2920123625), depth.bids[1].price)
-    expectAlmostEqual(new BigNumber(0.2), depth.bids[1].amount)
-    expectAlmostEqual(new BigNumber(3198.2208462109375), depth.bids[2].price)
-    expectAlmostEqual(new BigNumber(0.1), depth.bids[2].amount)
-    expectAlmostEqual(new BigNumber(3337.273926480978), depth.bids[3].price)
-    expectAlmostEqual(new BigNumber(0), depth.bids[3].amount)
-    expectAlmostEqual(new BigNumber(3337.273926480978), depth.asks[0].price)
-    expectAlmostEqual(new BigNumber(0), depth.asks[0].amount)
-    expectAlmostEqual(new BigNumber(3488.968195866477), depth.asks[1].price)
-    expectAlmostEqual(new BigNumber(0.1), depth.asks[1].amount)
-    expectAlmostEqual(new BigNumber(3655.109538526786), depth.asks[2].price)
-    expectAlmostEqual(new BigNumber(0.2), depth.asks[2].amount)
-    expectAlmostEqual(new BigNumber(3837.865015453125), depth.asks[3].price)
-    expectAlmostEqual(new BigNumber(0.3), depth.asks[3].amount)
+    expect(depth.bids[0].price).toApproximate(new BigNumber(2952.20385804086538))
+    expect(depth.bids[0].amount).toApproximate(new BigNumber(0.3))
+    expect(depth.bids[1].price).toApproximate(new BigNumber(3070.2920123625))
+    expect(depth.bids[1].amount).toApproximate(new BigNumber(0.2))
+    expect(depth.bids[2].price).toApproximate(new BigNumber(3198.2208462109375))
+    expect(depth.bids[2].amount).toApproximate(new BigNumber(0.1))
+    expect(depth.bids[3].price).toApproximate(new BigNumber(3337.273926480978))
+    expect(depth.bids[3].amount).toApproximate(new BigNumber(0))
+    expect(depth.asks[0].price).toApproximate(new BigNumber(3337.273926480978))
+    expect(depth.asks[0].amount).toApproximate(new BigNumber(0))
+    expect(depth.asks[1].price).toApproximate(new BigNumber(3488.968195866477))
+    expect(depth.asks[1].amount).toApproximate(new BigNumber(0.1))
+    expect(depth.asks[2].price).toApproximate(new BigNumber(3655.109538526786))
+    expect(depth.asks[2].amount).toApproximate(new BigNumber(0.2))
+    expect(depth.asks[3].price).toApproximate(new BigNumber(3837.865015453125))
+    expect(depth.asks[3].amount).toApproximate(new BigNumber(0.3))
   })
 
   it('computeAMMDepthDefault', function() {
@@ -679,22 +672,22 @@ describe('amm', function() {
     expect(depth.bids.length).toEqual(4)
     expect(depth.asks.length).toEqual(4)
 
-    expectAlmostEqual(new BigNumber(1 / 3837.865015453125), depth.bids[0].price)
-    expectAlmostEqual(new BigNumber(0.3), depth.bids[0].amount)
-    expectAlmostEqual(new BigNumber(1 / 3655.109538526786), depth.bids[1].price)
-    expectAlmostEqual(new BigNumber(0.2), depth.bids[1].amount)
-    expectAlmostEqual(new BigNumber(1 / 3488.968195866477), depth.bids[2].price)
-    expectAlmostEqual(new BigNumber(0.1), depth.bids[2].amount)
-    expectAlmostEqual(new BigNumber(1 / 3337.273926480978), depth.bids[3].price)
-    expectAlmostEqual(new BigNumber(0), depth.bids[3].amount)
-    expectAlmostEqual(new BigNumber(1 / 3337.273926480978), depth.asks[0].price)
-    expectAlmostEqual(new BigNumber(0), depth.asks[0].amount)
-    expectAlmostEqual(new BigNumber(1 / 3198.2208462109375), depth.asks[1].price)
-    expectAlmostEqual(new BigNumber(0.1), depth.asks[1].amount)
-    expectAlmostEqual(new BigNumber(1 / 3070.2920123625), depth.asks[2].price)
-    expectAlmostEqual(new BigNumber(0.2), depth.asks[2].amount)
-    expectAlmostEqual(new BigNumber(1 / 2952.20385804086538), depth.asks[3].price)
-    expectAlmostEqual(new BigNumber(0.3), depth.asks[3].amount)
+    expect(depth.bids[0].price).toApproximate(new BigNumber(1 / 3837.865015453125))
+    expect(depth.bids[0].amount).toApproximate(new BigNumber(0.3))
+    expect(depth.bids[1].price).toApproximate(new BigNumber(1 / 3655.109538526786))
+    expect(depth.bids[1].amount).toApproximate(new BigNumber(0.2))
+    expect(depth.bids[2].price).toApproximate(new BigNumber(1 / 3488.968195866477))
+    expect(depth.bids[2].amount).toApproximate(new BigNumber(0.1))
+    expect(depth.bids[3].price).toApproximate(new BigNumber(1 / 3337.273926480978))
+    expect(depth.bids[3].amount).toApproximate(new BigNumber(0))
+    expect(depth.asks[0].price).toApproximate(new BigNumber(1 / 3337.273926480978))
+    expect(depth.asks[0].amount).toApproximate(new BigNumber(0))
+    expect(depth.asks[1].price).toApproximate(new BigNumber(1 / 3198.2208462109375))
+    expect(depth.asks[1].amount).toApproximate(new BigNumber(0.1))
+    expect(depth.asks[2].price).toApproximate(new BigNumber(1 / 3070.2920123625))
+    expect(depth.asks[2].amount).toApproximate(new BigNumber(0.2))
+    expect(depth.asks[3].price).toApproximate(new BigNumber(1 / 2952.20385804086538))
+    expect(depth.asks[3].amount).toApproximate(new BigNumber(0.3))
   })
 
   it('computeAMMInverseDepthDefault', function() {
@@ -709,5 +702,190 @@ describe('amm', function() {
 
     expect(depth.bids.length).toEqual(3)
     expect(depth.asks.length).toEqual(21)
+  })
+})
+
+describe('computeTrade', function() {
+  const fundingResult = computeFunding(perpetualStorage.fundingParams, govParams, timestamp)
+  const accountDetails1 = computeAccount(accountStorage1, govParams, perpetualStorage, fundingResult)
+  /*
+  const accountDetails2 = computeAccount(accountStorage2, govParams, perpetualStorage, fundingResult)
+  const accountDetails3 = computeAccount(accountStorage3, govParams, perpetualStorage, fundingResult)
+  const accountDetails4 = computeAccount(accountStorage4, govParams, perpetualStorage, fundingResult)
+  */
+
+  it('decrease.FlatSide', function() {
+    expect((): void => {
+      computeDecreasePosition(perpetualStorage, fundingResult, accountStorage4, new BigNumber(7000), _1)
+    }).toThrow()
+  })
+
+  it('decrease.ZeroPrice', function() {
+    expect((): void => {
+      computeDecreasePosition(perpetualStorage, fundingResult, accountStorage1, _0, _1)
+    }).toThrow()
+  })
+
+  it('decrease.ZeroAmount', function() {
+    expect((): void => {
+      computeDecreasePosition(perpetualStorage, fundingResult, accountStorage1, _1, _0)
+    }).toThrow()
+  })
+
+  it('decrease.LargeAmount', function() {
+    expect((): void => {
+      computeDecreasePosition(perpetualStorage, fundingResult, accountStorage1, _1, _1000)
+    }).toThrow()
+  })
+
+  it('increase.FlatSide', function() {
+    expect((): void => {
+      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Flat, new BigNumber(7000), _1)
+    }).toThrow()
+  })
+
+  it('increase.ZeroPrice', function() {
+    expect((): void => {
+      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Buy, _0, _1)
+    }).toThrow()
+  })
+
+  it('increase.ZeroAmount', function() {
+    expect((): void => {
+      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Buy, _1, _0)
+    }).toThrow()
+  })
+
+  it('increase.BadSide', function() {
+    expect((): void => {
+      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Sell, _1, _0)
+    }).toThrow()
+  })
+
+  it('fee.ZeroPrice', function() {
+    expect((): void => {
+      computeFee(0, 1, 0.1)
+    }).toThrow()
+  })
+
+  it('fee.ZeroAmount', function() {
+    expect((): void => {
+      computeFee(1, 0, 0.1)
+    }).toThrow()
+  })
+
+  it('tradeCost.ZeroAmount', function() {
+    expect((): void => {
+      computeTradeCost(govParams, perpetualStorage, fundingResult, accountDetails1, SIDE.Buy, _1, _0, _1, _0_01)
+    }).toThrow()
+  })
+
+  it('tradeCost.ZeroPrice', function() {
+    expect((): void => {
+      computeTradeCost(govParams, perpetualStorage, fundingResult, accountDetails1, SIDE.Buy, _0, _1, _1, _0_01)
+    }).toThrow()
+  })
+
+  it('tradeCost.BadLev', function() {
+    expect((): void => {
+      computeTradeCost(
+        govParams,
+        perpetualStorage,
+        fundingResult,
+        accountDetails1,
+        SIDE.Buy,
+        _1,
+        _1,
+        _1.negated(),
+        _0_01
+      )
+    }).toThrow()
+  })
+
+  interface TradeCostCase {
+    input: {
+      accountDetails: AccountDetails
+      side: SIDE
+      price: BigNumberish
+      amount: BigNumberish
+      leverage: BigNumberish
+      feeRate: BigNumberish
+    }
+    expectedOutput: {
+      account: {
+        cashBalance: BigNumberish
+        positionSide: SIDE
+        positionSize: BigNumberish
+        entryValue: BigNumberish
+        entrySocialLoss: BigNumberish
+        entryFundingLoss: BigNumberish
+      }
+      marginCost: BigNumberish
+      toDeposit: BigNumberish
+      fee: BigNumberish
+    }
+  }
+  const tradeCostCases: Array<TradeCostCase> = [
+    {
+      input: {
+        accountDetails: accountDetails1,
+        side: SIDE.Buy,
+        price: 2000,
+        amount: 1,
+        leverage: 2,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          cashBalance: 0,
+          positionSide: SIDE.Buy,
+          positionSize: 0,
+          entryValue: 0,
+          entrySocialLoss: 0,
+          entryFundingLoss: 0
+        },
+        marginCost: 0,
+        toDeposit: 0,
+        fee: 20
+      }
+    }
+  ]
+
+  tradeCostCases.forEach((element, index) => {
+    const input = element.input
+    const expectedOutput = element.expectedOutput
+
+    it(`tradeCost.case.${index}`, function() {
+      const tradeCost = computeTradeCost(
+        govParams,
+        perpetualStorage,
+        fundingResult,
+        input.accountDetails,
+        input.side,
+        input.price,
+        input.amount,
+        input.leverage,
+        input.feeRate
+      )
+      expect(tradeCost.account.accountStorage.cashBalance).toBeBigNumber(
+        normalizeBigNumberish(expectedOutput.account.cashBalance)
+      )
+      expect(expectedOutput.account.positionSide).toEqual(tradeCost.account.accountStorage.positionSide)
+      expect(tradeCost.account.accountStorage.positionSize).toBeBigNumber(
+        normalizeBigNumberish(expectedOutput.account.positionSize)
+      )
+      expect(tradeCost.account.accountStorage.entryValue).toBeBigNumber(
+        normalizeBigNumberish(expectedOutput.account.entryValue)
+      )
+      expect(tradeCost.account.accountStorage.entrySocialLoss).toBeBigNumber(
+        normalizeBigNumberish(expectedOutput.account.entrySocialLoss)
+      )
+      expect(tradeCost.account.accountStorage.entryFundingLoss).toBeBigNumber(
+        normalizeBigNumberish(expectedOutput.account.entryFundingLoss)
+      )
+      expect(tradeCost.marginCost).toBeBigNumber(normalizeBigNumberish(expectedOutput.marginCost))
+      expect(tradeCost.toDeposit).toBeBigNumber(normalizeBigNumberish(expectedOutput.toDeposit))
+      expect(tradeCost.fee).toBeBigNumber(normalizeBigNumberish(expectedOutput.fee))
+    })
   })
 })

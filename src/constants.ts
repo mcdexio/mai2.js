@@ -27,6 +27,7 @@ export const _CHAIN_ID_NAME: { [key: number]: string } = {
 }
 
 export const _E = new BigNumber('2.718281828459045235')
+export const _0_01: BigNumber = new BigNumber('0.01')
 export const _0_1: BigNumber = new BigNumber('0.1')
 export const _0: BigNumber = new BigNumber('0')
 export const _1: BigNumber = new BigNumber('1')
