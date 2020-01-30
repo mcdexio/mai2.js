@@ -577,6 +577,23 @@ export function computAMMTradeCost(
   return { ...cost, price }
 }
 
+export function computAMMInverseTradeCost(
+  amm: AMMDetails,
+  g: GovParams,
+  p: PerpetualStorage,
+  f: FundingResult,
+  a: AccountDetails,
+  side: SIDE,
+  amount: BigNumberish,
+  leverage: BigNumberish
+): AMMTradeCost {
+  const inverseSide = side === SIDE.Buy ? SIDE.Sell : SIDE.Buy
+  const ammTradeCost = computAMMTradeCost(amm, g, p, f, a, inverseSide, amount, leverage)
+  const price = _1.div(ammTradeCost.price)
+
+  return { ...ammTradeCost, price }
+}
+
 export function computeDepositByLeverage(a: AccountDetails, f: FundingResult, leverage: BigNumberish): BigNumber {
   const normalizedLeverage = normalizeBigNumberish(leverage)
   if (!normalizedLeverage.isPositive()) {

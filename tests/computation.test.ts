@@ -12,6 +12,7 @@ import {
   computeFee,
   computeTradeCost,
   computAMMTradeCost,
+  computAMMInverseTradeCost,
   computeDepositByLeverage
 } from '../src/computation'
 import { _0, _1, SIDE, _1000, _0_1, _0_01 } from '../src/constants'
@@ -903,6 +904,36 @@ describe('computeTradeCost', function() {
       0.5
     )
     expect(ammCost.price).toApproximate(new BigNumber('4264.294461614583333'))
+    expect(ammCost.marginCost).toApproximate(new BigNumber('13963.448965178170393967576'))
+  })
+
+  it(`computeAMMInverseTradeCost.Buy`, function() {
+    const ammCost = computAMMInverseTradeCost(
+      ammDetails,
+      govParams,
+      perpetualStorage,
+      fundingResult,
+      accountDetails1,
+      SIDE.Buy,
+      0.5,
+      0.5
+    )
+    expect(ammCost.price).toApproximate(_1.div(new BigNumber('2741.332153895089')))
+    expect(ammCost.marginCost).toApproximate(new BigNumber('3493.83859839578811040773364'))
+  })
+
+  it(`computeAMMInverseTradeCost.Sell`, function() {
+    const ammCost = computAMMInverseTradeCost(
+      ammDetails,
+      govParams,
+      perpetualStorage,
+      fundingResult,
+      accountDetails1,
+      SIDE.Sell,
+      0.5,
+      0.5
+    )
+    expect(ammCost.price).toApproximate(_1.div(new BigNumber('4264.294461614583333')))
     expect(ammCost.marginCost).toApproximate(new BigNumber('13963.448965178170393967576'))
   })
 })
