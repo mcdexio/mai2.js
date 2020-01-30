@@ -11,8 +11,8 @@ import {
   computeIncreasePosition,
   computeFee,
   computeTradeCost,
-  computAMMTradeCost,
-  computAMMInverseTradeCost,
+  computeAMMTradeCost,
+  computeAMMInverseTradeCost,
   computeDepositByLeverage
 } from '../src/computation'
 import { _0, _1, SIDE, _1000, _0_1, _0_01 } from '../src/constants'
@@ -893,7 +893,7 @@ describe('computeTradeCost', function() {
   })
 
   it(`computeAMMTradeCost`, function() {
-    const ammCost = computAMMTradeCost(
+    const ammCost = computeAMMTradeCost(
       ammDetails,
       govParams,
       perpetualStorage,
@@ -908,7 +908,7 @@ describe('computeTradeCost', function() {
   })
 
   it(`computeAMMInverseTradeCost.Buy`, function() {
-    const ammCost = computAMMInverseTradeCost(
+    const ammCost = computeAMMInverseTradeCost(
       ammDetails,
       govParams,
       perpetualStorage,
@@ -923,7 +923,7 @@ describe('computeTradeCost', function() {
   })
 
   it(`computeAMMInverseTradeCost.Sell`, function() {
-    const ammCost = computAMMInverseTradeCost(
+    const ammCost = computeAMMInverseTradeCost(
       ammDetails,
       govParams,
       perpetualStorage,

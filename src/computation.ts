@@ -561,7 +561,7 @@ export interface AMMTradeCost extends TradeCost {
   price: BigNumber
 }
 
-export function computAMMTradeCost(
+export function computeAMMTradeCost(
   amm: AMMDetails,
   g: GovParams,
   p: PerpetualStorage,
@@ -577,7 +577,7 @@ export function computAMMTradeCost(
   return { ...cost, price }
 }
 
-export function computAMMInverseTradeCost(
+export function computeAMMInverseTradeCost(
   amm: AMMDetails,
   g: GovParams,
   p: PerpetualStorage,
@@ -588,7 +588,7 @@ export function computAMMInverseTradeCost(
   leverage: BigNumberish
 ): AMMTradeCost {
   const inverseSide = side === SIDE.Buy ? SIDE.Sell : SIDE.Buy
-  const ammTradeCost = computAMMTradeCost(amm, g, p, f, a, inverseSide, amount, leverage)
+  const ammTradeCost = computeAMMTradeCost(amm, g, p, f, a, inverseSide, amount, leverage)
   const price = _1.div(ammTradeCost.price)
 
   return { ...ammTradeCost, price }
