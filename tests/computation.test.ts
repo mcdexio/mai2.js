@@ -1,11 +1,7 @@
 import BigNumber from 'bignumber.js'
 import {
-  _tFunc,
-  _rFunc,
-  computeAccumulatedFunding,
   computeAccount,
   computeFunding,
-  funding,
   computeAMM,
   computeAMMPrice,
   computeAMMDepth,
@@ -14,12 +10,13 @@ import {
   computeDecreasePosition,
   computeIncreasePosition,
   computeFee,
-  computeTradeCost
+  computeTradeCost,
+  computAMMTradeCost,
+  computeDepositByLeverage
 } from '../src/computation'
-import { DECIMALS, _0, _1, SIDE, FUNDING_TIME, _1000, _0_1, _0_01 } from '../src/constants'
+import { _0, _1, SIDE, _1000, _0_1, _0_01 } from '../src/constants'
 import {
   BigNumberish,
-  FundingGovParams,
   FundingParams,
   PerpetualStorage,
   AccountStorage,
@@ -28,285 +25,9 @@ import {
   AccountDetails
 } from '../src/types'
 import { normalizeBigNumberish } from '../src/utils'
-import { extendExpect } from './helper'
+import { extendExpect, getBN } from './helper'
 
 extendExpect()
-
-function getBN(s: string): BigNumber {
-  return new BigNumber(s).shiftedBy(-DECIMALS)
-}
-
-describe('funding', function() {
-  const emaAlpha = '3327787021630616' // 2 / (600 + 1)
-  const markPremiumLimit = '5000000000000000' // 0.5%
-  const fundingDampener = '500000000000000' // 0.05%
-
-  it(`timeOnFundingCurve - upward`, function() {
-    const a2 = _1.minus(getBN(emaAlpha))
-    // y = -0.5% = -35 => t = 86.3
-    let r = _tFunc(getBN('-35000000000000000000'), a2, getBN('70000000000000000000'), getBN('-70000000000000000000'))
-    expect(r.toString()).toEqual('87')
-    // y = +0.5% = 35 => t = 415.8
-    r = _tFunc(getBN('35000000000000000000'), a2, getBN('70000000000000000000'), getBN('-70000000000000000000'))
-    expect(r.toString()).toEqual('416')
-  })
-
-  it(`timeOnFundingCurve - critical`, function() {
-    // y is very close to lastPremium
-    // index -> 1
-    // lastEMAPremium(v0) -> 0
-    // lastPremium -> 1 * (-limit - 1e-18)
-    // y = -limit = -0.005 => t = 10844.5
-    const a2 = _1.minus(getBN(emaAlpha))
-    let r = _tFunc(getBN('-5000000000000000'), a2, getBN('-5000000000000001'), getBN('0'))
-    expect(r.toString()).toEqual('10845')
-    // lastEMAPremium is very close to lastPremium
-    // index -> 1
-    // lastEMAPremium(v0) -> 1 * (-limit - 1e-18)
-    // lastPremium -> 1 * (-limit + 1e-18)
-    // y = -limit = -0.005 => t = 207.9
-    r = _tFunc(getBN('-5000000000000000'), a2, getBN('-4999999999999999'), getBN('-5000000000000001'))
-    expect(r.toString()).toEqual('208')
-  })
-
-  // integrateOnFundingCurve(x, y, v0, lastPremium)
-  // index -> 7000
-  // lastEMAPremium(v0) -> 7000 * 99% - 7000 (* markPrice = index * 99% *)
-  // lastPremium -> 7000 * 1% (* markPrice = index * 101% *)
-  // the curve is upward
-  it('integrateOnFundingCurve - upward', function() {
-    const a = getBN(emaAlpha)
-    const a2 = _1.minus(a)
-
-    // sum in [86, 100) = -460
-    const i = _rFunc(
-      new BigNumber('86'),
-      new BigNumber('100'),
-      a,
-      a2,
-      getBN('70000000000000000000'),
-      getBN('-70000000000000000000')
-    )
-
-    expect(i).toApproximate(getBN('-460083547083783088496'))
-  })
-
-  // integrateOnFundingCurve(x, y, v0, lastPremium)
-  // index -> 7000
-  // lastEMAPremium(v0) -> 7000 * 101% - 7000 (* markPrice = index * 101% *)
-  // lastPremium -> -7000 * 1% (* markPrice = index * 99% *)
-  // the curve is downward
-  it('integrateOnFundingCurve - downward', function() {
-    const a = getBN(emaAlpha)
-    const a2 = _1.minus(a)
-    // sum in [86, 100) = 460
-    const i = _rFunc(
-      new BigNumber('86'),
-      new BigNumber('100'),
-      a,
-      a2,
-      getBN('-70000000000000000000'),
-      getBN('70000000000000000000')
-    )
-    expect(i).toApproximate(getBN('460083547083783088496'))
-  })
-
-  const getAccumulatedFundingCase1IndexPrice = '7000000000000000000000'
-  const getAccumulatedFundingCase1 = [
-    // lastEMAPremium(v0), lastPremium, T, vt, acc
-
-    // upward part A
-    // lastEMAPremium(v0) -> 7000 * 99% - 7000 (* markPrice = index * 99% *)
-    // lastPremium -> 7000 * 1% (* markPrice = index * 101% *)
-    // A -> A, T <= 86.3, vt = -35, acc = -2709
-    [ '-70000000000000000000', '70000000000000000000', '86', '-35106643857103393523', '-2709000000000000000000' ],
-    // A -> B, T <= 193.3, vt = -3, acc = -4319
-    [ '-70000000000000000000', '70000000000000000000', '193', '-3575235401854865263', '-4319581596945078325265' ],
-    // A -> C, T <= 223, vt = 3, acc = -4319
-    [ '-70000000000000000000', '70000000000000000000', '223', '3426380131832338940', '-4319656832346933190529' ],
-    // A -> D, T <= 415.8, vt = 34, acc = -1008.28
-    [ '-70000000000000000000', '70000000000000000000', '415', '34896255404653271246', '-1008280731961454666274' ],
-    // A -> E, vt = 38, acc = 94
-    [ '-70000000000000000000', '70000000000000000000', '450', '38761820965682039178', '94115523443198604972' ],
-
-    // upward part B
-    // lastEMAPremium(v0) -> 7000 * (1-0.2%) - 7000 (* markPrice = index * (1-0.2%) *)
-    // lastPremium -> 7000 * 1% (* markPrice = index * 101% *)
-    // B -> B, T <= 40, vt = -3, acc = -210
-    [ '-14000000000000000000', '70000000000000000000', '40', '-3514549723721562091', '-210877808021670251100' ],
-    // B -> C, T <= 70, vt = 3, acc = -210
-    [ '-14000000000000000000', '70000000000000000000', '70', '3481290799061908523', '-210892357745391813192' ],
-    // B -> D, T <= 262, vt = 34, acc = 3108
-    [ '-14000000000000000000', '70000000000000000000', '262', '34925209366324635286', '3108228821993097906377' ],
-    // B -> E, vt = 39, acc = 4305
-    [ '-14000000000000000000', '70000000000000000000', '300', '39098155554478714217', '4305154031359422541663' ],
-
-    // upward part C
-    // lastEMAPremium(v0) -> 7000 * (1-0.02%) - 7000 (* markPrice = index * (1-0.02%) *)
-    // lastPremium -> 7000 * 1% (* markPrice = index * 101% *)
-    // C -> C, T <= 21, vt = 3, acc = 0
-    [ '-1400000000000000000', '70000000000000000000', '21', '3427085573633748559', '0' ],
-    // C -> D, T <= 213, vt = 34, acc = 3311
-    [ '-1400000000000000000', '70000000000000000000', '213', '34896627378550328410', '3311475602048935027368' ],
-    // C -> E, vt = 38, acc = 4476
-    [ '-1400000000000000000', '70000000000000000000', '250', '38969711855767328378', '4476872229427485355779' ],
-
-    // upward part D
-    // lastEMAPremium(v0) -> 7000 * (1+0.2%) - 7000 (* markPrice = index * (1+0.2%) *)
-    // lastPremium -> 7000 * 1% (* markPrice = index * 101% *)
-    // D -> D, T <= 141, vt = 34, acc = 3066
-    [ '14000000000000000000', '70000000000000000000', '141', '34999888207727589228', '3066033593577860118480' ],
-    // D -> E, vt = 36, acc = 3349
-    [ '14000000000000000000', '70000000000000000000', '150', '36034298780984053767', '3349533481785587707709' ],
-
-    // upward part E
-    // lastEMAPremium(v0) -> 7000 * (1+2%) - 7000 (* markPrice = index * (1+0.7%) *)
-    // lastPremium -> 7000 * 1% (* markPrice = index * 101% *)
-    // E -> E, vt = 49, acc = 315
-    [ '49000000000000000000', '70000000000000000000', '10', '49688462516778235676', '315000000000000000000' ],
-
-    // downward part B
-    // lastEMAPremium(v0) -> 7000 * (1-0.07%) - 7000 (* markPrice = index * (1-0.07%) *)
-    // lastPremium -> 7000 * -1% (* markPrice = index * 99% *)
-    // B -> A, T > 186, vt = -35, acc = -3361
-    [ '-4900000000000000000', '-70000000000000000000', '187', '-35096376859998840421', '-3361488753570349433398' ],
-    // critical conditions
-    [ '-4900000000000000000', '-70000000000000000000', '186', '-34979837216793494299', '-3330008916353555939098' ],
-
-    // downward part C
-    // lastEMAPremium(v0) -> 7000 * (1-0.02%) - 7000 (* markPrice = index * (1-0.02%) *)
-    // lastPremium -> 7000 * -1% (* markPrice = index * 99% *)
-    // C -> B, T > 10, vt = -4, acc = -0
-    [ '-1400000000000000000', '-70000000000000000000', '12', '-4089846915271522775', '-518757180982835053' ],
-    // C -> A, T > 202, vt = -40, acc = -4857
-    [ '-1400000000000000000', '-70000000000000000000', '250', '-40186585900639197854', '-4854922159631563784171' ],
-
-    // downward part D
-    // lastEMAPremium(v0) -> 7000 * (1+0.07%) - 7000 (* markPrice = index * (1+0.07%) *)
-    // lastPremium -> 7000 * -1% (* markPrice = index * 99% *)
-    // D -> C, T > 6, vt = 3, acc = 4
-    [ '4900000000000000000', '-70000000000000000000', '7', '3172563533094860525', '4677779033892501070' ],
-    // D -> B, T > 36, vt = -3, acc = 4
-    [ '4900000000000000000', '-70000000000000000000', '37', '-3790732672140452279', '4608112362846738456' ],
-    // D -> A, T > 229, vt = -35, acc = -3389
-    [ '4900000000000000000', '-70000000000000000000', '230', '-35204554075488539487', '-3389950180306064739192' ],
-
-    // downward part E
-    // lastEMAPremium(v0) -> 7000 * (1+2%) - 7000 (* markPrice = index * (1+2%) *)
-    // lastPremium -> 7000 * -1% (* markPrice = index * 99% *)
-    // E -> D, T > 208, vt = 34, acc = 6583
-    [ '140000000000000000000', '-70000000000000000000', '209', '34631036009018359602', '6583480388383005065348' ],
-    // E -> C, T > 315, vt = 3, acc = 8151
-    [ '140000000000000000000', '-70000000000000000000', '316', '3242307262417739864', '8151306520868855784490' ],
-    // E -> B, T > 345, vt = -3, acc = 8151
-    [ '140000000000000000000', '-70000000000000000000', '346', '-3727625942018965057', '8151300171634876822912' ],
-    // E -> A, T > 538, vt = -35, acc = 4765
-    [ '140000000000000000000', '-70000000000000000000', '539', '-35171389128887612720', '4765706109232913532243' ],
-
-    // initial conditions
-    // lastEMAPremium(v0) -> 7000 * 99% - 7000 (* markPrice = index * 99% *)
-    // lastPremium -> -7000 * 1% (* markPrice = index * 99% *)
-    // vt = -70, acc = -1890
-    [ '-70000000000000000000', '-70000000000000000000', '60', '-70000000000000000000', '-1890000000000000000000' ],
-    // lastEMAPremium(v0) -> 0 (* markPrice = 0 *)
-    // lastPremium -> 0 (* markPrice = 0 *)
-    // vt = 0, acc = 0
-    [ '0', '0', '60', '0', '0' ],
-    // lastEMAPremium(v0) -> 7000 * 101% - 7000 (* markPrice = index * 101% *)
-    // lastPremium -> 7000 * 1% (* markPrice = index * 101% *)
-    // vt = 70, acc = 1890
-    [ '70000000000000000000', '70000000000000000000', '60', '70000000000000000000', '1890000000000000000000' ]
-  ]
-
-  const gov: FundingGovParams = {
-    markPremiumLimit: getBN(markPremiumLimit),
-    fundingDampener: getBN(fundingDampener),
-    emaAlpha: getBN(emaAlpha)
-  }
-  let fundingParams: FundingParams = {
-    accumulatedFundingPerContract: _0,
-    lastEMAPremium: _0,
-    lastPremium: _0,
-    lastIndexPrice: getBN(getAccumulatedFundingCase1IndexPrice),
-    lastFundingTimestamp: 0
-  }
-
-  getAccumulatedFundingCase1.forEach((element, index) => {
-    const lastEMAPremium = getBN(element[0])
-    const lastPremium = getBN(element[1])
-    const timestamp = parseInt(element[2])
-    const expectedVT = getBN(element[3])
-    const expectedAcc = getBN(element[4])
-
-    it(`computeAccumulatedFunding.${index}:"${lastEMAPremium} ${lastPremium} ${timestamp}"`, function() {
-      fundingParams.lastEMAPremium = lastEMAPremium
-      fundingParams.lastPremium = lastPremium
-
-      const { acc, emaPremium } = computeAccumulatedFunding(fundingParams, gov, timestamp)
-
-      expect(acc).toApproximate(expectedAcc)
-      expect(emaPremium).toApproximate(expectedVT)
-    })
-  })
-
-  const perpetualStorage: PerpetualStorage = {
-    collateralTokenAddress: 'xxxx',
-    totalSize: new BigNumber('1000'),
-    longSocialLossPerContract: new BigNumber('0.1'),
-    shortSocialLossPerContract: new BigNumber('0.5'),
-    isEmergency: false,
-    isGlobalSettled: false,
-    globalSettlePrice: new BigNumber(0),
-    fundingParams: fundingParams
-  }
-
-  getAccumulatedFundingCase1.forEach((element, index) => {
-    const lastEMAPremium = getBN(element[0])
-    const lastPremium = getBN(element[1])
-    const timestamp = parseInt(element[2])
-    const expectedEMAPremium = getBN(element[3])
-    const expectedAcc = getBN(element[4])
-    const newIndexPrice = new BigNumber('10000')
-    const newFariPrice = new BigNumber('10100')
-
-    it(`funding.${index}:"${perpetualStorage.fundingParams.lastEMAPremium} ${perpetualStorage.fundingParams
-      .lastPremium} ${timestamp}"`, function() {
-      fundingParams.lastEMAPremium = lastEMAPremium
-      fundingParams.lastPremium = lastPremium
-
-      const accumulatedFundingPerContract = expectedAcc.div(fundingParams.lastIndexPrice).div(FUNDING_TIME)
-      const expectedNewParams: FundingParams = {
-        accumulatedFundingPerContract,
-        lastFundingTimestamp: timestamp,
-        lastEMAPremium: expectedEMAPremium,
-        lastPremium: newFariPrice.minus(newIndexPrice),
-        lastIndexPrice: newIndexPrice
-      }
-
-      const newStroage = funding(perpetualStorage, gov, timestamp, newIndexPrice, newFariPrice)
-      const newParams = newStroage.fundingParams
-
-      expect(newParams.accumulatedFundingPerContract).toApproximate(expectedNewParams.accumulatedFundingPerContract)
-      expect(newParams.lastEMAPremium).toApproximate(expectedNewParams.lastEMAPremium)
-      expect(newParams.lastPremium).toBeBigNumber(expectedNewParams.lastPremium)
-      expect(newParams.lastIndexPrice).toBeBigNumber(expectedNewParams.lastIndexPrice)
-      expect(expectedNewParams.lastFundingTimestamp).toEqual(newParams.lastFundingTimestamp)
-    })
-  })
-
-  it('Bad Timestamp', function() {
-    const fp: FundingParams = {
-      accumulatedFundingPerContract: _0,
-      lastEMAPremium: _0,
-      lastPremium: _0,
-      lastIndexPrice: getBN(getAccumulatedFundingCase1IndexPrice),
-      lastFundingTimestamp: 20000
-    }
-    expect((): void => {
-      computeFunding(fp, govParams, 10000)
-    }).toThrow()
-  })
-})
 
 const govParams: GovParams = {
   withdrawalLockBlockCount: 2,
@@ -353,6 +74,8 @@ const perpetualStorage: PerpetualStorage = {
   globalSettlePrice: new BigNumber(0),
   fundingParams: fundingParams
 }
+
+const fundingResult = computeFunding(perpetualStorage.fundingParams, govParams, timestamp)
 
 const accountStorage1: AccountStorage = {
   cashBalance: new BigNumber('10000'),
@@ -406,14 +129,29 @@ const accountStorage4: AccountStorage = {
   }
 }
 
+const accountDetails1 = computeAccount(accountStorage1, govParams, perpetualStorage, fundingResult)
+/*
+const accountDetails2 = computeAccount(accountStorage2, govParams, perpetualStorage, fundingResult)
+*/
+const accountDetails3 = computeAccount(accountStorage3, govParams, perpetualStorage, fundingResult)
+const accountDetails4 = computeAccount(accountStorage4, govParams, perpetualStorage, fundingResult)
+
+it('Bad Funding Timestamp', function() {
+  const fp: FundingParams = {
+    accumulatedFundingPerContract: _0,
+    lastEMAPremium: _0,
+    lastPremium: _0,
+    lastIndexPrice: new BigNumber(7000),
+    lastFundingTimestamp: 20000
+  }
+  expect((): void => {
+    computeFunding(fp, govParams, 10000)
+  }).toThrow()
+})
+
 describe('computeAccount', function() {
   interface ComputeAccountCase {
-    input: {
-      accountStorage: AccountStorage
-      govParams: GovParams
-      perpetualStorage: PerpetualStorage
-      timestamp: number
-    }
+    accountStorage: AccountStorage
     expectedOuput: AccountComputed
   }
 
@@ -507,54 +245,28 @@ describe('computeAccount', function() {
 
   const successCases: Array<ComputeAccountCase> = [
     {
-      input: {
-        accountStorage: accountStorage1,
-        perpetualStorage: perpetualStorage,
-        govParams: govParams,
-        timestamp: timestamp
-      },
+      accountStorage: accountStorage1,
       expectedOuput: expectOutput1
     },
     {
-      input: {
-        accountStorage: accountStorage2,
-        perpetualStorage: perpetualStorage,
-        govParams: govParams,
-        timestamp: timestamp
-      },
+      accountStorage: accountStorage2,
       expectedOuput: expectOutput2
     },
     {
-      input: {
-        accountStorage: accountStorage3,
-        perpetualStorage: perpetualStorage,
-        govParams: govParams,
-        timestamp: timestamp
-      },
+      accountStorage: accountStorage3,
       expectedOuput: expectOutput3
     },
     {
-      input: {
-        accountStorage: accountStorage4,
-        perpetualStorage: perpetualStorage,
-        govParams: govParams,
-        timestamp: timestamp
-      },
+      accountStorage: accountStorage4,
       expectedOuput: expectOutput4
     }
   ]
 
   successCases.forEach((element, index) => {
     it(`computeAccount.${index}`, function() {
-      const input = element.input
+      const accountStorage = element.accountStorage
       const expectedOutput = element.expectedOuput
-      const fundingResult = computeFunding(input.perpetualStorage.fundingParams, input.govParams, input.timestamp)
-      const accountDetails = computeAccount(
-        input.accountStorage,
-        input.govParams,
-        input.perpetualStorage,
-        fundingResult
-      )
+      const accountDetails = computeAccount(accountStorage, govParams, perpetualStorage, fundingResult)
       const computed = accountDetails.accountComputed
       expect(computed.entryPrice).toBeBigNumber(expectedOutput.entryPrice)
       expect(computed.positionValue).toApproximate(expectedOutput.positionValue)
@@ -579,24 +291,22 @@ describe('computeAccount', function() {
   })
 })
 
-describe('amm', function() {
-  const fundingResult = computeFunding(perpetualStorage.fundingParams, govParams, timestamp)
-
-  const ammStorage: AccountStorage = {
-    cashBalance: new BigNumber('10000'),
-    positionSide: SIDE.Buy,
-    positionSize: new BigNumber('2.3'),
-    entryValue: new BigNumber('2300.23'),
-    entrySocialLoss: new BigNumber('0.1'),
-    entryFundingLoss: new BigNumber('-0.91'),
-    withdrawalApplication: {
-      amount: new BigNumber('10'),
-      height: 123
-    }
+const ammStorage: AccountStorage = {
+  cashBalance: new BigNumber('10000'),
+  positionSide: SIDE.Buy,
+  positionSize: new BigNumber('2.3'),
+  entryValue: new BigNumber('2300.23'),
+  entrySocialLoss: new BigNumber('0.1'),
+  entryFundingLoss: new BigNumber('-0.91'),
+  withdrawalApplication: {
+    amount: new BigNumber('10'),
+    height: 123
   }
+}
 
-  const ammDetails = computeAMM(ammStorage, govParams, perpetualStorage, fundingResult)
+const ammDetails = computeAMM(ammStorage, govParams, perpetualStorage, fundingResult)
 
+describe('amm', function() {
   it('computeAMM', function() {
     //socialLoss: new BigNumber('0.13'),
     //fundingLoss: new BigNumber('23.90996909375'), // 9.9999865625 * 2.3 -(-0.91)
@@ -705,15 +415,7 @@ describe('amm', function() {
   })
 })
 
-describe('computeTrade', function() {
-  const fundingResult = computeFunding(perpetualStorage.fundingParams, govParams, timestamp)
-  const accountDetails1 = computeAccount(accountStorage1, govParams, perpetualStorage, fundingResult)
-  /*
-  const accountDetails2 = computeAccount(accountStorage2, govParams, perpetualStorage, fundingResult)
-  const accountDetails3 = computeAccount(accountStorage3, govParams, perpetualStorage, fundingResult)
-  const accountDetails4 = computeAccount(accountStorage4, govParams, perpetualStorage, fundingResult)
-  */
-
+describe('computeTrade.Fail', function() {
   it('decrease.FlatSide', function() {
     expect((): void => {
       computeDecreasePosition(perpetualStorage, fundingResult, accountStorage4, new BigNumber(7000), _1)
@@ -741,6 +443,12 @@ describe('computeTrade', function() {
   it('increase.FlatSide', function() {
     expect((): void => {
       computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Flat, new BigNumber(7000), _1)
+    }).toThrow()
+  })
+
+  it('increase.BadSide', function() {
+    expect((): void => {
+      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Sell, new BigNumber(7000), _1)
     }).toThrow()
   })
 
@@ -787,22 +495,16 @@ describe('computeTrade', function() {
   })
 
   it('tradeCost.BadLev', function() {
+    const negatedOne = _1.negated()
     expect((): void => {
-      computeTradeCost(
-        govParams,
-        perpetualStorage,
-        fundingResult,
-        accountDetails1,
-        SIDE.Buy,
-        _1,
-        _1,
-        _1.negated(),
-        _0_01
-      )
+      computeTradeCost(govParams, perpetualStorage, fundingResult, accountDetails1, SIDE.Buy, _1, _1, negatedOne, _0_01)
     }).toThrow()
   })
+})
 
+describe('computeTradeCost', function() {
   interface TradeCostCase {
+    name: string
     input: {
       accountDetails: AccountDetails
       side: SIDE
@@ -814,6 +516,7 @@ describe('computeTrade', function() {
     expectedOutput: {
       account: {
         cashBalance: BigNumberish
+        marginBalance: BigNumberish
         positionSide: SIDE
         positionSize: BigNumberish
         entryValue: BigNumberish
@@ -821,12 +524,17 @@ describe('computeTrade', function() {
         entryFundingLoss: BigNumberish
       }
       marginCost: BigNumberish
-      toDeposit: BigNumberish
       fee: BigNumberish
     }
   }
+
+  //console.log(fundingResult.markPrice.toString())
+  //fundingResult.accumulatedFundingPerContract = 9.9999865625
+  //fundingResult.markPrice = 6964.893356142896606476516234
+  //new BigNumber('23694.9847500349122')
   const tradeCostCases: Array<TradeCostCase> = [
     {
+      name: 'increase long',
       input: {
         accountDetails: accountDetails1,
         side: SIDE.Buy,
@@ -837,25 +545,314 @@ describe('computeTrade', function() {
       },
       expectedOutput: {
         account: {
-          cashBalance: 0,
+          cashBalance: 9980,
+          /*
+            9980 +
+            (6964.893356142896606476516234 * 3.3 - 4300.23) -
+            (0.1 * 3.3 - 0.2) -
+            (9.9999865625 * 3.3 - 9.0899865625),
+          */
+          marginBalance: '28639.87810617780800190864675',
           positionSide: SIDE.Buy,
+          positionSize: '3.3',
+          entryValue: '4300.23',
+          entrySocialLoss: '0.2',
+          entryFundingLoss: '9.0899865625'
+        },
+        marginCost: 0,
+        fee: 20
+      }
+    },
+    {
+      name: 'increase long with leverage cost',
+      input: {
+        accountDetails: accountDetails1,
+        side: SIDE.Buy,
+        price: 7000,
+        amount: 5,
+        leverage: 2,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          cashBalance: 9650,
+          /*
+            9650 +
+            (6964.893356142896606476516234 * 7.3 - 37300.23) -
+            (0.1 * 7.3 - 0.6) -
+            (9.9999865625 * 7.3 - 49.0899328125),
+          */
+          marginBalance: '23169.4515307493952',
+          positionSide: SIDE.Buy,
+          positionSize: '7.3',
+          entryValue: '37300.23',
+          entrySocialLoss: '0.6',
+          entryFundingLoss: '49.0899328125'
+        },
+        /*  6964.893356142896606476516234 * 7.3 / 2 - 23169.4515307493952 */
+        marginCost: '2252.40921917217739',
+        fee: 350
+      }
+    },
+    {
+      name: 'increase long with loss',
+      input: {
+        accountDetails: accountDetails1,
+        side: SIDE.Buy,
+        price: 10000,
+        amount: 10,
+        leverage: 10,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          cashBalance: 9000,
+          /*
+            9000 +
+            (6964.893356142896606476516234 * 12.3 - 102300.23) -
+            (0.1 * 12.3 - 1.1) -
+            (9.9999865625 * 12.3 - 99.089865625),
+          */
+          marginBalance: '-7656.08168853612174034',
+          positionSide: SIDE.Buy,
+          positionSize: '12.3',
+          entryValue: '102300.23',
+          entrySocialLoss: '1.1',
+          entryFundingLoss: '99.089865625'
+        },
+        /*  6964.893356142896606476516234 * 7.3 / 2 - 23169.4515307493952 */
+        marginCost: '16222.9005165918845663',
+        fee: 1000
+      }
+    },
+    {
+      name: 'decrease long',
+      input: {
+        accountDetails: accountDetails1,
+        side: SIDE.Sell,
+        price: 2000,
+        amount: 1,
+        leverage: 2,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          // 10000 + 999.9 - 20 - (0.1 - 0.1/2.3) * 1 - (9.9999865625 - (-0.91)/2.3 ) * 1
+          cashBalance: '10969.44783952445652173913',
+          positionSide: SIDE.Buy,
+          positionSize: '1.3',
+          entryValue: '1300.13',
+          entrySocialLoss: '0.0565217391304',
+          entryFundingLoss: '-0.514347826087',
+          /*
+            10969.44783952445652173913 +
+            (6964.893356142896606476516234 * 1.3 - 1300.13) -
+            (0.1 * 1.3 - 0.0565217391304) -
+            (9.9999865625 * 1.3 - (-0.514347826087)),
+          */
+          marginBalance: '18710.0913938920155884194711'
+        },
+        marginCost: 0,
+        fee: 20
+      }
+    },
+    {
+      name: 'decrease long to zero',
+      input: {
+        accountDetails: accountDetails1,
+        side: SIDE.Sell,
+        price: 2000,
+        amount: 2.3,
+        leverage: 1,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          // 10000 + 2299.77‬ - 46 - (0.1 * 2.3 - 0.1) - (9.9999865625 * 2.3 - (-0.91))
+          cashBalance: '12229.73003090625',
+          positionSide: SIDE.Flat,
           positionSize: 0,
           entryValue: 0,
           entrySocialLoss: 0,
-          entryFundingLoss: 0
+          entryFundingLoss: 0,
+          marginBalance: '12229.73003090625'
         },
         marginCost: 0,
-        toDeposit: 0,
+        fee: 46
+      }
+    },
+    {
+      name: 'decrease long to short',
+      input: {
+        accountDetails: accountDetails1,
+        side: SIDE.Sell,
+        price: 2000,
+        amount: 3.3,
+        leverage: 1,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          // 10000 + 2299.77‬ - 66 - (0.1 * 2.3 - 0.1) - (9.9999865625 * 2.3 - (-0.91))
+          cashBalance: '12209.73003090625',
+          positionSide: SIDE.Sell,
+          positionSize: 1,
+          entryValue: 2000,
+          entrySocialLoss: '0.5',
+          entryFundingLoss: '9.9999865625',
+          /*
+            12209.73003090625 + (2000 - 6964.893356142896606476516234 * 1)
+          */
+          marginBalance: '7244.83667476335339'
+        },
+        marginCost: 0,
+        fee: 66
+      }
+    },
+    {
+      name: 'increase zero to long with cost',
+      input: {
+        accountDetails: accountDetails4,
+        side: SIDE.Buy,
+        price: 7000,
+        amount: 2,
+        leverage: 1,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          cashBalance: '9860',
+          positionSide: SIDE.Buy,
+          positionSize: 2,
+          entryValue: '14000',
+          entrySocialLoss: '0.2',
+          entryFundingLoss: '19.999973125',
+          /*
+            9860 + (6964.893356142896606476516234 * 2 - 14000)
+          */
+          marginBalance: '9789.7867122857932129'
+        },
+        marginCost: 4140,
+        fee: 140
+      }
+    },
+    {
+      name: 'decrease zero to short with cost',
+      input: {
+        accountDetails: accountDetails4,
+        side: SIDE.Sell,
+        price: 7000,
+        amount: 2,
+        leverage: 1,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          cashBalance: '9860',
+          positionSide: SIDE.Sell,
+          positionSize: 2,
+          entryValue: '14000',
+          entrySocialLoss: '1',
+          entryFundingLoss: '19.999973125',
+          /*
+            9860 + (14000-6964.893356142896606476516234 * 2)
+          */
+          marginBalance: '9930.2132877142067870'
+        },
+        marginCost: '3999.5734245715864259',
+        fee: 140
+      }
+    },
+    {
+      name: 'decrease short',
+      input: {
+        accountDetails: accountDetails3,
+        side: SIDE.Buy,
+        price: 2000,
+        amount: 1,
+        leverage: 2,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          // 14000 - 999.9 - 20 - (0.5 - 0.1/2.3) * 1 + (9.9999865625 - (-0.91)/2.3 ) * 1
+          cashBalance: '12990.039116997282608',
+          positionSide: SIDE.Sell,
+          positionSize: '1.3',
+          entryValue: '1300.13',
+          entrySocialLoss: '0.0565217391304',
+          entryFundingLoss: '-0.514347826087',
+          /*
+            12990.039116997282608 +
+            (1300.13 - 6964.893356142896606476516234 * 1.3) -
+            (0.5 * 1.3 - 0.0565217391304)
+            + (9.9999865625 * 1.3 - (-0.514347826087)),
+          */
+          marginBalance: '5248.7286061079844115805'
+        },
+        marginCost: 0,
         fee: 20
+      }
+    },
+    {
+      name: 'decrease short to zero',
+      input: {
+        accountDetails: accountDetails3,
+        side: SIDE.Buy,
+        price: 2000,
+        amount: 2.3,
+        leverage: 2,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          // 14000 - 2299.77 - 46 - (0.5 * 2.3 - 0.1) + (9.9999865625 * 2.3 - (-0.91))
+          cashBalance: '11677.08996909375',
+          positionSide: SIDE.Flat,
+          positionSize: 0,
+          entryValue: 0,
+          entrySocialLoss: 0,
+          entryFundingLoss: 0,
+          marginBalance: '11677.08996909375'
+        },
+        marginCost: 0,
+        fee: 46
+      }
+    },
+    {
+      name: 'decrease short to long with leverage',
+      input: {
+        accountDetails: accountDetails3,
+        side: SIDE.Buy,
+        price: 2000,
+        amount: 3.3,
+        leverage: 0.1,
+        feeRate: 0.01
+      },
+      expectedOutput: {
+        account: {
+          // 14000 - 2299.77 - 66 - (0.5 * 2.3 - 0.1) + (9.9999865625 * 2.3 - (-0.91))
+          cashBalance: '11657.08996909375',
+          positionSide: SIDE.Buy,
+          positionSize: 1,
+          entryValue: 2000,
+          entrySocialLoss: '0.1',
+          entryFundingLoss: '9.9999865625',
+          // 11657.08996909375 + (6964.893356142896606476516234-2000) * 1
+          marginBalance: '16621.983325236646'
+        },
+        marginCost: '53026.9502361923200',
+        fee: 66
       }
     }
   ]
 
-  tradeCostCases.forEach((element, index) => {
+  tradeCostCases.forEach((element) => {
     const input = element.input
+    const name = element.name
     const expectedOutput = element.expectedOutput
 
-    it(`tradeCost.case.${index}`, function() {
+    it(`tradeCost[${name}]`, function() {
       const tradeCost = computeTradeCost(
         govParams,
         perpetualStorage,
@@ -867,9 +864,10 @@ describe('computeTrade', function() {
         input.leverage,
         input.feeRate
       )
-      expect(tradeCost.account.accountStorage.cashBalance).toBeBigNumber(
+      expect(tradeCost.account.accountStorage.cashBalance).toApproximate(
         normalizeBigNumberish(expectedOutput.account.cashBalance)
       )
+
       expect(expectedOutput.account.positionSide).toEqual(tradeCost.account.accountStorage.positionSide)
       expect(tradeCost.account.accountStorage.positionSize).toBeBigNumber(
         normalizeBigNumberish(expectedOutput.account.positionSize)
@@ -877,15 +875,52 @@ describe('computeTrade', function() {
       expect(tradeCost.account.accountStorage.entryValue).toBeBigNumber(
         normalizeBigNumberish(expectedOutput.account.entryValue)
       )
-      expect(tradeCost.account.accountStorage.entrySocialLoss).toBeBigNumber(
+      expect(tradeCost.account.accountStorage.entrySocialLoss).toApproximate(
         normalizeBigNumberish(expectedOutput.account.entrySocialLoss)
       )
-      expect(tradeCost.account.accountStorage.entryFundingLoss).toBeBigNumber(
+      expect(tradeCost.account.accountStorage.entryFundingLoss).toApproximate(
         normalizeBigNumberish(expectedOutput.account.entryFundingLoss)
       )
-      expect(tradeCost.marginCost).toBeBigNumber(normalizeBigNumberish(expectedOutput.marginCost))
-      expect(tradeCost.toDeposit).toBeBigNumber(normalizeBigNumberish(expectedOutput.toDeposit))
+
+      expect(tradeCost.account.accountComputed.marginBalance).toApproximate(
+        normalizeBigNumberish(expectedOutput.account.marginBalance)
+      )
+
+      expect(tradeCost.marginCost).toApproximate(normalizeBigNumberish(expectedOutput.marginCost))
       expect(tradeCost.fee).toBeBigNumber(normalizeBigNumberish(expectedOutput.fee))
     })
+  })
+
+  it(`computeAMMTradeCost`, function() {
+    const ammCost = computAMMTradeCost(
+      ammDetails,
+      govParams,
+      perpetualStorage,
+      fundingResult,
+      accountDetails1,
+      SIDE.Buy,
+      0.5,
+      0.5
+    )
+    expect(ammCost.price).toApproximate(new BigNumber('4264.294461614583333'))
+    expect(ammCost.marginCost).toApproximate(new BigNumber('13963.448965178170393967576'))
+  })
+})
+
+describe('computeDepositByLeverage', function() {
+  it('bad leverage', function() {
+    expect((): void => {
+      computeDepositByLeverage(accountDetails1, fundingResult, -1)
+    }).toThrow()
+  })
+
+  it('positive', function() {
+    const deposit = computeDepositByLeverage(accountDetails1, fundingResult, 0.5)
+    expect(deposit).toApproximate(new BigNumber('8343.5246882224122'))
+  })
+
+  it('nagetive', function() {
+    const deposit = computeDepositByLeverage(accountDetails1, fundingResult, 10)
+    expect(deposit).toApproximate(new BigNumber('-22093.05927812204598'))
   })
 })

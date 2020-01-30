@@ -1,6 +1,10 @@
 import { BigNumber } from 'bignumber.js'
-import { _0 } from '../src/constants'
+import { DECIMALS, _0 } from '../src/constants'
 import './jtest.d'
+
+export function getBN(s: string): BigNumber {
+  return new BigNumber(s).shiftedBy(-DECIMALS)
+}
 
 export function extendExpect() {
   expect.extend({

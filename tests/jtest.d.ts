@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 export {}
 
 import { BigNumber } from 'bignumber.js'

@@ -437,7 +437,7 @@ export function computeDecreasePosition(
   const rpnl2 = rpnl1.minus(socialLoss).minus(fundingLoss)
   const positionSize = size.minus(amount)
   const positionSide = positionSize.isZero() ? SIDE.Flat : side
-  entrySocialLoss = entryFundingLoss.times(positionSize).div(size)
+  entrySocialLoss = entrySocialLoss.times(positionSize).div(size)
   entryFundingLoss = entryFundingLoss.times(positionSize).div(size)
   entryValue = entryValue.times(positionSize).div(size)
   const cashBalance = a.cashBalance.plus(rpnl2)
@@ -503,7 +503,7 @@ export function computeTrade(
   const normalizedPrice = normalizeBigNumberish(price)
   const normalizedAmount = normalizeBigNumberish(amount)
   const normalizedFeeRate = normalizeBigNumberish(feeRate)
-  if (!normalizedPrice.isPositive() || !normalizedAmount.isPositive()) {
+  if (normalizedPrice.isLessThanOrEqualTo(_0) || normalizedAmount.isLessThanOrEqualTo(_0)) {
     throw Error(`bad price ${normalizedPrice} or amount ${normalizedAmount}`)
   }
   let storage: AccountStorage = a
@@ -530,7 +530,6 @@ export function computeTrade(
 export interface TradeCost {
   account: AccountDetails
   marginCost: BigNumber
-  toDeposit: BigNumber
   fee: BigNumber
 }
 
@@ -552,11 +551,10 @@ export function computeTradeCost(
   const accountStorage = computeTrade(p, f, a.accountStorage, side, price, amount, feeRate)
   const account = computeAccount(accountStorage, g, p, f)
   const positionMargin = accountStorage.positionSize.times(f.markPrice).div(normalizedLeverage)
-  const marginCost = BigNumber.max(_0, positionMargin.minus(a.accountComputed.positionMargin))
-  const toDeposit = positionMargin.minus(account.accountComputed.marginBalance)
+  const marginCost = BigNumber.max(_0, positionMargin.minus(account.accountComputed.marginBalance))
   const fee = computeFee(price, amount, feeRate)
 
-  return { account, marginCost, toDeposit, fee }
+  return { account, marginCost, fee }
 }
 
 export interface AMMTradeCost extends TradeCost {

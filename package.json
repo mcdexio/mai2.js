@@ -1,40 +1,40 @@
 {
-	"name": "mai2.js",
-	"version": "1.0.0",
-	"description": "Mai Protocol v2 JavaScript API",
-	"homepage": "http://",
-	"author": "Liu Jie <jie@mcarlo.com> (https://github.com/jie85)",
-	"contributors": [],
-	"keywords": [ "mai", "protocol", "mcdex" ],
-	"main": "./dist/index.js",
-	"jsnext:main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"engines": {
-		"node": "*"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/mcdexio/mai2.js"
-	},
-	"bugs": {
-		"url": "https://github.com/mcdexio/mai2.js/issues"
-	},
-	"license": "GPLv3",
-	"devDependencies": {
-		"@types/jest": "^24.0.25",
-		"jest": "^24.9.0",
-		"prettier": "^1.19.1",
-		"ts-jest": "^24.3.0",
-		"typescript": "^3.7.4"
-	},
-	"dependencies": {
-		"bignumber.js": "^9.0.0",
-		"ethers": "^4.0.43"
-	},
-	"scripts": {
-		"test": "jest",
-		"coverage": "jest --coverage",
-		"build": "tsc"
-	},
-	"files": [ "dist/**/*" ]
+  "name": "mai2.js",
+  "version": "1.0.0",
+  "description": "Mai Protocol v2 JavaScript API",
+  "homepage": "http://",
+  "author": "Liu Jie <jie@mcarlo.com> (https://github.com/jie85)",
+  "contributors": [],
+  "keywords": [ "mai", "protocol", "mcdex" ],
+  "main": "./dist/index.js",
+  "jsnext:main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "engines": {
+    "node": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mcdexio/mai2.js"
+  },
+  "bugs": {
+    "url": "https://github.com/mcdexio/mai2.js/issues"
+  },
+  "license": "GPLv3",
+  "devDependencies": {
+    "@types/jest": "^24.0.25",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.3.0",
+    "typescript": "^3.7.4"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.0.0",
+    "ethers": "^4.0.43"
+  },
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "build": "tsc"
+  },
+  "files": [ "dist/**/*" ]
 }
