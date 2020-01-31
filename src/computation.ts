@@ -193,7 +193,7 @@ export function computeFunding(f: FundingParams, g: FundingGovParams, timestamp:
   }
 
   let { acc, emaPremium } = computeAccumulatedFunding(f, g, timestamp)
-  acc = acc.div(f.lastIndexPrice).div(FUNDING_TIME)
+  acc = acc.div(FUNDING_TIME)
 
   const accumulatedFundingPerContract = f.accumulatedFundingPerContract.plus(acc)
   const markPrice = f.lastIndexPrice.plus(emaPremium)

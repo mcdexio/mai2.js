@@ -61,8 +61,8 @@ const timestamp = fundingParams.lastFundingTimestamp + duration
 //const expectedEMAPremium = getBN('-35106643857103393523')
 //const expectedACC = getBN('-2709000000000000000000')
 //const exepectedMarkPrice = fundingParams.lastIndexPrice.plus(expectedEMAPremium) // 6964.893356142896606477
-//const acc = expectedACC.div(fundingParams.lastIndexPrice).div(FUNDING_TIME) // -0.0000134375
-//const accumulatedFundingPerContract = fundingParams.accumulatedFundingPerContract.plus(acc) //9.9999865625
+//const acc = expectedACC.div(fundingParams.lastIndexPrice).div(FUNDING_TIME) // -0.0940625‬
+//const accumulatedFundingPerContract = fundingParams.accumulatedFundingPerContract.plus(acc) // 9.9059375
 //console.log(acc.toString(), accumulatedFundingPerContract.toString())
 
 const perpetualStorage: PerpetualStorage = {
@@ -162,16 +162,16 @@ describe('computeAccount', function() {
     positionMargin: new BigNumber('1601.9254719128662'),
     maintenanceMargin: new BigNumber('800.9627359564331'),
     socialLoss: new BigNumber('0.13'),
-    fundingLoss: new BigNumber('23.90996909375'), // 9.9999865625 * 2.3 -(-0.91)
+    fundingLoss: new BigNumber('23.69365625'), // 9.9059375 * 2.3 -(-0.91)
     pnl1: new BigNumber('13719.0247191286622'),
-    pnl2: new BigNumber('13694.9847500349122'),
-    roe: new BigNumber('1.36949847500349122'),
+    pnl2: new BigNumber('13695.20106287866219'),
+    roe: new BigNumber('1.36952010628786621949'),
     liquidationPrice: _0,
-    marginBalance: new BigNumber('23694.9847500349122'),
-    maxWithdrawable: new BigNumber('22093.05927812204597'),
-    availableMargin: new BigNumber('22083.05927812204597'),
+    marginBalance: new BigNumber('23695.2010628786622'),
+    maxWithdrawable: new BigNumber('22093.27559096579597'),
+    availableMargin: new BigNumber('22083.27559096579597'),
     withdrawableBalance: new BigNumber('10'),
-    leverage: new BigNumber('0.676060984555183532'),
+    leverage: new BigNumber('0.676054812812908402'),
     isSafe: true,
     inverseSide: SIDE.Sell,
     inverseEntryPrice: new BigNumber('0.000999900009999'),
@@ -184,20 +184,20 @@ describe('computeAccount', function() {
     positionMargin: new BigNumber('1601.9254719128662'),
     maintenanceMargin: new BigNumber('800.9627359564331'),
     socialLoss: new BigNumber('0.13'),
-    fundingLoss: new BigNumber('23.90996909375'), // 9.9999865625 * 2.3 -(-0.91)
+    fundingLoss: new BigNumber('23.69365625'), // 9.9059375 * 2.3 -(-0.91)
     pnl1: new BigNumber('13719.0247191286622'),
-    pnl2: new BigNumber('13694.9847500349122'),
-    roe: new BigNumber('13.6949847500349122'),
-    liquidationPrice: new BigNumber('606.07321239988558'),
-    marginBalance: new BigNumber('14694.9847500349122'),
-    maxWithdrawable: new BigNumber('13093.05927812204598'),
-    availableMargin: new BigNumber('13083.05927812204598'),
+    pnl2: new BigNumber('13695.2010628786622'),
+    roe: new BigNumber('13.6952010628786621949'),
+    liquidationPrice: new BigNumber('605.97421338672768878719'),
+    marginBalance: new BigNumber('14695.2010628786621'),
+    maxWithdrawable: new BigNumber('13093.27559096579598'),
+    availableMargin: new BigNumber('13083.27559096579598'),
     withdrawableBalance: new BigNumber('10'),
-    leverage: new BigNumber('1.090117138031777'),
+    leverage: new BigNumber('1.09010109154577497111'),
     isSafe: true,
     inverseSide: SIDE.Sell,
     inverseEntryPrice: new BigNumber('0.000999900009999'),
-    inverseLiquidationPrice: new BigNumber('0.001649965679955')
+    inverseLiquidationPrice: new BigNumber('0.00165023523758726073')
   }
 
   const expectOutput3: AccountComputed = {
@@ -206,20 +206,20 @@ describe('computeAccount', function() {
     positionMargin: new BigNumber('1601.9254719128662'),
     maintenanceMargin: new BigNumber('800.9627359564331'),
     socialLoss: new BigNumber('1.05'),
-    fundingLoss: new BigNumber('-23.90996909375'), // 9.9999865625 * 2.3 -(-0.91)
+    fundingLoss: new BigNumber('-23.69365625'), // 9.9059375 * 2.3 -(-0.91)
     pnl1: new BigNumber('-13719.0247191286622'),
-    pnl2: new BigNumber('-13696.164750034912'),
-    roe: new BigNumber('-0.97829748214535087'),
-    liquidationPrice: new BigNumber('6759.0434654632505176'),
-    marginBalance: new BigNumber('303.8352499650878'),
+    pnl2: new BigNumber('-13696.3810628786622'),
+    roe: new BigNumber('-0.97831293306276158535'),
+    liquidationPrice: new BigNumber('6758.95389492753623188406'),
+    marginBalance: new BigNumber('303.6189371213378'),
     maxWithdrawable: _0,
     availableMargin: _0,
     withdrawableBalance: _0,
-    leverage: new BigNumber('52.72348985500976'),
+    leverage: new BigNumber('52.76105262408830538298'),
     isSafe: false,
     inverseSide: SIDE.Buy,
     inverseEntryPrice: new BigNumber('0.0009999000099990001'),
-    inverseLiquidationPrice: new BigNumber('0.00014794992887820734')
+    inverseLiquidationPrice: new BigNumber('0.00014795188952989909')
   }
 
   const expectOutput4: AccountComputed = {
@@ -228,7 +228,7 @@ describe('computeAccount', function() {
     positionMargin: _0,
     maintenanceMargin: _0,
     socialLoss: _0,
-    fundingLoss: _0, // 9.9999865625 * 2.3 -(-0.91)
+    fundingLoss: _0, // 9.9059375 * 2.3 -(-0.91)
     pnl1: _0,
     pnl2: _0,
     roe: _0,
@@ -310,11 +310,11 @@ const ammDetails = computeAMM(ammStorage, govParams, perpetualStorage, fundingRe
 describe('amm', function() {
   it('computeAMM', function() {
     //socialLoss: new BigNumber('0.13'),
-    //fundingLoss: new BigNumber('23.90996909375'), // 9.9999865625 * 2.3 -(-0.91)
-    // 10000 - 2300.23 - 0.13 - 23.90996909375
-    expect(ammDetails.ammComputed.availableMargin).toApproximate(new BigNumber(7675.73003090625))
-    expect(ammDetails.ammComputed.fairPrice).toApproximate(new BigNumber(3337.273926480978))
-    expect(ammDetails.ammComputed.inverseFairPrice).toApproximate(new BigNumber(1 / 3337.273926480978))
+    //fundingLoss: new BigNumber('23.69365625'), // 9.9059375 * 2.3 -(-0.91)
+    // 10000 - 2300.23 - 0.13 - 23.69365625
+    expect(ammDetails.ammComputed.availableMargin).toApproximate(new BigNumber('7675.94634375'))
+    expect(ammDetails.ammComputed.fairPrice).toApproximate(new BigNumber('3337.36797554347826086957'))
+    expect(ammDetails.ammComputed.inverseFairPrice).toApproximate(new BigNumber(1 / 3337.36797554347826086957))
   })
 
   it(`computeAMMPrice.buyTooLarge`, function() {
@@ -325,12 +325,12 @@ describe('amm', function() {
 
   it(`computeAMMPrice.buy`, function() {
     const price = computeAMMPrice(ammDetails, SIDE.Buy, 0.5)
-    expect(price).toApproximate(new BigNumber(4264.294461614583333))
+    expect(price).toApproximate(new BigNumber('4264.414635416666667'))
   })
 
   it(`computeAMMPrice.sell`, function() {
     const price = computeAMMPrice(ammDetails, SIDE.Sell, 0.5)
-    expect(price).toApproximate(new BigNumber(2741.332153895089))
+    expect(price).toApproximate(new BigNumber('2741.40940848214285714286'))
   })
 
   it('computeAMMDepth', function() {
@@ -339,21 +339,21 @@ describe('amm', function() {
     expect(depth.bids.length).toEqual(4)
     expect(depth.asks.length).toEqual(4)
 
-    expect(depth.bids[0].price).toApproximate(new BigNumber(2952.20385804086538))
+    expect(depth.bids[0].price).toApproximate(new BigNumber('2952.28705528846153846154'))
     expect(depth.bids[0].amount).toApproximate(new BigNumber(0.3))
-    expect(depth.bids[1].price).toApproximate(new BigNumber(3070.2920123625))
+    expect(depth.bids[1].price).toApproximate(new BigNumber('3070.3785375'))
     expect(depth.bids[1].amount).toApproximate(new BigNumber(0.2))
-    expect(depth.bids[2].price).toApproximate(new BigNumber(3198.2208462109375))
+    expect(depth.bids[2].price).toApproximate(new BigNumber('3198.3109765625'))
     expect(depth.bids[2].amount).toApproximate(new BigNumber(0.1))
-    expect(depth.bids[3].price).toApproximate(new BigNumber(3337.273926480978))
+    expect(depth.bids[3].price).toApproximate(new BigNumber('3337.36797554347826086957'))
     expect(depth.bids[3].amount).toApproximate(new BigNumber(0))
-    expect(depth.asks[0].price).toApproximate(new BigNumber(3337.273926480978))
+    expect(depth.asks[0].price).toApproximate(new BigNumber('3337.36797554347826086957'))
     expect(depth.asks[0].amount).toApproximate(new BigNumber(0))
-    expect(depth.asks[1].price).toApproximate(new BigNumber(3488.968195866477))
+    expect(depth.asks[1].price).toApproximate(new BigNumber('3489.06651988636363636364'))
     expect(depth.asks[1].amount).toApproximate(new BigNumber(0.1))
-    expect(depth.asks[2].price).toApproximate(new BigNumber(3655.109538526786))
+    expect(depth.asks[2].price).toApproximate(new BigNumber('3655.21254464285714285714'))
     expect(depth.asks[2].amount).toApproximate(new BigNumber(0.2))
-    expect(depth.asks[3].price).toApproximate(new BigNumber(3837.865015453125))
+    expect(depth.asks[3].price).toApproximate(new BigNumber('3837.973171875'))
     expect(depth.asks[3].amount).toApproximate(new BigNumber(0.3))
   })
 
@@ -383,21 +383,21 @@ describe('amm', function() {
     expect(depth.bids.length).toEqual(4)
     expect(depth.asks.length).toEqual(4)
 
-    expect(depth.bids[0].price).toApproximate(new BigNumber(1 / 3837.865015453125))
+    expect(depth.bids[0].price).toApproximate(new BigNumber(1 / 3837.973171875))
     expect(depth.bids[0].amount).toApproximate(new BigNumber(0.3))
-    expect(depth.bids[1].price).toApproximate(new BigNumber(1 / 3655.109538526786))
+    expect(depth.bids[1].price).toApproximate(new BigNumber(1 / 3655.21254464285714285714))
     expect(depth.bids[1].amount).toApproximate(new BigNumber(0.2))
-    expect(depth.bids[2].price).toApproximate(new BigNumber(1 / 3488.968195866477))
+    expect(depth.bids[2].price).toApproximate(new BigNumber(1 / 3489.06651988636363636364))
     expect(depth.bids[2].amount).toApproximate(new BigNumber(0.1))
-    expect(depth.bids[3].price).toApproximate(new BigNumber(1 / 3337.273926480978))
+    expect(depth.bids[3].price).toApproximate(new BigNumber(1 / 3337.36797554347826086957))
     expect(depth.bids[3].amount).toApproximate(new BigNumber(0))
-    expect(depth.asks[0].price).toApproximate(new BigNumber(1 / 3337.273926480978))
+    expect(depth.asks[0].price).toApproximate(new BigNumber(1 / 3337.36797554347826086957))
     expect(depth.asks[0].amount).toApproximate(new BigNumber(0))
-    expect(depth.asks[1].price).toApproximate(new BigNumber(1 / 3198.2208462109375))
+    expect(depth.asks[1].price).toApproximate(new BigNumber(1 / 3198.3109765625))
     expect(depth.asks[1].amount).toApproximate(new BigNumber(0.1))
-    expect(depth.asks[2].price).toApproximate(new BigNumber(1 / 3070.2920123625))
+    expect(depth.asks[2].price).toApproximate(new BigNumber(1 / 3070.3785375))
     expect(depth.asks[2].amount).toApproximate(new BigNumber(0.2))
-    expect(depth.asks[3].price).toApproximate(new BigNumber(1 / 2952.20385804086538))
+    expect(depth.asks[3].price).toApproximate(new BigNumber(1 / 2952.28705528846153846154))
     expect(depth.asks[3].amount).toApproximate(new BigNumber(0.3))
   })
 
@@ -530,7 +530,7 @@ describe('computeTradeCost', function() {
   }
 
   //console.log(fundingResult.markPrice.toString())
-  //fundingResult.accumulatedFundingPerContract = 9.9999865625
+  //fundingResult.accumulatedFundingPerContract = 9.9059375
   //fundingResult.markPrice = 6964.893356142896606476516234
   //new BigNumber('23694.9847500349122')
   const tradeCostCases: Array<TradeCostCase> = [
@@ -551,14 +551,14 @@ describe('computeTradeCost', function() {
             9980 +
             (6964.893356142896606476516234 * 3.3 - 4300.23) -
             (0.1 * 3.3 - 0.2) -
-            (9.9999865625 * 3.3 - 9.0899865625),
+            (9.9059375 * 3.3 - 8.9959375),
           */
-          marginBalance: '28639.87810617780800190864675',
+          marginBalance: '28640.0944190215588',
           positionSide: SIDE.Buy,
           positionSize: '3.3',
           entryValue: '4300.23',
           entrySocialLoss: '0.2',
-          entryFundingLoss: '9.0899865625'
+          entryFundingLoss: '8.9959375'
         },
         marginCost: 0,
         fee: 20
@@ -581,17 +581,17 @@ describe('computeTradeCost', function() {
             9650 +
             (6964.893356142896606476516234 * 7.3 - 37300.23) -
             (0.1 * 7.3 - 0.6) -
-            (9.9999865625 * 7.3 - 49.0899328125),
+            (9.9059375 * 7.3 - 48.6196875),
           */
-          marginBalance: '23169.4515307493952',
+          marginBalance: '23169.66784359314523',
           positionSide: SIDE.Buy,
           positionSize: '7.3',
           entryValue: '37300.23',
           entrySocialLoss: '0.6',
-          entryFundingLoss: '49.0899328125'
+          entryFundingLoss: '48.6196875'
         },
-        /*  6964.893356142896606476516234 * 7.3 / 2 - 23169.4515307493952 */
-        marginCost: '2252.40921917217739',
+        /*  6964.893356142896606476516234 * 7.3 / 2 -23169.66784359314523 */
+        marginCost: '2252.19290632842738',
         fee: 350
       }
     },
@@ -612,17 +612,16 @@ describe('computeTradeCost', function() {
             9000 +
             (6964.893356142896606476516234 * 12.3 - 102300.23) -
             (0.1 * 12.3 - 1.1) -
-            (9.9999865625 * 12.3 - 99.089865625),
+            (9.9059375 * 12.3 - 98.149375),
           */
-          marginBalance: '-7656.08168853612174034',
+          marginBalance: '-7655.86537569237174',
           positionSide: SIDE.Buy,
           positionSize: '12.3',
           entryValue: '102300.23',
           entrySocialLoss: '1.1',
-          entryFundingLoss: '99.089865625'
+          entryFundingLoss: '98.149375'
         },
-        /*  6964.893356142896606476516234 * 7.3 / 2 - 23169.4515307493952 */
-        marginCost: '16222.9005165918845663',
+        marginCost: '16222.6842037481345663',
         fee: 1000
       }
     },
@@ -638,20 +637,20 @@ describe('computeTradeCost', function() {
       },
       expectedOutput: {
         account: {
-          // 10000 + 999.9 - 20 - (0.1 - 0.1/2.3) * 1 - (9.9999865625 - (-0.91)/2.3 ) * 1
-          cashBalance: '10969.44783952445652173913',
+          // 10000 + 999.9 - 20 - (0.1 - 0.1/2.3) * 1 - (9.9059375 - (-0.91)/2.3 ) * 1
+          cashBalance: '10969.54188858695652173913',
           positionSide: SIDE.Buy,
           positionSize: '1.3',
           entryValue: '1300.13',
           entrySocialLoss: '0.0565217391304',
           entryFundingLoss: '-0.514347826087',
           /*
-            10969.44783952445652173913 +
+            10969.54188858695652173913 +
             (6964.893356142896606476516234 * 1.3 - 1300.13) -
             (0.1 * 1.3 - 0.0565217391304) -
-            (9.9999865625 * 1.3 - (-0.514347826087)),
+            (9.9059375 * 1.3 - (-0.514347826087)),
           */
-          marginBalance: '18710.0913938920155884194711'
+          marginBalance: '18710.3077067357655884194711'
         },
         marginCost: 0,
         fee: 20
@@ -669,14 +668,14 @@ describe('computeTradeCost', function() {
       },
       expectedOutput: {
         account: {
-          // 10000 + 2299.77‬ - 46 - (0.1 * 2.3 - 0.1) - (9.9999865625 * 2.3 - (-0.91))
-          cashBalance: '12229.73003090625',
+          // 10000 + 2299.77‬ - 46 - (0.1 * 2.3 - 0.1) - (9.9059375 * 2.3 - (-0.91))
+          cashBalance: '12229.94634375',
           positionSide: SIDE.Flat,
           positionSize: 0,
           entryValue: 0,
           entrySocialLoss: 0,
           entryFundingLoss: 0,
-          marginBalance: '12229.73003090625'
+          marginBalance: '12229.94634375'
         },
         marginCost: 0,
         fee: 46
@@ -694,17 +693,17 @@ describe('computeTradeCost', function() {
       },
       expectedOutput: {
         account: {
-          // 10000 + 2299.77‬ - 66 - (0.1 * 2.3 - 0.1) - (9.9999865625 * 2.3 - (-0.91))
-          cashBalance: '12209.73003090625',
+          // 10000 + 2299.77‬ - 66 - (0.1 * 2.3 - 0.1) - (9.9059375 * 2.3 - (-0.91))
+          cashBalance: '12209.94634375',
           positionSide: SIDE.Sell,
           positionSize: 1,
           entryValue: 2000,
           entrySocialLoss: '0.5',
-          entryFundingLoss: '9.9999865625',
+          entryFundingLoss: '9.9059375',
           /*
-            12209.73003090625 + (2000 - 6964.893356142896606476516234 * 1)
+            12209.94634375 + (2000 - 6964.893356142896606476516234 * 1)
           */
-          marginBalance: '7244.83667476335339'
+          marginBalance: '7245.052987607103393523483766'
         },
         marginCost: 0,
         fee: 66
@@ -727,7 +726,7 @@ describe('computeTradeCost', function() {
           positionSize: 2,
           entryValue: '14000',
           entrySocialLoss: '0.2',
-          entryFundingLoss: '19.999973125',
+          entryFundingLoss: '19.811875',
           /*
             9860 + (6964.893356142896606476516234 * 2 - 14000)
           */
@@ -754,7 +753,7 @@ describe('computeTradeCost', function() {
           positionSize: 2,
           entryValue: '14000',
           entrySocialLoss: '1',
-          entryFundingLoss: '19.999973125',
+          entryFundingLoss: '19.811875',
           /*
             9860 + (14000-6964.893356142896606476516234 * 2)
           */
@@ -776,20 +775,20 @@ describe('computeTradeCost', function() {
       },
       expectedOutput: {
         account: {
-          // 14000 - 999.9 - 20 - (0.5 - 0.1/2.3) * 1 + (9.9999865625 - (-0.91)/2.3 ) * 1
-          cashBalance: '12990.039116997282608',
+          // 14000 - 999.9 - 20 - (0.5 - 0.1/2.3) * 1 + (9.9059375 - (-0.91)/2.3 ) * 1
+          cashBalance: '12989.94506793478260869',
           positionSide: SIDE.Sell,
           positionSize: '1.3',
           entryValue: '1300.13',
           entrySocialLoss: '0.0565217391304',
           entryFundingLoss: '-0.514347826087',
           /*
-            12990.039116997282608 +
+            12,989.94506793478260869 +
             (1300.13 - 6964.893356142896606476516234 * 1.3) -
             (0.5 * 1.3 - 0.0565217391304)
-            + (9.9999865625 * 1.3 - (-0.514347826087)),
+            + (9.9059375 * 1.3 - (-0.514347826087)),
           */
-          marginBalance: '5248.7286061079844115805'
+          marginBalance: '5248.51229326423442027'
         },
         marginCost: 0,
         fee: 20
@@ -807,14 +806,14 @@ describe('computeTradeCost', function() {
       },
       expectedOutput: {
         account: {
-          // 14000 - 2299.77 - 46 - (0.5 * 2.3 - 0.1) + (9.9999865625 * 2.3 - (-0.91))
-          cashBalance: '11677.08996909375',
+          // 14000 - 2299.77 - 46 - (0.5 * 2.3 - 0.1) + (9.9059375 * 2.3 - (-0.91))
+          cashBalance: '11676.87365625',
           positionSide: SIDE.Flat,
           positionSize: 0,
           entryValue: 0,
           entrySocialLoss: 0,
           entryFundingLoss: 0,
-          marginBalance: '11677.08996909375'
+          marginBalance: '11676.87365625'
         },
         marginCost: 0,
         fee: 46
@@ -832,17 +831,17 @@ describe('computeTradeCost', function() {
       },
       expectedOutput: {
         account: {
-          // 14000 - 2299.77 - 66 - (0.5 * 2.3 - 0.1) + (9.9999865625 * 2.3 - (-0.91))
-          cashBalance: '11657.08996909375',
+          // 14000 - 2299.77 - 66 - (0.5 * 2.3 - 0.1) + (9.9059375 * 2.3 - (-0.91))
+          cashBalance: '11656.87365625',
           positionSide: SIDE.Buy,
           positionSize: 1,
           entryValue: 2000,
           entrySocialLoss: '0.1',
-          entryFundingLoss: '9.9999865625',
-          // 11657.08996909375 + (6964.893356142896606476516234-2000) * 1
-          marginBalance: '16621.983325236646'
+          entryFundingLoss: '9.9059375',
+          // 11656.87365625 + (6964.893356142896606476516234-2000) * 1
+          marginBalance: '16621.7670123928966064765'
         },
-        marginCost: '53026.9502361923200',
+        marginCost: '53027.166549036069',
         fee: 66
       }
     }
@@ -903,8 +902,8 @@ describe('computeTradeCost', function() {
       0.5,
       0.5
     )
-    expect(ammCost.price).toApproximate(new BigNumber('4264.294461614583333'))
-    expect(ammCost.marginCost).toApproximate(new BigNumber('13963.448965178170393967576'))
+    expect(ammCost.price).toApproximate(new BigNumber('4264.41463541666666666667'))
+    expect(ammCost.marginCost).toApproximate(new BigNumber('13963.292889452714664800912'))
   })
 
   it(`computeAMMInverseTradeCost.Buy`, function() {
@@ -918,8 +917,8 @@ describe('computeTradeCost', function() {
       0.5,
       0.5
     )
-    expect(ammCost.price).toApproximate(_1.div(new BigNumber('2741.332153895089')))
-    expect(ammCost.marginCost).toApproximate(new BigNumber('3493.83859839578811040773364'))
+    expect(ammCost.price).toApproximate(_1.div(new BigNumber('2741.40940848214286')))
+    expect(ammCost.marginCost).toApproximate(new BigNumber('3493.58375482674514165773435'))
   })
 
   it(`computeAMMInverseTradeCost.Sell`, function() {
@@ -933,8 +932,8 @@ describe('computeTradeCost', function() {
       0.5,
       0.5
     )
-    expect(ammCost.price).toApproximate(_1.div(new BigNumber('4264.294461614583333')))
-    expect(ammCost.marginCost).toApproximate(new BigNumber('13963.448965178170393967576'))
+    expect(ammCost.price).toApproximate(_1.div(new BigNumber('4264.41463541666661')))
+    expect(ammCost.marginCost).toApproximate(new BigNumber('13963.292889452714664800912'))
   })
 })
 
@@ -947,11 +946,11 @@ describe('computeDepositByLeverage', function() {
 
   it('positive', function() {
     const deposit = computeDepositByLeverage(accountDetails1, fundingResult, 0.5)
-    expect(deposit).toApproximate(new BigNumber('8343.5246882224122'))
+    expect(deposit).toApproximate(new BigNumber('8343.3083753786622'))
   })
 
   it('nagetive', function() {
     const deposit = computeDepositByLeverage(accountDetails1, fundingResult, 10)
-    expect(deposit).toApproximate(new BigNumber('-22093.05927812204598'))
+    expect(deposit).toApproximate(new BigNumber('-22093.27559096579598'))
   })
 })

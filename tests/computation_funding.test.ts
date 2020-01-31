@@ -244,7 +244,7 @@ describe('funding', function() {
       fundingParams.lastEMAPremium = lastEMAPremium
       fundingParams.lastPremium = lastPremium
 
-      const accumulatedFundingPerContract = expectedAcc.div(fundingParams.lastIndexPrice).div(FUNDING_TIME)
+      const accumulatedFundingPerContract = expectedAcc.div(FUNDING_TIME)
       const expectedNewParams: FundingParams = {
         accumulatedFundingPerContract,
         lastFundingTimestamp: timestamp,
