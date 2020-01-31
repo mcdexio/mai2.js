@@ -1,23 +1,23 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { BigNumberish } from '../src/types'
-import { bigLn, normalizeBigNumberish, getEthToken, isChainId, isLowLevelProvider } from '../src/utils'
-import { ETH, SUPPORTED_CHAIN_ID } from '../src/constants'
+import { bigLn, normalizeBigNumberish, getEthToken, isNetworkId, isLowLevelProvider } from '../src/utils'
+import { ETH, SUPPORTED_NETWORK_ID } from '../src/constants'
 
-describe('isChainId', function() {
+describe('isNetworkId', function() {
   it('mainnet id', function() {
-    expect(isChainId(SUPPORTED_CHAIN_ID.Mainnet)).toBeTruthy()
+    expect(isNetworkId(SUPPORTED_NETWORK_ID.Mainnet)).toBeTruthy()
   })
 
   it('provider', function() {
     const provider = ethers.getDefaultProvider()
-    expect(isChainId(provider)).toBeFalsy()
+    expect(isNetworkId(provider)).toBeFalsy()
   })
 })
 
 describe('isLowLevelProvider', function() {
   it('mainnet id', function() {
-    expect(isLowLevelProvider(SUPPORTED_CHAIN_ID.Mainnet)).toBeFalsy()
+    expect(isLowLevelProvider(SUPPORTED_NETWORK_ID.Mainnet)).toBeFalsy()
   })
   it('provider', function() {
     const provider = ethers.getDefaultProvider()

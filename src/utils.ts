@@ -1,43 +1,41 @@
 import { BigNumber } from 'bignumber.js'
 import { ethers } from 'ethers'
 
-import { SUPPORTED_CHAIN_ID, ETH, ERC20_ABI, _CHAIN_ID_NAME, _0, _MAX_UINT8, _MAX_UINT256 } from './constants'
-import { BigNumberish, ChainIdOrProvider, Token, _ChainIdAndProvider } from './types'
+import { SUPPORTED_NETWORK_ID, ETH, ERC20_ABI, _NETWORK_ID_NAME, _0, _MAX_UINT8, _MAX_UINT256 } from './constants'
+import { BigNumberish, NetworkIdOrProvider, Token, _ChainIdAndProvider } from './types'
 import { _0_1, _1, _10, _E, DECIMALS } from './constants'
 
-// type guard for ChainIdOrProvider
-export function isChainId(chainIdOrProvider: ChainIdOrProvider): chainIdOrProvider is SUPPORTED_CHAIN_ID {
-  const chainId: SUPPORTED_CHAIN_ID = chainIdOrProvider as SUPPORTED_CHAIN_ID
+export function isNetworkId(idOrProvider: NetworkIdOrProvider): idOrProvider is SUPPORTED_NETWORK_ID {
+  const chainId: SUPPORTED_NETWORK_ID = idOrProvider as SUPPORTED_NETWORK_ID
   return typeof chainId === 'number'
 }
 
-// type guard for ChainIdOrProvider
-export function isLowLevelProvider(
-  chainIdOrProvider: ChainIdOrProvider
-): chainIdOrProvider is ethers.providers.AsyncSendable {
-  if (isChainId(chainIdOrProvider)) {
+export function isLowLevelProvider(idOrProvider: NetworkIdOrProvider): idOrProvider is ethers.providers.AsyncSendable {
+  if (isNetworkId(idOrProvider)) {
     return false
-  } else {
-    const provider: ethers.providers.Provider = chainIdOrProvider as ethers.providers.Provider
-    return ethers.providers.Provider.isProvider(provider)
   }
+  const provider: ethers.providers.Provider = idOrProvider as ethers.providers.Provider
+  return ethers.providers.Provider.isProvider(provider)
 }
 
-export async function getChainIdAndProvider(chainIdOrProvider: ChainIdOrProvider): Promise<_ChainIdAndProvider> {
-  // if a chainId is provided, get a default provider for it
-  if (isChainId(chainIdOrProvider)) {
+export async function getChainIdAndProvider(idOrProvider: NetworkIdOrProvider): Promise<_ChainIdAndProvider> {
+  // if a id is provided, get a default provider for it
+  if (isNetworkId(idOrProvider)) {
+    if (!(idOrProvider in SUPPORTED_NETWORK_ID)) {
+      throw Error(`chainId ${idOrProvider} is not valid.`)
+    }
     return {
-      chainId: chainIdOrProvider,
-      provider: ethers.getDefaultProvider(_CHAIN_ID_NAME[chainIdOrProvider])
+      chainId: idOrProvider,
+      provider: ethers.getDefaultProvider(_NETWORK_ID_NAME[idOrProvider])
     }
   } else {
     // if a provider is provided, fetch the chainId from it
-    const provider: ethers.providers.Provider = isLowLevelProvider(chainIdOrProvider)
-      ? new ethers.providers.Web3Provider(chainIdOrProvider)
-      : chainIdOrProvider
+    const provider: ethers.providers.Provider = isLowLevelProvider(idOrProvider)
+      ? new ethers.providers.Web3Provider(idOrProvider)
+      : idOrProvider
     const { chainId }: ethers.utils.Network = await provider.getNetwork()
 
-    if (!(chainId in SUPPORTED_CHAIN_ID)) {
+    if (!(chainId in SUPPORTED_NETWORK_ID)) {
       throw Error(`chainId ${chainId} is not valid.`)
     }
 
@@ -51,9 +49,9 @@ export async function getChainIdAndProvider(chainIdOrProvider: ChainIdOrProvider
 export async function getContract(
   address: string,
   ABI: string,
-  chainIdOrProvider: ChainIdOrProvider = SUPPORTED_CHAIN_ID.Mainnet
+  idOrProvider: NetworkIdOrProvider = SUPPORTED_NETWORK_ID.Mainnet
 ): Promise<ethers.Contract> {
-  const chainIdAndProvider: _ChainIdAndProvider = await getChainIdAndProvider(chainIdOrProvider)
+  const chainIdAndProvider: _ChainIdAndProvider = await getChainIdAndProvider(idOrProvider)
   return new ethers.Contract(address, ABI, chainIdAndProvider.provider)
 }
 

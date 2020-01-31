@@ -1,14 +1,13 @@
 import { BigNumber } from 'bignumber.js'
 import { ethers } from 'ethers'
-import { SUPPORTED_CHAIN_ID, SIDE } from './constants'
+import { SUPPORTED_NETWORK_ID, SIDE } from './constants'
 
 export type BigNumberish = BigNumber | ethers.utils.BigNumber | string | number
 
-//// types for on-chain, submitted, and normalized data
-export type ChainIdOrProvider = SUPPORTED_CHAIN_ID | ethers.providers.AsyncSendable | ethers.providers.Provider
+export type NetworkIdOrProvider = SUPPORTED_NETWORK_ID | ethers.providers.AsyncSendable | ethers.providers.Provider
 
 export interface Token {
-  chainId?: SUPPORTED_CHAIN_ID
+  chainId?: SUPPORTED_NETWORK_ID
   address?: string
   decimals: number
 }

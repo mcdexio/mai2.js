@@ -1,14 +1,14 @@
 import { ethers } from 'ethers'
 
-import { ChainIdOrProvider, _ChainIdAndProvider, GovParams } from './types'
-import { SUPPORTED_CHAIN_ID, PERPETUAL_ABI, _0, _1 } from './constants'
+import { NetworkIdOrProvider, _ChainIdAndProvider, GovParams } from './types'
+import { SUPPORTED_NETWORK_ID, PERPETUAL_ABI, _0, _1 } from './constants'
 import { normalizeBigNumberish, getContract } from './utils'
 
 export async function getPerpetualContract(
   address: string,
-  chainIdOrProvider: ChainIdOrProvider = SUPPORTED_CHAIN_ID.Mainnet
+  idOrProvider: NetworkIdOrProvider = SUPPORTED_NETWORK_ID.Mainnet
 ): Promise<ethers.Contract> {
-  return getContract(address, PERPETUAL_ABI, chainIdOrProvider)
+  return getContract(address, PERPETUAL_ABI, idOrProvider)
 }
 
 export async function getGovParams(perpetualContract: ethers.Contract): Promise<GovParams> {

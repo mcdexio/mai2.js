@@ -3,15 +3,13 @@ import PerpetualABI from './abi/perpetual.json'
 import ERC20ABI from './abi/perpetual.json'
 
 export const ETH = 'ETH'
-export enum SUPPORTED_CHAIN_ID {
+export enum SUPPORTED_NETWORK_ID {
   Mainnet = 1,
   Ropsten = 3
 }
 
 export const DECIMALS = 18
-
 export const FUNDING_TIME = 28800
-
 export const PERPETUAL_ABI: string = JSON.stringify(PerpetualABI)
 export const ERC20_ABI: string = JSON.stringify(ERC20ABI)
 
@@ -21,9 +19,9 @@ export enum SIDE {
   Flat
 }
 
-export const _CHAIN_ID_NAME: { [key: number]: string } = {
-  [SUPPORTED_CHAIN_ID.Mainnet]: 'homestead',
-  [SUPPORTED_CHAIN_ID.Ropsten]: 'ropsten'
+export const _NETWORK_ID_NAME: { [key: number]: string } = {
+  [SUPPORTED_NETWORK_ID.Mainnet]: 'homestead',
+  [SUPPORTED_NETWORK_ID.Ropsten]: 'ropsten'
 }
 
 export const _E = new BigNumber('2.718281828459045235')
