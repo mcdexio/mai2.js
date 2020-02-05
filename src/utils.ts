@@ -15,7 +15,7 @@ export function isLowLevelProvider(idOrProvider: NetworkIdOrProvider): idOrProvi
     return false
   }
   const provider: ethers.providers.Provider = idOrProvider as ethers.providers.Provider
-  return ethers.providers.Provider.isProvider(provider)
+  return !ethers.providers.Provider.isProvider(provider)
 }
 
 export async function getChainIdAndProvider(idOrProvider: NetworkIdOrProvider): Promise<_ChainIdAndProvider> {

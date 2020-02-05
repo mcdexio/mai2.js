@@ -21,7 +21,7 @@ describe('isLowLevelProvider', function() {
   })
   it('provider', function() {
     const provider = ethers.getDefaultProvider()
-    expect(isLowLevelProvider(provider)).toBeTruthy()
+    expect(isLowLevelProvider(provider)).toBeFalsy()
   })
 })
 
