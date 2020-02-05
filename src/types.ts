@@ -33,8 +33,11 @@ export interface FundingGovParams {
 }
 
 export interface GovParams extends FundingGovParams {
+  // global
   withdrawalLockBlockCount: number
   brokerLockBlockCount: number
+
+  // perpetual
   intialMargin: BigNumber
   maintenanceMargin: BigNumber
   liquidationSafetyFactor: BigNumber
@@ -42,8 +45,15 @@ export interface GovParams extends FundingGovParams {
   penaltyFundRate: BigNumber
   makerDevRate: BigNumber
   takerDevRate: BigNumber
-  oracleAddress: string
-  ammFeeRate: BigNumber
+
+  // amm
+  minPoolSize: BigNumber
+  poolFeeRate: BigNumber
+  poolDevFeeRate: BigNumber
+  emaAlpha: BigNumber
+  updatePremiumPrize: BigNumber
+  markPremiumLimit: BigNumber
+  fundingDampener: BigNumber
 }
 
 export interface PerpetualStorage {

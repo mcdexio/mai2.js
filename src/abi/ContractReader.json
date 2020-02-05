@@ -42,10 +42,6 @@
                 "type": "uint256"
               },
               {
-                "name": "markPremiumLimit",
-                "type": "uint256"
-              },
-              {
                 "name": "takerDevFeeRate",
                 "type": "uint256"
               },
@@ -114,10 +110,6 @@
         "components": [
           {
             "name": "collateralTokenAddress",
-            "type": "address"
-          },
-          {
-            "name": "perpetualAddress",
             "type": "address"
           },
           {
