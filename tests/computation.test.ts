@@ -40,11 +40,12 @@ const govParams: GovParams = {
   penaltyFundRate: new BigNumber(0.2),
   makerDevRate: new BigNumber(-0.0005),
   takerDevRate: new BigNumber(0.0015),
-  oracleAddress: '0x123456',
-  ammFeeRate: new BigNumber(0.001),
+  poolFeeRate: new BigNumber(0.001),
+  poolDevFeeRate: new BigNumber(0.0015),
   markPremiumLimit: new BigNumber('0.005'), //0.5%
   fundingDampener: new BigNumber('0.0005'), // 0.05%
-  emaAlpha: getBN('3327787021630616') // 2 / (600 + 1)
+  emaAlpha: getBN('3327787021630616'), // 2 / (600 + 1)
+  updatePremiumPrize: _0
 }
 //[ '-70000000000000000000', '70000000000000000000', '86', '-35106643857103393523', '-2709000000000000000000' ],
 const fundingParams: FundingParams = {

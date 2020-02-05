@@ -571,7 +571,7 @@ export function computeAMMTradeCost(
   amount: BigNumberish,
   leverage: BigNumberish
 ): AMMTradeCost {
-  const feeRate = g.ammFeeRate.plus(g.takerDevRate)
+  const feeRate = g.poolFeeRate.plus(g.poolDevFeeRate)
   const price = computeAMMPrice(amm, side, amount)
   const cost = computeTradeCost(g, p, f, a, side, price, amount, leverage, feeRate)
   return { ...cost, price }

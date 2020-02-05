@@ -47,7 +47,6 @@ export interface GovParams extends FundingGovParams {
   takerDevRate: BigNumber
 
   // amm
-  minPoolSize: BigNumber
   poolFeeRate: BigNumber
   poolDevFeeRate: BigNumber
   emaAlpha: BigNumber
