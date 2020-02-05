@@ -1,16 +1,17 @@
 import BigNumber from 'bignumber.js'
-import PerpetualABI from './abi/perpetual.json'
-import ERC20ABI from './abi/perpetual.json'
+import ERC20ABI from './abi/erc20.json'
+import ContractReaderABI from './abi/ContractReader.json'
 
 export const ETH = 'ETH'
 export enum SUPPORTED_NETWORK_ID {
   Mainnet = 1,
-  Ropsten = 3
+  Ropsten = 3,
+  S1 = 66
 }
 
 export const DECIMALS = 18
 export const FUNDING_TIME = 28800
-export const PERPETUAL_ABI: string = JSON.stringify(PerpetualABI)
+export const CONTRACT_READER_ABI: string = JSON.stringify(ContractReaderABI)
 export const ERC20_ABI: string = JSON.stringify(ERC20ABI)
 
 export enum SIDE {
@@ -21,7 +22,12 @@ export enum SIDE {
 
 export const _NETWORK_ID_NAME: { [key: number]: string } = {
   [SUPPORTED_NETWORK_ID.Mainnet]: 'homestead',
-  [SUPPORTED_NETWORK_ID.Ropsten]: 'ropsten'
+  [SUPPORTED_NETWORK_ID.Ropsten]: 'ropsten',
+  [SUPPORTED_NETWORK_ID.S1]: 's1'
+}
+
+export const CONTRACT_READER_ADDRESS: { [key: number]: string } = {
+  [SUPPORTED_NETWORK_ID.S1]: '0xD4A2142E1CCFdF356Adb5462884CE9004791470B'
 }
 
 export const _E = new BigNumber('2.718281828459045235')

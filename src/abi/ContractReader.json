@@ -1,0 +1,251 @@
+[
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "perpetualAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getGovParams",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "withdrawalLockBlockCount",
+            "type": "uint256"
+          },
+          {
+            "name": "brokerLockBlockCount",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "name": "initialMarginRate",
+                "type": "uint256"
+              },
+              {
+                "name": "maintenanceMarginRate",
+                "type": "uint256"
+              },
+              {
+                "name": "liquidationSafetyFactor",
+                "type": "uint256"
+              },
+              {
+                "name": "liquidationPenaltyRate",
+                "type": "uint256"
+              },
+              {
+                "name": "penaltyFundRate",
+                "type": "uint256"
+              },
+              {
+                "name": "markPremiumLimit",
+                "type": "uint256"
+              },
+              {
+                "name": "takerDevFeeRate",
+                "type": "uint256"
+              },
+              {
+                "name": "makerDevFeeRate",
+                "type": "uint256"
+              }
+            ],
+            "name": "perpetual",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "name": "minPoolSize",
+                "type": "uint256"
+              },
+              {
+                "name": "poolFeeRate",
+                "type": "uint256"
+              },
+              {
+                "name": "poolDevFeeRate",
+                "type": "uint256"
+              },
+              {
+                "name": "emaAlpha",
+                "type": "int256"
+              },
+              {
+                "name": "updatePremiumPrize",
+                "type": "uint256"
+              },
+              {
+                "name": "markPremiumLimit",
+                "type": "int256"
+              },
+              {
+                "name": "fundingDampener",
+                "type": "int256"
+              }
+            ],
+            "name": "automatedMarketMaker",
+            "type": "tuple"
+          }
+        ],
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "perpetualAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getPerpetualStorage",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "collateralTokenAddress",
+            "type": "address"
+          },
+          {
+            "name": "perpetualAddress",
+            "type": "address"
+          },
+          {
+            "name": "totalSize",
+            "type": "uint256"
+          },
+          {
+            "name": "longSocialLossPerContract",
+            "type": "uint256"
+          },
+          {
+            "name": "shortSocialLossPerContract",
+            "type": "uint256"
+          },
+          {
+            "name": "isEmergency",
+            "type": "bool"
+          },
+          {
+            "name": "isGlobalSettled",
+            "type": "bool"
+          },
+          {
+            "name": "globalSettlePrice",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "name": "lastFundingTime",
+                "type": "uint256"
+              },
+              {
+                "name": "lastPremium",
+                "type": "int256"
+              },
+              {
+                "name": "lastEMAPremium",
+                "type": "int256"
+              },
+              {
+                "name": "lastIndexPrice",
+                "type": "uint256"
+              },
+              {
+                "name": "accumulatedFundingPerContract",
+                "type": "int256"
+              }
+            ],
+            "name": "fundingParams",
+            "type": "tuple"
+          }
+        ],
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "perpetualAddress",
+        "type": "address"
+      },
+      {
+        "name": "guy",
+        "type": "address"
+      }
+    ],
+    "name": "getAccountStroage",
+    "outputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "name": "balance",
+                "type": "uint256"
+              },
+              {
+                "name": "appliedBalance",
+                "type": "uint256"
+              },
+              {
+                "name": "appliedHeight",
+                "type": "uint256"
+              }
+            ],
+            "name": "collateral",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "name": "side",
+                "type": "uint8"
+              },
+              {
+                "name": "size",
+                "type": "uint256"
+              },
+              {
+                "name": "entryValue",
+                "type": "uint256"
+              },
+              {
+                "name": "entrySocialLoss",
+                "type": "uint256"
+              },
+              {
+                "name": "entryFundingLoss",
+                "type": "int256"
+              }
+            ],
+            "name": "position",
+            "type": "tuple"
+          }
+        ],
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

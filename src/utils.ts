@@ -1,9 +1,9 @@
 import { BigNumber } from 'bignumber.js'
 import { ethers } from 'ethers'
 
-import { SUPPORTED_NETWORK_ID, ETH, ERC20_ABI, _NETWORK_ID_NAME, _0, _MAX_UINT8, _MAX_UINT256 } from './constants'
+import { SUPPORTED_NETWORK_ID, ETH, ERC20_ABI, _NETWORK_ID_NAME } from './constants'
 import { BigNumberish, NetworkIdOrProvider, Token, _ChainIdAndProvider } from './types'
-import { _0_1, _1, _10, _E, DECIMALS } from './constants'
+import { _MAX_UINT8, _MAX_UINT256, _0, _0_1, _1, _10, _E, DECIMALS } from './constants'
 
 export function isNetworkId(idOrProvider: NetworkIdOrProvider): idOrProvider is SUPPORTED_NETWORK_ID {
   const chainId: SUPPORTED_NETWORK_ID = idOrProvider as SUPPORTED_NETWORK_ID
@@ -34,7 +34,6 @@ export async function getChainIdAndProvider(idOrProvider: NetworkIdOrProvider): 
       ? new ethers.providers.Web3Provider(idOrProvider)
       : idOrProvider
     const { chainId }: ethers.utils.Network = await provider.getNetwork()
-
     if (!(chainId in SUPPORTED_NETWORK_ID)) {
       throw Error(`chainId ${chainId} is not valid.`)
     }
