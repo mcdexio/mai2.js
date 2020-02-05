@@ -1,27 +1,18 @@
-import {
-  getContractReader,
-  getGovParams,
-  getPerpetualStorage,
-  getAccountStroage
-} from '../src/data'
+import { getContractReader, getGovParams, getPerpetualStorage, getAccountStroage } from '../src/data'
 import { SIDE, _0, _1, _1000, _0_1, _0_01 } from '../src/constants'
-import {
-  GovParams,
-  PerpetualStorage,
-  AccountStorage
-} from '../src/types'
+import { GovParams, PerpetualStorage, AccountStorage } from '../src/types'
 import { normalizeBigNumberish } from '../src/utils'
 import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 
-const testRpc = 'http://192.168.1.8:8645'
+const testRpc = 'http://s1.jy.mcarlo.com:8545'
 const testPerp = '0x048e5F4ecfa68Bd833730484FBF2BE163Bb4E8B4'
 const testUser = '0x31Ebd457b999Bf99759602f5Ece5AA5033CB56B3'
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 
 extendExpect()
 
-it('param', async function () {
+it('param', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: GovParams = await getGovParams(contractReader, testPerp)
   expect(p.withdrawalLockBlockCount).toEqual(5)
@@ -42,7 +33,7 @@ it('param', async function () {
   expect(p.fundingDampener).toBeBigNumber(normalizeBigNumberish('0.0005'))
 })
 
-it('perp', async function () {
+it('perp', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: PerpetualStorage = await getPerpetualStorage(contractReader, testPerp)
   expect(p.collateralTokenAddress).not.toEqual('')
@@ -61,7 +52,7 @@ it('perp', async function () {
   expect(p.fundingParams.lastFundingTimestamp).not.toEqual(0)
 })
 
-it('account', async function () {
+it('account', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: AccountStorage = await getAccountStroage(contractReader, testPerp, testUser)
   expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('700000'))
