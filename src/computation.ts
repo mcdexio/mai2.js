@@ -19,7 +19,7 @@ import {
   AccountComputed
 } from './types'
 import { _0, _1, FUNDING_TIME, SIDE, _0_1 } from './constants'
-import { bigLog, normalizeBigNumberish } from './utils'
+import { bigLog, bigPowi, normalizeBigNumberish } from './utils'
 
 interface _AccumulatedFundingResult {
   acc: BigNumber
@@ -39,7 +39,7 @@ export function _rFunc(
   v0: BigNumber
 ): BigNumber {
   const tt1 = v0.minus(lastPremium)
-  return tt1.times(a2.pow(x).minus(a2.pow(y))).div(a).plus(lastPremium.times(y.minus(x)))
+  return tt1.times(bigPowi(a2, x).minus(bigPowi(a2, y))).div(a).plus(lastPremium.times(y.minus(x)))
 }
 
 export function computeAccumulatedFunding(
@@ -53,7 +53,7 @@ export function computeAccumulatedFunding(
   const v0 = f.lastEMAPremium
 
   //vt = (LastEMAPremium - LastPremium) * Pow(a2, n) + LastPremium
-  const vt = f.lastEMAPremium.minus(f.lastPremium).times(a2.pow(n)).plus(f.lastPremium)
+  const vt = f.lastEMAPremium.minus(f.lastPremium).times(bigPowi(a2, n)).plus(f.lastPremium)
   //vLimit = GovMarkPremiumLimit * LastIndexPrice
   const vLimit = f.lastIndexPrice.times(g.markPremiumLimit)
   const vNegLimit = vLimit.negated()

@@ -156,3 +156,19 @@ export function bigLn(v: BigNumber): BigNumber {
 export function bigLog(base: BigNumber, x: BigNumber): BigNumber {
   return bigLn(x).div(bigLn(base))
 }
+
+export function bigPowi(x: BigNumber, n: BigNumber): BigNumber {
+  if (!n.isInteger()) {
+    throw Error(`bad n(${n}), must be integer`)
+  }
+  let z = n.mod(2).isZero() ? _1 : x
+  n = n.div(2).dp(0, BigNumber.ROUND_DOWN)
+  while (!n.isZero()) {
+    x = x.times(x).dp(DECIMALS, BigNumber.ROUND_DOWN)
+    if (!n.mod(2).isZero()) {
+      z = z.times(x).dp(DECIMALS, BigNumber.ROUND_DOWN)
+    }
+    n = n.div(2).dp(0, BigNumber.ROUND_DOWN)
+  }
+  return z
+}
