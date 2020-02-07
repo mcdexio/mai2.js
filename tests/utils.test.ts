@@ -66,23 +66,30 @@ describe('bigLn', function() {
 
 describe('bigPowi', function() {
   const cases = [
-    [ '2312.112284812121238', 1, '2312.112284812121238' ],
-    [ '2312.112284812121238', 0, '1' ],
-    [ '2312.112284812121238', 2, '5345863.21757912763761371608921' ],
-    [ '2312.112284812121238', 3, '12360236018.289954807369597916771' ],
-    [ '0.9999999', 100000, '0.9900498332593543' ],
-    [ '0.9999999', 1000000, '0.9048374135593988' ],
-    [ '0.9999999', 10000000, '0.367879422971105' ]
+    [ '2312.112284812121238', 1 ],
+    [ '2312.112284812121238', 0 ],
+    [ '2312.112284812121238', 2 ],
+    [ '2312.112284812121238', 3 ],
+    [ '0.9999999', 100000 ],
+    [ '0.9999999', 1000000 ],
+    [ '0.9999999', 10000000 ]
   ]
 
   cases.forEach((i) => {
-    const p = i[0]
-    const n = i[1]
-    const e = i[2]
+    const p = normalizeBigNumberish(i[0])
+    const n = normalizeBigNumberish(i[1])
     it(`pow(${p}, ${n})`, () => {
-      const i = bigPowi(normalizeBigNumberish(p), normalizeBigNumberish(n))
-      expect(i).toApproximate(normalizeBigNumberish(e))
+      BigNumber.config({ POW_PRECISION: 18 })
+      const e = p.pow(n).dp(8, BigNumber.ROUND_DOWN)
+      const i = bigPowi(p, n).dp(8, BigNumber.ROUND_DOWN)
+      expect(i).toBeBigNumber(e)
     })
+  })
+
+  it('float n', function() {
+    expect((): void => {
+      bigPowi(normalizeBigNumberish('1.22'), normalizeBigNumberish('1.5'))
+    }).toThrow()
   })
 })
 
