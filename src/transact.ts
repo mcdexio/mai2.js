@@ -2,6 +2,8 @@
 import { ethers } from 'ethers'
 import { BigNumberish, AMMTradeResult } from './types'
 
+export async function perpetualSetBroker(contract: ethers.Contact, brokerAddress: string): Promise<void>{}
+
 export async function perpetualDeposit(contract: ethers.Contract, amount: BigNumberish): Promise<void> {}
 
 export async function perpetualApplyWithdrawal(contract: ethers.Contract, amount: BigNumberish): Promise<void> {}
