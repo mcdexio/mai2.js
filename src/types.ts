@@ -145,6 +145,10 @@ export interface AMMDepth {
   asks: Array<Depth>
 }
 
+export interface AMMTradeResult {
+  price: BigNumber
+}
+
 //// internal-only interfaces
 export interface _ChainIdAndProvider {
   chainId: number
