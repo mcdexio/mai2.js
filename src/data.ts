@@ -18,26 +18,30 @@ export async function getGovParams(
 ): Promise<GovParams> {
   const p = await contractReader.getGovParams(perpetualContractAddress)
   return {
+    // addresses
+    amm: p.amm,
+    poolAccount: p.poolAccount,
+
     // global
     withdrawalLockBlockCount: parseInt(p.withdrawalLockBlockCount),
     brokerLockBlockCount: parseInt(p.brokerLockBlockCount),
 
     // perpetual
-    intialMargin: normalizeBigNumberish(p.perpetual.initialMarginRate).shiftedBy(-DECIMALS),
-    maintenanceMargin: normalizeBigNumberish(p.perpetual.maintenanceMarginRate).shiftedBy(-DECIMALS),
-    liquidationSafetyFactor: normalizeBigNumberish(p.perpetual.liquidationSafetyFactor).shiftedBy(-DECIMALS),
-    liquidationPenaltyRate: normalizeBigNumberish(p.perpetual.liquidationPenaltyRate).shiftedBy(-DECIMALS),
-    penaltyFundRate: normalizeBigNumberish(p.perpetual.penaltyFundRate).shiftedBy(-DECIMALS),
-    makerDevRate: normalizeBigNumberish(p.perpetual.makerDevFeeRate).shiftedBy(-DECIMALS),
-    takerDevRate: normalizeBigNumberish(p.perpetual.takerDevFeeRate).shiftedBy(-DECIMALS),
+    intialMargin: normalizeBigNumberish(p.perpGovernanceConfig.initialMarginRate).shiftedBy(-DECIMALS),
+    maintenanceMargin: normalizeBigNumberish(p.perpGovernanceConfig.maintenanceMarginRate).shiftedBy(-DECIMALS),
+    liquidationSafetyFactor: normalizeBigNumberish(p.perpGovernanceConfig.liquidationSafetyFactor).shiftedBy(-DECIMALS),
+    liquidationPenaltyRate: normalizeBigNumberish(p.perpGovernanceConfig.liquidationPenaltyRate).shiftedBy(-DECIMALS),
+    penaltyFundRate: normalizeBigNumberish(p.perpGovernanceConfig.penaltyFundRate).shiftedBy(-DECIMALS),
+    makerDevRate: normalizeBigNumberish(p.perpGovernanceConfig.makerDevFeeRate).shiftedBy(-DECIMALS),
+    takerDevRate: normalizeBigNumberish(p.perpGovernanceConfig.takerDevFeeRate).shiftedBy(-DECIMALS),
 
     // amm
-    poolFeeRate: normalizeBigNumberish(p.automatedMarketMaker.poolFeeRate).shiftedBy(-DECIMALS),
-    poolDevFeeRate: normalizeBigNumberish(p.automatedMarketMaker.poolDevFeeRate).shiftedBy(-DECIMALS),
-    emaAlpha: normalizeBigNumberish(p.automatedMarketMaker.emaAlpha).shiftedBy(-DECIMALS),
-    updatePremiumPrize: normalizeBigNumberish(p.automatedMarketMaker.updatePremiumPrize).shiftedBy(-DECIMALS),
-    markPremiumLimit: normalizeBigNumberish(p.automatedMarketMaker.markPremiumLimit).shiftedBy(-DECIMALS),
-    fundingDampener: normalizeBigNumberish(p.automatedMarketMaker.fundingDampener).shiftedBy(-DECIMALS)
+    poolFeeRate: normalizeBigNumberish(p.ammGovernanceConfig.poolFeeRate).shiftedBy(-DECIMALS),
+    poolDevFeeRate: normalizeBigNumberish(p.ammGovernanceConfig.poolDevFeeRate).shiftedBy(-DECIMALS),
+    emaAlpha: normalizeBigNumberish(p.ammGovernanceConfig.emaAlpha).shiftedBy(-DECIMALS),
+    updatePremiumPrize: normalizeBigNumberish(p.ammGovernanceConfig.updatePremiumPrize).shiftedBy(-DECIMALS),
+    markPremiumLimit: normalizeBigNumberish(p.ammGovernanceConfig.markPremiumLimit).shiftedBy(-DECIMALS),
+    fundingDampener: normalizeBigNumberish(p.ammGovernanceConfig.fundingDampener).shiftedBy(-DECIMALS)
   }
 }
 

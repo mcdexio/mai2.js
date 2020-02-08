@@ -33,6 +33,10 @@ export interface FundingGovParams {
 }
 
 export interface GovParams extends FundingGovParams {
+  // addresses
+  amm: string // AMM contract address
+  poolAccount: string // AMM account address
+
   // global
   withdrawalLockBlockCount: number
   brokerLockBlockCount: number
