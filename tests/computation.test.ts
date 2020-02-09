@@ -376,7 +376,7 @@ describe('amm', function() {
 
   it(`computeAMMInversePrice.sellTooLarge`, function() {
     expect((): void => {
-      computeAMMInversePrice(ammDetails, SIDE.Sell, 4)
+      computeAMMInversePrice(ammDetails, TRADE_SIDE.Sell, 4)
     }).toThrow()
   })
 
