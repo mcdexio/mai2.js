@@ -609,11 +609,11 @@ export function computeAMMInverseTradeCost(
   }
   const ammSide = side === TRADE_SIDE.Buy ? TRADE_SIDE.Sell : TRADE_SIDE.Buy
   const ammPrice = computeAMMPrice(amm, ammSide, amount)
-  const estimatedPrice = _1.div(ammPrice)
+  const estimatedPrice = inversePrice(ammPrice)
   const limitPrice = estimatedPrice.times(
     side == TRADE_SIDE.Buy ? _1.plus(normalizedLimitSlippage) : _1.minus(normalizedLimitSlippage)
   )
-  const ammLimitPrice = _1.div(limitPrice)
+  const ammLimitPrice = inversePrice(limitPrice)
   const cost = computeTradeCost(g, p, f, a, ammSide, ammLimitPrice, amount, leverage, feeRate)
   return { ...cost, estimatedPrice, limitSlippage: normalizedLimitSlippage, limitPrice }
 }
@@ -625,4 +625,8 @@ export function computeDepositByLeverage(a: AccountDetails, f: FundingResult, le
   }
   const positionMargin = a.accountStorage.positionSize.times(f.markPrice).div(normalizedLeverage)
   return positionMargin.minus(a.accountComputed.marginBalance)
+}
+
+export function inversePrice(price: BigNumber): BigNumber {
+  return _1.div(price)
 }
