@@ -6,6 +6,8 @@ export type BigNumberish = BigNumber | ethers.utils.BigNumber | string | number
 
 export type NetworkIdOrProvider = SUPPORTED_NETWORK_ID | ethers.providers.AsyncSendable | ethers.providers.Provider
 
+export type SignerOrProvider = ethers.Signer | ethers.providers.Provider
+
 export interface Token {
   chainId?: SUPPORTED_NETWORK_ID
   address?: string
@@ -156,9 +158,9 @@ export interface AMMDepth {
   asks: Array<Depth>
 }
 
-export interface AMMTradeResult {
-  price: BigNumber
-}
+// export interface AMMTradeResult {
+//   price: BigNumber
+// }
 
 //// internal-only interfaces
 export interface _ChainIdAndProvider {

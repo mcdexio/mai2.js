@@ -1,6 +1,8 @@
 import BigNumber from 'bignumber.js'
 import ERC20ABI from './abi/erc20.json'
 import ContractReaderABI from './abi/ContractReader.json'
+import PerpetualABI from './abi/Perpetual.json'
+import AMMABI from './abi/AMM.json'
 
 export const ETH = 'ETH'
 export enum SUPPORTED_NETWORK_ID {
@@ -12,6 +14,8 @@ export enum SUPPORTED_NETWORK_ID {
 export const DECIMALS = 18
 export const FUNDING_TIME = 28800
 export const CONTRACT_READER_ABI: string = JSON.stringify(ContractReaderABI)
+export const PERPETUAL_ABI: string = JSON.stringify(PerpetualABI)
+export const AMM_ABI: string = JSON.stringify(AMMABI)
 export const ERC20_ABI: string = JSON.stringify(ERC20ABI)
 
 export enum SIDE {
