@@ -45,7 +45,9 @@ const govParams: GovParams = {
   markPremiumLimit: new BigNumber('0.005'), //0.5%
   fundingDampener: new BigNumber('0.0005'), // 0.05%
   emaAlpha: getBN('3327787021630616'), // 2 / (600 + 1)
-  updatePremiumPrize: _0
+  updatePremiumPrize: _0,
+  amm: '0x0000',
+  poolAccount: '0x0000'
 }
 //[ '-70000000000000000000', '70000000000000000000', '86', '-35106643857103393523', '-2709000000000000000000' ],
 const fundingParams: FundingParams = {
