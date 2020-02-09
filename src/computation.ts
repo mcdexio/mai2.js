@@ -578,6 +578,9 @@ export function computeAMMTradeCost(
 ): AMMTradeCost {
   const feeRate = g.poolFeeRate.plus(g.poolDevFeeRate)
   const normalizedLimitSlippage = normalizeBigNumberish(limitSlippage)
+  if (!(normalizedLimitSlippage.gte(0) && normalizedLimitSlippage.lt(1))) {
+    throw Error(`limitSlippage must be between 0 and 1`)
+  }
   const estimatedPrice = computeAMMPrice(amm, side, amount)
   const limitPrice =
     side === TRADE_SIDE.Buy
@@ -601,6 +604,9 @@ export function computeAMMInverseTradeCost(
 ): AMMTradeCost {
   const feeRate = g.poolFeeRate.plus(g.poolDevFeeRate)
   const normalizedLimitSlippage = normalizeBigNumberish(limitSlippage)
+  if (!(normalizedLimitSlippage.gte(0) && normalizedLimitSlippage.lt(1))) {
+    throw Error(`invalid limitSlippage, must be between 0 and 1`)
+  }
   const ammSide = side === TRADE_SIDE.Buy ? TRADE_SIDE.Sell : TRADE_SIDE.Buy
   const ammPrice = computeAMMPrice(amm, ammSide, amount)
   const estimatedPrice = _1.div(ammPrice)

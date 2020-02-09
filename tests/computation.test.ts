@@ -1021,6 +1021,37 @@ describe('computeTradeCost', function() {
     expect(ammCost.limitSlippage).toBeBigNumber(_0)
     expect(ammCost.marginCost).toApproximate(new BigNumber('13963.292889452714664800912'))
   })
+  it(`computeAMMTradeCost.Buy.Slippage`, function() {
+    expect((): void => {
+      computeAMMTradeCost(
+        ammDetails,
+        govParams,
+        perpetualStorage,
+        fundingResult,
+        accountDetails1,
+        TRADE_SIDE.Buy,
+        0.5,
+        0.5,
+        2
+      )
+    }).toThrow()
+  })
+
+  it('computeAMMInverseTradeCost.Buy.BadSlippage', function() {
+    expect((): void => {
+      computeAMMInverseTradeCost(
+        ammDetails,
+        govParams,
+        perpetualStorage,
+        fundingResult,
+        accountDetails1,
+        TRADE_SIDE.Buy,
+        0.5,
+        0.5,
+        '-1'
+      )
+    }).toThrow()
+  })
 })
 
 describe('computeDepositByLeverage', function() {
