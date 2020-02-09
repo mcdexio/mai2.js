@@ -18,7 +18,7 @@ import {
   FundingGovParams,
   AccountComputed
 } from './types'
-import { _0, _1, FUNDING_TIME, SIDE, _0_1 } from './constants'
+import { _0, _1, FUNDING_TIME, SIDE, TRADE_SIDE, _0_1 } from './constants'
 import { bigLog, normalizeBigNumberish } from './utils'
 
 interface _AccumulatedFundingResult {
@@ -335,12 +335,12 @@ export function computeAMM(
   return { ...accountDetails, ammComputed }
 }
 
-export function computeAMMPrice(amm: AMMDetails, side: SIDE, amount: BigNumberish): BigNumber {
+export function computeAMMPrice(amm: AMMDetails, side: TRADE_SIDE, amount: BigNumberish): BigNumber {
   const normalizedAmount = normalizeBigNumberish(amount)
   const x = amm.ammComputed.availableMargin
   const y = amm.accountStorage.positionSize
 
-  if (side === SIDE.Buy) {
+  if (side === TRADE_SIDE.Buy) {
     if (normalizedAmount.isGreaterThanOrEqualTo(y)) {
       throw Error(`buy amount '${normalizedAmount}' is larger than the amm's position size '${y}'`)
     }
@@ -356,7 +356,7 @@ export function computeAMMDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSam
   const normalizedStep = normalizeBigNumberish(step)
 
   for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
-    const price = computeAMMPrice(amm, SIDE.Sell, amount)
+    const price = computeAMMPrice(amm, TRADE_SIDE.Sell, amount)
     bids.unshift({ price, amount })
   }
 
@@ -364,7 +364,7 @@ export function computeAMMDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSam
     if (amount.isGreaterThanOrEqualTo(amm.accountStorage.positionSize)) {
       break
     }
-    const price = computeAMMPrice(amm, SIDE.Buy, amount)
+    const price = computeAMMPrice(amm, TRADE_SIDE.Buy, amount)
     asks.push({ price, amount })
   }
 
@@ -453,7 +453,7 @@ export function computeIncreasePosition(
   p: PerpetualStorage,
   f: FundingResult,
   a: AccountStorage,
-  side: SIDE,
+  side: TRADE_SIDE,
   price: BigNumber,
   amount: BigNumber
 ): AccountStorage {
@@ -465,17 +465,15 @@ export function computeIncreasePosition(
   if (price.isLessThanOrEqualTo(_0) || amount.isLessThanOrEqualTo(_0)) {
     throw Error(`bad price ${price} or amount ${amount}`)
   }
-  if (side == SIDE.Flat) {
-    throw Error(`bad increase side ${side}`)
-  }
-  if (positionSide != SIDE.Flat && positionSide != side) {
+
+  if (positionSide != SIDE.Flat && positionSide.valueOf() != side.valueOf()) {
     throw Error(`bad increase side ${side} where position side is ${positionSide}`)
   }
-
-  positionSide = side
+  positionSide = side == TRADE_SIDE.Buy ? SIDE.Buy : SIDE.Sell
   entryValue = entryValue.plus(price.times(amount))
   positionSize = positionSize.plus(amount)
-  if (side == SIDE.Buy) {
+
+  if (side == TRADE_SIDE.Buy) {
     entrySocialLoss = entrySocialLoss.plus(p.longSocialLossPerContract.times(amount))
   } else {
     entrySocialLoss = entrySocialLoss.plus(p.shortSocialLossPerContract.times(amount))
@@ -499,7 +497,7 @@ export function computeTrade(
   p: PerpetualStorage,
   f: FundingResult,
   a: AccountStorage,
-  side: SIDE,
+  side: TRADE_SIDE,
   price: BigNumberish,
   amount: BigNumberish,
   feeRate: BigNumberish
@@ -512,7 +510,7 @@ export function computeTrade(
   }
   let storage: AccountStorage = a
   let toDecrease, toIncrease: BigNumber
-  if (a.positionSize.isPositive() && a.positionSide != side) {
+  if (a.positionSize.isPositive() && a.positionSide.valueOf() !== side.valueOf()) {
     toDecrease = BigNumber.min(a.positionSize, normalizedAmount)
     toIncrease = normalizedAmount.minus(toDecrease)
   } else {
@@ -542,7 +540,7 @@ export function computeTradeCost(
   p: PerpetualStorage,
   f: FundingResult,
   a: AccountDetails,
-  side: SIDE,
+  side: TRADE_SIDE,
   price: BigNumberish,
   amount: BigNumberish,
   leverage: BigNumberish,
@@ -562,7 +560,9 @@ export function computeTradeCost(
 }
 
 export interface AMMTradeCost extends TradeCost {
-  price: BigNumber
+  estimatedPrice: BigNumber
+  limitSlippage: BigNumber
+  limitPrice: BigNumber
 }
 
 export function computeAMMTradeCost(
@@ -571,14 +571,21 @@ export function computeAMMTradeCost(
   p: PerpetualStorage,
   f: FundingResult,
   a: AccountDetails,
-  side: SIDE,
+  side: TRADE_SIDE,
   amount: BigNumberish,
-  leverage: BigNumberish
+  leverage: BigNumberish,
+  limitSlippage: BigNumberish = 0
 ): AMMTradeCost {
   const feeRate = g.poolFeeRate.plus(g.poolDevFeeRate)
-  const price = computeAMMPrice(amm, side, amount)
-  const cost = computeTradeCost(g, p, f, a, side, price, amount, leverage, feeRate)
-  return { ...cost, price }
+  const normalizedLimitSlippage = normalizeBigNumberish(limitSlippage)
+  const estimatedPrice = computeAMMPrice(amm, side, amount)
+  const limitPrice =
+    side === TRADE_SIDE.Buy
+      ? estimatedPrice.times(_1.plus(normalizedLimitSlippage))
+      : estimatedPrice.times(_1.minus(normalizedLimitSlippage))
+
+  const cost = computeTradeCost(g, p, f, a, side, limitPrice, amount, leverage, feeRate)
+  return { ...cost, estimatedPrice, limitSlippage: normalizedLimitSlippage, limitPrice }
 }
 
 export function computeAMMInverseTradeCost(
@@ -587,15 +594,22 @@ export function computeAMMInverseTradeCost(
   p: PerpetualStorage,
   f: FundingResult,
   a: AccountDetails,
-  side: SIDE,
+  side: TRADE_SIDE,
   amount: BigNumberish,
-  leverage: BigNumberish
+  leverage: BigNumberish,
+  limitSlippage: BigNumberish = 0
 ): AMMTradeCost {
-  const inverseSide = side === SIDE.Buy ? SIDE.Sell : SIDE.Buy
-  const ammTradeCost = computeAMMTradeCost(amm, g, p, f, a, inverseSide, amount, leverage)
-  const price = _1.div(ammTradeCost.price)
-
-  return { ...ammTradeCost, price }
+  const feeRate = g.poolFeeRate.plus(g.poolDevFeeRate)
+  const normalizedLimitSlippage = normalizeBigNumberish(limitSlippage)
+  const ammSide = side === TRADE_SIDE.Buy ? TRADE_SIDE.Sell : TRADE_SIDE.Buy
+  const ammPrice = computeAMMPrice(amm, ammSide, amount)
+  const estimatedPrice = _1.div(ammPrice)
+  const limitPrice = estimatedPrice.times(
+    side == TRADE_SIDE.Buy ? _1.plus(normalizedLimitSlippage) : _1.minus(normalizedLimitSlippage)
+  )
+  const ammLimitPrice = _1.div(limitPrice)
+  const cost = computeTradeCost(g, p, f, a, ammSide, ammLimitPrice, amount, leverage, feeRate)
+  return { ...cost, estimatedPrice, limitSlippage: normalizedLimitSlippage, limitPrice }
 }
 
 export function computeDepositByLeverage(a: AccountDetails, f: FundingResult, leverage: BigNumberish): BigNumber {

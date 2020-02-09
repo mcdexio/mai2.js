@@ -24,6 +24,11 @@ export enum SIDE {
   Flat
 }
 
+export enum TRADE_SIDE {
+  Buy = SIDE.Buy,
+  Sell = SIDE.Sell
+}
+
 export const _NETWORK_ID_NAME: { [key: number]: string } = {
   [SUPPORTED_NETWORK_ID.Mainnet]: 'homestead',
   [SUPPORTED_NETWORK_ID.Ropsten]: 'ropsten',

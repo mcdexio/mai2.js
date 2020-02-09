@@ -15,7 +15,7 @@ import {
   computeAMMInverseTradeCost,
   computeDepositByLeverage
 } from '../src/computation'
-import { _0, _1, SIDE, _1000, _0_1, _0_01 } from '../src/constants'
+import { _0, _1, SIDE, _1000, _0_1, _0_01, TRADE_SIDE } from '../src/constants'
 import {
   BigNumberish,
   FundingParams,
@@ -320,17 +320,17 @@ describe('amm', function() {
 
   it(`computeAMMPrice.buyTooLarge`, function() {
     expect((): void => {
-      computeAMMPrice(ammDetails, SIDE.Buy, 4)
+      computeAMMPrice(ammDetails, TRADE_SIDE.Buy, 4)
     }).toThrow()
   })
 
   it(`computeAMMPrice.buy`, function() {
-    const price = computeAMMPrice(ammDetails, SIDE.Buy, 0.5)
+    const price = computeAMMPrice(ammDetails, TRADE_SIDE.Buy, 0.5)
     expect(price).toApproximate(new BigNumber('4264.414635416666667'))
   })
 
   it(`computeAMMPrice.sell`, function() {
-    const price = computeAMMPrice(ammDetails, SIDE.Sell, 0.5)
+    const price = computeAMMPrice(ammDetails, TRADE_SIDE.Sell, 0.5)
     expect(price).toApproximate(new BigNumber('2741.40940848214285714286'))
   })
 
@@ -442,33 +442,34 @@ describe('computeTrade.Fail', function() {
     }).toThrow()
   })
 
-  it('increase.FlatSide', function() {
-    expect((): void => {
-      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Flat, new BigNumber(7000), _1)
-    }).toThrow()
-  })
-
   it('increase.BadSide', function() {
     expect((): void => {
-      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Sell, new BigNumber(7000), _1)
+      computeIncreasePosition(
+        perpetualStorage,
+        fundingResult,
+        accountStorage1,
+        TRADE_SIDE.Sell,
+        new BigNumber(7000),
+        _1
+      )
     }).toThrow()
   })
 
   it('increase.ZeroPrice', function() {
     expect((): void => {
-      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Buy, _0, _1)
+      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, TRADE_SIDE.Buy, _0, _1)
     }).toThrow()
   })
 
   it('increase.ZeroAmount', function() {
     expect((): void => {
-      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Buy, _1, _0)
+      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, TRADE_SIDE.Buy, _1, _0)
     }).toThrow()
   })
 
   it('increase.BadSide', function() {
     expect((): void => {
-      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, SIDE.Sell, _1, _0)
+      computeIncreasePosition(perpetualStorage, fundingResult, accountStorage1, TRADE_SIDE.Sell, _1, _0)
     }).toThrow()
   })
 
@@ -486,20 +487,30 @@ describe('computeTrade.Fail', function() {
 
   it('tradeCost.ZeroAmount', function() {
     expect((): void => {
-      computeTradeCost(govParams, perpetualStorage, fundingResult, accountDetails1, SIDE.Buy, _1, _0, _1, _0_01)
+      computeTradeCost(govParams, perpetualStorage, fundingResult, accountDetails1, TRADE_SIDE.Buy, _1, _0, _1, _0_01)
     }).toThrow()
   })
 
   it('tradeCost.ZeroPrice', function() {
     expect((): void => {
-      computeTradeCost(govParams, perpetualStorage, fundingResult, accountDetails1, SIDE.Buy, _0, _1, _1, _0_01)
+      computeTradeCost(govParams, perpetualStorage, fundingResult, accountDetails1, TRADE_SIDE.Buy, _0, _1, _1, _0_01)
     }).toThrow()
   })
 
   it('tradeCost.BadLev', function() {
     const negatedOne = _1.negated()
     expect((): void => {
-      computeTradeCost(govParams, perpetualStorage, fundingResult, accountDetails1, SIDE.Buy, _1, _1, negatedOne, _0_01)
+      computeTradeCost(
+        govParams,
+        perpetualStorage,
+        fundingResult,
+        accountDetails1,
+        TRADE_SIDE.Buy,
+        _1,
+        _1,
+        negatedOne,
+        _0_01
+      )
     }).toThrow()
   })
 })
@@ -509,7 +520,7 @@ describe('computeTradeCost', function() {
     name: string
     input: {
       accountDetails: AccountDetails
-      side: SIDE
+      side: TRADE_SIDE
       price: BigNumberish
       amount: BigNumberish
       leverage: BigNumberish
@@ -539,7 +550,7 @@ describe('computeTradeCost', function() {
       name: 'increase long',
       input: {
         accountDetails: accountDetails1,
-        side: SIDE.Buy,
+        side: TRADE_SIDE.Buy,
         price: 2000,
         amount: 1,
         leverage: 2,
@@ -569,7 +580,7 @@ describe('computeTradeCost', function() {
       name: 'increase long with leverage cost',
       input: {
         accountDetails: accountDetails1,
-        side: SIDE.Buy,
+        side: TRADE_SIDE.Buy,
         price: 7000,
         amount: 5,
         leverage: 2,
@@ -600,7 +611,7 @@ describe('computeTradeCost', function() {
       name: 'increase long with loss',
       input: {
         accountDetails: accountDetails1,
-        side: SIDE.Buy,
+        side: TRADE_SIDE.Buy,
         price: 10000,
         amount: 10,
         leverage: 10,
@@ -630,7 +641,7 @@ describe('computeTradeCost', function() {
       name: 'decrease long',
       input: {
         accountDetails: accountDetails1,
-        side: SIDE.Sell,
+        side: TRADE_SIDE.Sell,
         price: 2000,
         amount: 1,
         leverage: 2,
@@ -661,7 +672,7 @@ describe('computeTradeCost', function() {
       name: 'decrease long to zero',
       input: {
         accountDetails: accountDetails1,
-        side: SIDE.Sell,
+        side: TRADE_SIDE.Sell,
         price: 2000,
         amount: 2.3,
         leverage: 1,
@@ -686,7 +697,7 @@ describe('computeTradeCost', function() {
       name: 'decrease long to short',
       input: {
         accountDetails: accountDetails1,
-        side: SIDE.Sell,
+        side: TRADE_SIDE.Sell,
         price: 2000,
         amount: 3.3,
         leverage: 1,
@@ -714,7 +725,7 @@ describe('computeTradeCost', function() {
       name: 'increase zero to long with cost',
       input: {
         accountDetails: accountDetails4,
-        side: SIDE.Buy,
+        side: TRADE_SIDE.Buy,
         price: 7000,
         amount: 2,
         leverage: 1,
@@ -741,7 +752,7 @@ describe('computeTradeCost', function() {
       name: 'decrease zero to short with cost',
       input: {
         accountDetails: accountDetails4,
-        side: SIDE.Sell,
+        side: TRADE_SIDE.Sell,
         price: 7000,
         amount: 2,
         leverage: 1,
@@ -768,7 +779,7 @@ describe('computeTradeCost', function() {
       name: 'decrease short',
       input: {
         accountDetails: accountDetails3,
-        side: SIDE.Buy,
+        side: TRADE_SIDE.Buy,
         price: 2000,
         amount: 1,
         leverage: 2,
@@ -799,7 +810,7 @@ describe('computeTradeCost', function() {
       name: 'decrease short to zero',
       input: {
         accountDetails: accountDetails3,
-        side: SIDE.Buy,
+        side: TRADE_SIDE.Buy,
         price: 2000,
         amount: 2.3,
         leverage: 2,
@@ -824,7 +835,7 @@ describe('computeTradeCost', function() {
       name: 'decrease short to long with leverage',
       input: {
         accountDetails: accountDetails3,
-        side: SIDE.Buy,
+        side: TRADE_SIDE.Buy,
         price: 2000,
         amount: 3.3,
         leverage: 0.1,
@@ -892,19 +903,72 @@ describe('computeTradeCost', function() {
     })
   })
 
-  it(`computeAMMTradeCost`, function() {
+  it(`computeAMMTradeCost.Buy`, function() {
     const ammCost = computeAMMTradeCost(
       ammDetails,
       govParams,
       perpetualStorage,
       fundingResult,
       accountDetails1,
-      SIDE.Buy,
+      TRADE_SIDE.Buy,
       0.5,
       0.5
     )
-    expect(ammCost.price).toApproximate(new BigNumber('4264.41463541666666666667'))
+    expect(ammCost.estimatedPrice).toApproximate(new BigNumber('4264.41463541666666666667'))
+    expect(ammCost.limitPrice).toApproximate(new BigNumber('4264.41463541666666666667'))
+    expect(ammCost.limitSlippage).toBeBigNumber(_0)
     expect(ammCost.marginCost).toApproximate(new BigNumber('13963.292889452714664800912'))
+  })
+
+  it(`computeAMMTradeCost.Buy.Slippage`, function() {
+    const ammCost = computeAMMTradeCost(
+      ammDetails,
+      govParams,
+      perpetualStorage,
+      fundingResult,
+      accountDetails1,
+      TRADE_SIDE.Buy,
+      0.5,
+      0.5,
+      0.01
+    )
+    expect(ammCost.estimatedPrice).toApproximate(new BigNumber('4264.41463541666666666667'))
+    expect(ammCost.limitPrice).toApproximate(new BigNumber('4307.0587817708333333333367'))
+    expect(ammCost.limitSlippage).toBeBigNumber(_0_01)
+    expect(ammCost.marginCost).toApproximate(new BigNumber('13984.668267812740706467579'))
+  })
+
+  it(`computeAMMTradeCost.Sell`, function() {
+    const ammCost = computeAMMTradeCost(
+      ammDetails,
+      govParams,
+      perpetualStorage,
+      fundingResult,
+      accountDetails1,
+      TRADE_SIDE.Sell,
+      0.5,
+      0.5
+    )
+    expect(ammCost.estimatedPrice).toApproximate(new BigNumber('2741.40940848214286'))
+    expect(ammCost.marginCost).toApproximate(new BigNumber('3493.58375482674514165773435'))
+  })
+
+  it(`computeAMMTradeCost.Sell`, function() {
+    const ammCost = computeAMMTradeCost(
+      ammDetails,
+      govParams,
+      perpetualStorage,
+      fundingResult,
+      accountDetails1,
+      TRADE_SIDE.Sell,
+      0.5,
+      0.5,
+      0.01
+    )
+    expect(ammCost.estimatedPrice).toApproximate(new BigNumber('2741.40940848214286'))
+    expect(ammCost.limitPrice).toApproximate(new BigNumber('2713.9953143973214285714314'))
+    expect(ammCost.limitSlippage).toBeBigNumber(_0_01)
+    expect(ammCost.marginCost).toApproximate(new BigNumber('3507.2565342515498291577343'))
   })
 
   it(`computeAMMInverseTradeCost.Buy`, function() {
@@ -914,12 +978,29 @@ describe('computeTradeCost', function() {
       perpetualStorage,
       fundingResult,
       accountDetails1,
-      SIDE.Buy,
+      TRADE_SIDE.Buy,
       0.5,
       0.5
     )
-    expect(ammCost.price).toApproximate(_1.div(new BigNumber('2741.40940848214286')))
+    expect(ammCost.estimatedPrice).toApproximate(_1.div(new BigNumber('2741.40940848214286')))
     expect(ammCost.marginCost).toApproximate(new BigNumber('3493.58375482674514165773435'))
+  })
+
+  it(`computeAMMInverseTradeCost.Buy.Slippage`, function() {
+    const ammCost = computeAMMInverseTradeCost(
+      ammDetails,
+      govParams,
+      perpetualStorage,
+      fundingResult,
+      accountDetails1,
+      TRADE_SIDE.Buy,
+      0.5,
+      0.5,
+      0.01
+    )
+    expect(ammCost.estimatedPrice).toApproximate(_1.div(new BigNumber('2741.40940848214286')))
+    expect(ammCost.limitPrice).toApproximate(_1.div(new BigNumber('2741.40940848214286')).times(1.01))
+    expect(ammCost.marginCost).toApproximate(new BigNumber('3507.12116019783888976399272'))
   })
 
   it(`computeAMMInverseTradeCost.Sell`, function() {
@@ -929,11 +1010,13 @@ describe('computeTradeCost', function() {
       perpetualStorage,
       fundingResult,
       accountDetails1,
-      SIDE.Sell,
+      TRADE_SIDE.Sell,
       0.5,
       0.5
     )
-    expect(ammCost.price).toApproximate(_1.div(new BigNumber('4264.41463541666661')))
+    expect(ammCost.estimatedPrice).toApproximate(_1.div(new BigNumber('4264.41463541666661')))
+    expect(ammCost.limitPrice).toApproximate(_1.div(new BigNumber('4264.41463541666661')))
+    expect(ammCost.limitSlippage).toBeBigNumber(_0)
     expect(ammCost.marginCost).toApproximate(new BigNumber('13963.292889452714664800912'))
   })
 })
