@@ -141,21 +141,11 @@ export interface AMMDetails extends AccountDetails {
   ammComputed: AMMComputed
 }
 
-export interface Depth {
-  price: BigNumber
-  amount: BigNumber
-}
-
 export interface TransactGas {
   // The maximum units of gas for the transaction to use
   gasLimit: number
   // The price (in wei) per unit of gas
   gasPrice: ethers.utils.BigNumber
-}
-
-export interface AMMDepth {
-  bids: Array<Depth>
-  asks: Array<Depth>
 }
 
 // export interface AMMTradeResult {

@@ -12,8 +12,6 @@ import {
   FundingResult,
   PerpetualStorage,
   AMMDetails,
-  Depth,
-  AMMDepth,
   BigNumberish,
   FundingGovParams,
   AccountComputed
@@ -355,35 +353,21 @@ export function computeAMMAmount(amm: AMMDetails, side: TRADE_SIDE, price: BigNu
   const x = amm.ammComputed.availableMargin
   const y = amm.accountStorage.positionSize
 
+  if (normalizedPrice.lte(_0)) {
+    throw Error(`invalid price '${normalizedPrice}'`)
+  }
+
   if (side === TRADE_SIDE.Buy) {
     if (normalizedPrice.lt(amm.ammComputed.fairPrice)) {
       throw Error(`buy price '${normalizedPrice}' is less than the amm's fair price '${amm.ammComputed.fairPrice}'`)
     }
     return y.minus(x.div(normalizedPrice))
   } else {
+    if (normalizedPrice.gt(amm.ammComputed.fairPrice)) {
+      throw Error(`sell price '${normalizedPrice}' is greater than the amm's fair price '${amm.ammComputed.fairPrice}'`)
+    }
     return x.div(normalizedPrice).minus(y)
   }
-}
-
-export function computeAMMDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSamples: number = 20): AMMDepth {
-  let asks: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
-  let bids: Array<Depth> = [ { price: amm.ammComputed.fairPrice, amount: _0 } ]
-  const normalizedStep = normalizeBigNumberish(step)
-
-  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
-    const price = computeAMMPrice(amm, TRADE_SIDE.Sell, amount)
-    bids.unshift({ price, amount })
-  }
-
-  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
-    if (amount.isGreaterThanOrEqualTo(amm.accountStorage.positionSize)) {
-      break
-    }
-    const price = computeAMMPrice(amm, TRADE_SIDE.Buy, amount)
-    asks.push({ price, amount })
-  }
-
-  return { bids, asks }
 }
 
 export function computeAMMInversePrice(amm: AMMDetails, side: TRADE_SIDE, amount: BigNumberish): BigNumber {
@@ -403,27 +387,6 @@ export function computeAMMInversePrice(amm: AMMDetails, side: TRADE_SIDE, amount
 
 export function computeAMMInverseAmount(amm: AMMDetails, side: TRADE_SIDE, price: BigNumberish): BigNumber {
   return computeAMMAmount(amm, inverseSide(side), inversePrice(price))
-}
-
-export function computeAMMInverseDepth(amm: AMMDetails, step: BigNumberish = _0_1, nSamples: number = 20): AMMDepth {
-  let asks: Array<Depth> = [ { price: amm.ammComputed.inverseFairPrice, amount: _0 } ]
-  let bids: Array<Depth> = [ { price: amm.ammComputed.inverseFairPrice, amount: _0 } ]
-  const normalizedStep = normalizeBigNumberish(step)
-
-  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
-    if (amount.isGreaterThanOrEqualTo(amm.accountStorage.positionSize)) {
-      break
-    }
-    const price = computeAMMInversePrice(amm, TRADE_SIDE.Sell, amount)
-    bids.unshift({ price, amount })
-  }
-
-  for (let amount = normalizedStep, i = 0; i < nSamples; i++, amount = amount.plus(normalizedStep)) {
-    const price = computeAMMInversePrice(amm, TRADE_SIDE.Buy, amount)
-    asks.push({ price, amount })
-  }
-
-  return { bids, asks }
 }
 
 export function computeDecreasePosition(

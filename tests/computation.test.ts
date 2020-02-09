@@ -4,16 +4,16 @@ import {
   computeFunding,
   computeAMM,
   computeAMMPrice,
-  computeAMMDepth,
   computeAMMInversePrice,
-  computeAMMInverseDepth,
   computeDecreasePosition,
   computeIncreasePosition,
   computeFee,
   computeTradeCost,
   computeAMMTradeCost,
   computeAMMInverseTradeCost,
-  computeDepositByLeverage
+  computeDepositByLeverage,
+  computeAMMAmount,
+  computeAMMInverseAmount
 } from '../src/computation'
 import { _0, _1, SIDE, _1000, _0_1, _0_01, TRADE_SIDE } from '../src/constants'
 import {
@@ -336,86 +336,62 @@ describe('amm', function() {
     expect(price).toApproximate(new BigNumber('2741.40940848214285714286'))
   })
 
-  it('computeAMMDepth', function() {
-    const depth = computeAMMDepth(ammDetails, 0.1, 3)
-
-    expect(depth.bids.length).toEqual(4)
-    expect(depth.asks.length).toEqual(4)
-
-    expect(depth.bids[0].price).toApproximate(new BigNumber('2952.28705528846153846154'))
-    expect(depth.bids[0].amount).toApproximate(new BigNumber(0.3))
-    expect(depth.bids[1].price).toApproximate(new BigNumber('3070.3785375'))
-    expect(depth.bids[1].amount).toApproximate(new BigNumber(0.2))
-    expect(depth.bids[2].price).toApproximate(new BigNumber('3198.3109765625'))
-    expect(depth.bids[2].amount).toApproximate(new BigNumber(0.1))
-    expect(depth.bids[3].price).toApproximate(new BigNumber('3337.36797554347826086957'))
-    expect(depth.bids[3].amount).toApproximate(new BigNumber(0))
-    expect(depth.asks[0].price).toApproximate(new BigNumber('3337.36797554347826086957'))
-    expect(depth.asks[0].amount).toApproximate(new BigNumber(0))
-    expect(depth.asks[1].price).toApproximate(new BigNumber('3489.06651988636363636364'))
-    expect(depth.asks[1].amount).toApproximate(new BigNumber(0.1))
-    expect(depth.asks[2].price).toApproximate(new BigNumber('3655.21254464285714285714'))
-    expect(depth.asks[2].amount).toApproximate(new BigNumber(0.2))
-    expect(depth.asks[3].price).toApproximate(new BigNumber('3837.973171875'))
-    expect(depth.asks[3].amount).toApproximate(new BigNumber(0.3))
-  })
-
-  it('computeAMMDepthDefault', function() {
-    const depth = computeAMMDepth(ammDetails)
-
-    expect(depth.bids.length).toEqual(21)
-    expect(depth.asks.length).toEqual(21)
-  })
-
-  it('computeAMMDepthTooLarge', function() {
-    const depth = computeAMMDepth(ammDetails, 1)
-
-    expect(depth.bids.length).toEqual(21)
-    expect(depth.asks.length).toEqual(3)
-  })
-
   it(`computeAMMInversePrice.sellTooLarge`, function() {
     expect((): void => {
       computeAMMInversePrice(ammDetails, TRADE_SIDE.Sell, 4)
     }).toThrow()
   })
 
-  it('computeAMMInverseDepth', function() {
-    const depth = computeAMMInverseDepth(ammDetails, 0.1, 3)
-
-    expect(depth.bids.length).toEqual(4)
-    expect(depth.asks.length).toEqual(4)
-
-    expect(depth.bids[0].price).toApproximate(new BigNumber(1 / 3837.973171875))
-    expect(depth.bids[0].amount).toApproximate(new BigNumber(0.3))
-    expect(depth.bids[1].price).toApproximate(new BigNumber(1 / 3655.21254464285714285714))
-    expect(depth.bids[1].amount).toApproximate(new BigNumber(0.2))
-    expect(depth.bids[2].price).toApproximate(new BigNumber(1 / 3489.06651988636363636364))
-    expect(depth.bids[2].amount).toApproximate(new BigNumber(0.1))
-    expect(depth.bids[3].price).toApproximate(new BigNumber(1 / 3337.36797554347826086957))
-    expect(depth.bids[3].amount).toApproximate(new BigNumber(0))
-    expect(depth.asks[0].price).toApproximate(new BigNumber(1 / 3337.36797554347826086957))
-    expect(depth.asks[0].amount).toApproximate(new BigNumber(0))
-    expect(depth.asks[1].price).toApproximate(new BigNumber(1 / 3198.3109765625))
-    expect(depth.asks[1].amount).toApproximate(new BigNumber(0.1))
-    expect(depth.asks[2].price).toApproximate(new BigNumber(1 / 3070.3785375))
-    expect(depth.asks[2].amount).toApproximate(new BigNumber(0.2))
-    expect(depth.asks[3].price).toApproximate(new BigNumber(1 / 2952.28705528846153846154))
-    expect(depth.asks[3].amount).toApproximate(new BigNumber(0.3))
+  it(`computeAMMInversePrice.buy`, function() {
+    const price = computeAMMInversePrice(ammDetails, TRADE_SIDE.Buy, 0.5)
+    expect(price).toApproximate(_1.div(new BigNumber('2741.40940848214285714286')))
   })
 
-  it('computeAMMInverseDepthDefault', function() {
-    const depth = computeAMMInverseDepth(ammDetails)
-
-    expect(depth.bids.length).toEqual(21)
-    expect(depth.asks.length).toEqual(21)
+  it(`computeAMMInversePrice.sell`, function() {
+    const price = computeAMMInversePrice(ammDetails, TRADE_SIDE.Sell, 0.5)
+    expect(price).toApproximate(_1.div(new BigNumber('4264.414635416666667')))
   })
 
-  it('computeAMMInverseDepthTooLarge', function() {
-    const depth = computeAMMInverseDepth(ammDetails, 1)
+  it(`computeAMMAmount.buy`, function() {
+    const amount = computeAMMAmount(ammDetails, TRADE_SIDE.Buy, '4264.414635416666667')
+    expect(amount).toApproximate(new BigNumber('0.5'))
+  })
 
-    expect(depth.bids.length).toEqual(3)
-    expect(depth.asks.length).toEqual(21)
+  it(`computeAMMAmount.sell`, function() {
+    const amount = computeAMMAmount(ammDetails, TRADE_SIDE.Sell, '2741.40940848214285714286')
+    expect(amount).toApproximate(new BigNumber('0.5'))
+  })
+
+  it('computeAMMAmount.bad price', function() {
+    expect((): void => {
+      computeAMMAmount(ammDetails, TRADE_SIDE.Sell, '-1')
+    }).toThrow()
+  })
+
+  it('computeAMMAmount.buy.lessThanFair', function() {
+    expect((): void => {
+      computeAMMAmount(ammDetails, TRADE_SIDE.Buy, ammDetails.ammComputed.fairPrice.times(0.99))
+    }).toThrow()
+  })
+
+  it('computeAMMAmount.sell.greaterThanFair', function() {
+    expect((): void => {
+      computeAMMAmount(ammDetails, TRADE_SIDE.Sell, ammDetails.ammComputed.fairPrice.times(1.01))
+    }).toThrow()
+  })
+
+  it(`computeAMMInverseAmount.buy`, function() {
+    const amount = computeAMMInverseAmount(
+      ammDetails,
+      TRADE_SIDE.Buy,
+      _1.div(new BigNumber('2741.40940848214285714286'))
+    )
+    expect(amount).toApproximate(new BigNumber('0.5'))
+  })
+
+  it(`computeAMMInverseAmount.sell`, function() {
+    const amount = computeAMMInverseAmount(ammDetails, TRADE_SIDE.Sell, _1.div(new BigNumber('4264.414635416666667')))
+    expect(amount).toApproximate(new BigNumber('0.5'))
   })
 })
 
