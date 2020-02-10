@@ -1561,7 +1561,7 @@
         "type": "uint256"
       }
     ],
-    "name": "applyToWithdraw",
+    "name": "applyForWithdrawal",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",

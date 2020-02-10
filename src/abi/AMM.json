@@ -701,7 +701,7 @@
     "constant": false,
     "inputs": [
       {
-        "name": "amount",
+        "name": "collateralAmount",
         "type": "uint256"
       }
     ],
@@ -727,7 +727,24 @@
   },
   {
     "constant": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "depositAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "tradeAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
     "name": "depositAndBuy",
     "outputs": [],
     "payable": false,
@@ -736,7 +753,24 @@
   },
   {
     "constant": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "depositAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "tradeAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
     "name": "depositAndSell",
     "outputs": [],
     "payable": false,
@@ -745,7 +779,16 @@
   },
   {
     "constant": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "depositAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "liquidityCollateralAmount",
+        "type": "uint256"
+      }
+    ],
     "name": "depositAndAddLiquidity",
     "outputs": [],
     "payable": false,
