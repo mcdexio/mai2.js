@@ -13,13 +13,7 @@ export interface Token {
   address?: string
   decimals: number
 }
-
 export interface TokenAmount {
-  token: Token
-  amount: BigNumberish
-}
-
-export interface TokenAmountNormalized {
   token: Token
   amount: BigNumber
 }

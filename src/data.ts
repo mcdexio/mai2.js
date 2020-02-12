@@ -90,3 +90,7 @@ export async function getAccountStroage(
     entryFundingLoss: normalizeBigNumberish(p.position.entryFundingLoss).shiftedBy(-DECIMALS)
   }
 }
+
+/*
+export async function getTokenBalance(collateralTokenAddress: string, userAddress: string): Promise<TokenAmount> {}
+*/
