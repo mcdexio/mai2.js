@@ -14,7 +14,7 @@ const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 
 extendExpect()
 
-it('param', async function () {
+it('param', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: GovParams = await getGovParams(contractReader, testPerp)
   expect(p.amm).toEqual(testAMM)
@@ -38,7 +38,7 @@ it('param', async function () {
   expect(p.fundingDampener).toBeBigNumber(normalizeBigNumberish('0.0005'))
 })
 
-it('perp', async function () {
+it('perp', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: PerpetualStorage = await getPerpetualStorage(contractReader, testPerp)
   expect(p.collateralTokenAddress).not.toEqual('')
@@ -53,11 +53,11 @@ it('perp', async function () {
   expect(p.fundingParams.accumulatedFundingPerContract).toBeBigNumber(normalizeBigNumberish('0'))
   expect(p.fundingParams.lastEMAPremium).toBeBigNumber(normalizeBigNumberish('0'))
   expect(p.fundingParams.lastPremium).toBeBigNumber(normalizeBigNumberish('0'))
-  expect(p.fundingParams.lastIndexPrice).toBeBigNumber(normalizeBigNumberish('0.005'))// price = 1 / $200
+  expect(p.fundingParams.lastIndexPrice).toBeBigNumber(normalizeBigNumberish('0.005')) // price = 1 / $200
   expect(p.fundingParams.lastFundingTimestamp).not.toEqual(0)
 })
 
-it('account', async function () {
+it('account', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: AccountStorage = await getAccountStroage(contractReader, testPerp, testUser)
   expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('5000')) // position * price
@@ -65,7 +65,7 @@ it('account', async function () {
   expect(p.withdrawalApplication.height).toEqual(0)
   expect(p.positionSide).toEqual(SIDE.Sell)
   expect(p.positionSize).toBeBigNumber(normalizeBigNumberish('1000000'))
-  expect(p.entryValue).toBeBigNumber(normalizeBigNumberish('5000'))// position * price
+  expect(p.entryValue).toBeBigNumber(normalizeBigNumberish('5000')) // position * price
   expect(p.entrySocialLoss).toBeBigNumber(normalizeBigNumberish('0'))
   expect(p.entryFundingLoss).toBeBigNumber(normalizeBigNumberish('0'))
 })

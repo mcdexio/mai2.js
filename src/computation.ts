@@ -16,7 +16,7 @@ import {
   FundingGovParams,
   AccountComputed
 } from './types'
-import { _0, _1, FUNDING_TIME, SIDE, TRADE_SIDE, _0_1 } from './constants'
+import { _0, _1, _0_1, FUNDING_TIME, SIDE, TRADE_SIDE } from './constants'
 import { bigLog, normalizeBigNumberish } from './utils'
 
 interface _AccumulatedFundingResult {

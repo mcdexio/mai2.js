@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { BigNumberish } from '../src/types'
-import { bigLn, normalizeBigNumberish, isNetworkId, isLowLevelProvider, bigPowi } from '../src/utils'
-import { SUPPORTED_NETWORK_ID, _0 } from '../src/constants'
+import { bigLn, normalizeBigNumberish, isNetworkId, isLowLevelProvider, bigPowi, isCollateralETH } from '../src/utils'
+import { SUPPORTED_NETWORK_ID, _0, ETH_COLLATERAL_ADDRESS } from '../src/constants'
 
 import { extendExpect } from './helper'
 
@@ -170,4 +170,8 @@ describe('normalizeBigNumberish', (): void => {
     testSuccesses(expectedSuccesses)
     testFailures(expectedFailures)
   })
+})
+
+it('isCollateralETH', function() {
+  expect(isCollateralETH(ETH_COLLATERAL_ADDRESS)).toBeTruthy()
 })

@@ -2,7 +2,14 @@ import { getContractReader, getGovParams } from '../src/data'
 import { GovParams, TransactGas } from '../src/types'
 import { getPerpetualContract, getAMMContract } from '../src/transact'
 import { perpetualSetBroker, perpetualApplyForWithdrawal, perpetualDeposit, perpetualWithdraw } from '../src/transact'
-import { ammDepositAndBuy, ammDepositAndSell, ammBuy, ammSell, ammAddLiquidity, ammRemoveLiquidity } from '../src/transact'
+import {
+  ammDepositAndBuy,
+  ammDepositAndSell,
+  ammBuy,
+  ammSell,
+  ammAddLiquidity,
+  ammRemoveLiquidity
+} from '../src/transact'
 import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 import BigNumber from 'bignumber.js'
@@ -20,39 +27,39 @@ extendExpect()
 let govParams: GovParams
 let testAMMAddress: string
 
-beforeAll(async function () {
+beforeAll(async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   govParams = await getGovParams(contractReader, testPerp)
   testAMMAddress = govParams.amm
 })
 
-it('perp.applyForWithdrawal', async function () {
+it('perp.applyForWithdrawal', async function() {
   const c = await getPerpetualContract(testPerp, walletWithProvider)
   const tx = await perpetualApplyForWithdrawal(c, new BigNumber('1000'), 18, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('perp.setBroker', async function () {
+it('perp.setBroker', async function() {
   const c = await getPerpetualContract(testPerp, walletWithProvider)
   const tx = await perpetualSetBroker(c, testAMM, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('perp.deposit', async function () {
+it('perp.deposit', async function() {
   const c = await getPerpetualContract(testPerp, walletWithProvider)
   const tx = await perpetualDeposit(c, new BigNumber('200'), 18, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('get AMM by GovParams', async function () {
+it('get AMM by GovParams', async function() {
   const c = await getAMMContract(govParams, walletWithProvider)
   expect(c.address).toEqual(testAMMAddress)
 })
 
-it('amm.depositAndBuy', async function () {
+it('amm.depositAndBuy', async function() {
   const c = await getAMMContract(testAMM, walletWithProvider)
   const depositAmount = new BigNumber('0.005') // 1 / 200
   const buyAmount = new BigNumber('1')
@@ -63,7 +70,7 @@ it('amm.depositAndBuy', async function () {
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('amm.depositAndSell', async function () {
+it('amm.depositAndSell', async function() {
   const c = await getAMMContract(testAMM, walletWithProvider)
   const depositAmount = new BigNumber('0.005') // 1 / 200
   const buyAmount = new BigNumber('1')
@@ -74,7 +81,7 @@ it('amm.depositAndSell', async function () {
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('amm.buy', async function () {
+it('amm.buy', async function() {
   const c = await getAMMContract(testAMM, walletWithProvider)
   const buyAmount = new BigNumber('1')
   const limitPrice = new BigNumber('1')
@@ -84,7 +91,7 @@ it('amm.buy', async function () {
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('amm.sell', async function () {
+it('amm.sell', async function() {
   const c = await getAMMContract(testAMM, walletWithProvider)
   const buyAmount = new BigNumber('1')
   const limitPrice = new BigNumber('1')
@@ -94,7 +101,7 @@ it('amm.sell', async function () {
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('amm.addLiquidity', async function () {
+it('amm.addLiquidity', async function() {
   const c = await getAMMContract(testAMM, walletWithProvider)
   const collateralAmount = new BigNumber('1')
   const tx = await ammAddLiquidity(c, collateralAmount, 18, testGas)
@@ -102,7 +109,7 @@ it('amm.addLiquidity', async function () {
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('amm.removeLiquidity', async function () {
+it('amm.removeLiquidity', async function() {
   const c = await getAMMContract(testAMM, walletWithProvider)
   const shareAmount = new BigNumber('1')
   const tx = await ammRemoveLiquidity(c, shareAmount, testGas)
@@ -110,7 +117,7 @@ it('amm.removeLiquidity', async function () {
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('perp.withdraw', async function () {
+it('perp.withdraw', async function() {
   const c = await getPerpetualContract(testPerp, walletWithProvider)
   const tx = await perpetualWithdraw(c, new BigNumber('200'), 18, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')

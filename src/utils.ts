@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js'
 import { ethers } from 'ethers'
 
-import { SUPPORTED_NETWORK_ID, _NETWORK_ID_NAME } from './constants'
+import { SUPPORTED_NETWORK_ID, _NETWORK_ID_NAME, ETH_COLLATERAL_ADDRESS } from './constants'
 import { BigNumberish, NetworkIdOrProvider, ChainIdAndProvider } from './types'
 import { _MAX_UINT8, _MAX_UINT256, _0, _0_1, _1, _10, _E, DECIMALS } from './constants'
 
@@ -148,4 +148,8 @@ export function bigPowi(x: BigNumber, n: BigNumber): BigNumber {
     n = n.div(2).dp(0, BigNumber.ROUND_DOWN)
   }
   return z
+}
+
+export function isCollateralETH(tokenAddress: string): boolean {
+  return tokenAddress === ETH_COLLATERAL_ADDRESS
 }
