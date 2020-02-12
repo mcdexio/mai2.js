@@ -2,7 +2,7 @@ import { BigNumber } from 'bignumber.js'
 import { ethers } from 'ethers'
 
 import { SUPPORTED_NETWORK_ID, _NETWORK_ID_NAME } from './constants'
-import { BigNumberish, NetworkIdOrProvider, _ChainIdAndProvider } from './types'
+import { BigNumberish, NetworkIdOrProvider, ChainIdAndProvider } from './types'
 import { _MAX_UINT8, _MAX_UINT256, _0, _0_1, _1, _10, _E, DECIMALS } from './constants'
 
 export function isNetworkId(idOrProvider: NetworkIdOrProvider): idOrProvider is SUPPORTED_NETWORK_ID {
@@ -18,7 +18,7 @@ export function isLowLevelProvider(idOrProvider: NetworkIdOrProvider): idOrProvi
   return !ethers.providers.Provider.isProvider(provider)
 }
 
-export async function getChainIdAndProvider(idOrProvider: NetworkIdOrProvider): Promise<_ChainIdAndProvider> {
+export async function getChainIdAndProvider(idOrProvider: NetworkIdOrProvider): Promise<ChainIdAndProvider> {
   // if a id is provided, get a default provider for it
   if (isNetworkId(idOrProvider)) {
     if (!(idOrProvider in SUPPORTED_NETWORK_ID)) {
@@ -50,7 +50,7 @@ export async function getContract(
   ABI: string,
   idOrProvider: NetworkIdOrProvider = SUPPORTED_NETWORK_ID.Mainnet
 ): Promise<ethers.Contract> {
-  const chainIdAndProvider: _ChainIdAndProvider = await getChainIdAndProvider(idOrProvider)
+  const chainIdAndProvider: ChainIdAndProvider = await getChainIdAndProvider(idOrProvider)
   return new ethers.Contract(address, ABI, chainIdAndProvider.provider)
 }
 

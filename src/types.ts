@@ -132,12 +132,7 @@ export interface TransactGas {
   gasPrice: ethers.utils.BigNumber
 }
 
-// export interface AMMTradeResult {
-//   price: BigNumber
-// }
-
-//// internal-only interfaces
-export interface _ChainIdAndProvider {
+export interface ChainIdAndProvider {
   chainId: number
   provider: ethers.providers.Provider
 }

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 
-import { NetworkIdOrProvider, _ChainIdAndProvider, GovParams, PerpetualStorage, AccountStorage } from './types'
+import { NetworkIdOrProvider, ChainIdAndProvider, GovParams, PerpetualStorage, AccountStorage } from './types'
 import { SUPPORTED_NETWORK_ID, CONTRACT_READER_ADDRESS, CONTRACT_READER_ABI, SIDE, _0, _1, DECIMALS } from './constants'
 import { getChainIdAndProvider, normalizeBigNumberish, getContract, normalizeAddress } from './utils'
 
