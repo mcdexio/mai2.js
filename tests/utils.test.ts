@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { BigNumberish } from '../src/types'
-import { bigLn, normalizeBigNumberish, getEthToken, isNetworkId, isLowLevelProvider, bigPowi } from '../src/utils'
-import { ETH, SUPPORTED_NETWORK_ID, _0 } from '../src/constants'
+import { bigLn, normalizeBigNumberish, isNetworkId, isLowLevelProvider, bigPowi } from '../src/utils'
+import { SUPPORTED_NETWORK_ID, _0 } from '../src/constants'
 
 import { extendExpect } from './helper'
 
@@ -170,8 +170,4 @@ describe('normalizeBigNumberish', (): void => {
     testSuccesses(expectedSuccesses)
     testFailures(expectedFailures)
   })
-})
-
-test('getEthToken', (): void => {
-  expect(getEthToken(1).address).toEqual(ETH)
 })

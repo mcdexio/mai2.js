@@ -8,16 +8,6 @@ export type NetworkIdOrProvider = SUPPORTED_NETWORK_ID | ethers.providers.AsyncS
 
 export type SignerOrProvider = ethers.Signer | ethers.providers.Provider
 
-export interface Token {
-  chainId?: SUPPORTED_NETWORK_ID
-  address?: string
-  decimals: number
-}
-export interface TokenAmount {
-  token: Token
-  amount: BigNumber
-}
-
 export interface PerpetualContract {
   contract: ethers.Contract
 }

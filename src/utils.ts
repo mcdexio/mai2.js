@@ -1,8 +1,8 @@
 import { BigNumber } from 'bignumber.js'
 import { ethers } from 'ethers'
 
-import { SUPPORTED_NETWORK_ID, ETH, ERC20_ABI, _NETWORK_ID_NAME } from './constants'
-import { BigNumberish, NetworkIdOrProvider, Token, _ChainIdAndProvider } from './types'
+import { SUPPORTED_NETWORK_ID, _NETWORK_ID_NAME } from './constants'
+import { BigNumberish, NetworkIdOrProvider, _ChainIdAndProvider } from './types'
 import { _MAX_UINT8, _MAX_UINT256, _0, _0_1, _1, _10, _E, DECIMALS } from './constants'
 
 export function isNetworkId(idOrProvider: NetworkIdOrProvider): idOrProvider is SUPPORTED_NETWORK_ID {
@@ -68,29 +68,6 @@ export function normalizeBigNumberish(bigNumberish: BigNumberish): BigNumber {
 
 export function normalizeAddress(address: string): string {
   return ethers.utils.getAddress(address.toLowerCase())
-}
-
-export function getEthToken(chainId?: number): Token {
-  return {
-    ...chainId ? { chainId } : {},
-    address: ETH,
-    decimals: 18
-  }
-}
-
-export async function getToken(tokenAddress: string, chainIdAndProvider: _ChainIdAndProvider): Promise<Token> {
-  if (tokenAddress === ETH) {
-    return getEthToken(chainIdAndProvider.chainId)
-  } else {
-    const ERC20Contract = await getContract(tokenAddress, ERC20_ABI, chainIdAndProvider.provider)
-    const decimals: number = await ERC20Contract.decimals()
-
-    return {
-      chainId: chainIdAndProvider.chainId,
-      address: ERC20Contract.address,
-      decimals
-    }
-  }
 }
 
 const _LN_1_5 = new BigNumber('0.405465108108164381978013115464349137')
