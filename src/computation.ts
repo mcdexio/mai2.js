@@ -198,13 +198,10 @@ export function computeFunding(f: FundingParams, g: FundingGovParams, timestamp:
   acc = acc.div(FUNDING_TIME)
 
   const accumulatedFundingPerContract = f.accumulatedFundingPerContract.plus(acc)
-  const markPrice = f.lastIndexPrice.plus(emaPremium)
-  let premiumRate = emaPremium.div(f.lastIndexPrice)
-  if (premiumRate.isGreaterThan(g.markPremiumLimit)) {
-    premiumRate = g.markPremiumLimit
-  } else if (premiumRate.isLessThan(g.markPremiumLimit.negated())) {
-    premiumRate = g.markPremiumLimit.negated()
-  }
+  let markPrice = f.lastIndexPrice.plus(emaPremium)
+  markPrice = BigNumber.min(f.lastIndexPrice.times(_1.plus(g.markPremiumLimit)), markPrice)
+  markPrice = BigNumber.max(f.lastIndexPrice.times(_1.minus(g.markPremiumLimit)), markPrice)
+  let premiumRate = markPrice.minus(f.lastIndexPrice).div(f.lastIndexPrice)
   let fundingRate = _0
   if (premiumRate.isGreaterThan(g.fundingDampener)) {
     fundingRate = premiumRate.minus(g.fundingDampener)
