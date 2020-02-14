@@ -450,6 +450,20 @@
   },
   {
     "constant": true,
+    "inputs": [],
+    "name": "isTokenizedCollateral",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
     "inputs": [
       {
         "name": "",
@@ -882,6 +896,20 @@
     "type": "function"
   },
   {
+    "constant": true,
+    "inputs": [],
+    "name": "isPositionBalanced",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": false,
     "inputs": [
       {
@@ -960,6 +988,55 @@
       {
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "trader",
+        "type": "address"
+      }
+    ],
+    "name": "getBroker",
+    "outputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "name": "broker",
+                "type": "address"
+              },
+              {
+                "name": "appliedHeight",
+                "type": "uint256"
+              }
+            ],
+            "name": "previous",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "name": "broker",
+                "type": "address"
+              },
+              {
+                "name": "appliedHeight",
+                "type": "uint256"
+              }
+            ],
+            "name": "current",
+            "type": "tuple"
+          }
+        ],
+        "name": "",
+        "type": "tuple"
       }
     ],
     "payable": false,
@@ -1067,6 +1144,11 @@
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "fallback"
   },
   {
     "anonymous": false,
@@ -1244,7 +1326,61 @@
         "type": "tuple"
       }
     ],
-    "name": "Liquidate",
+    "name": "Liquidator",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "guy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "cashBalance",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "name": "side",
+            "type": "uint8"
+          },
+          {
+            "name": "size",
+            "type": "uint256"
+          },
+          {
+            "name": "entryValue",
+            "type": "uint256"
+          },
+          {
+            "name": "entrySocialLoss",
+            "type": "uint256"
+          },
+          {
+            "name": "entryFundingLoss",
+            "type": "int256"
+          }
+        ],
+        "indexed": false,
+        "name": "account",
+        "type": "tuple"
+      }
+    ],
+    "name": "Liquidated",
     "type": "event"
   },
   {
@@ -1521,6 +1657,20 @@
     "constant": false,
     "inputs": [
       {
+        "name": "broker",
+        "type": "address"
+      }
+    ],
+    "name": "depositEtherAndSetBroker",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
         "name": "amount",
         "type": "uint256"
       }
@@ -1529,6 +1679,15 @@
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "depositEther",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
     "type": "function"
   },
   {

@@ -6,15 +6,15 @@ import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 
 const testRpc = 'http://s1.jy.mcarlo.com:8545'
-const testPerp = '0x7376C6Bcc0C46Fb540008647dFff8E0875DbcCC9'
-const testAMM = '0x7a64031aFaE863F82cD7E24A51AaB02287b0F998'
-const testPerpProxy = '0xd08DD83ee1B35460c2365B226B4Ed95FCff60830'
+const testPerp = '0x4d4Aa606e4Cc72C88bF25CB77dB6D0F66E9614F2'
+const testAMM = '0xeC2289d88d06E2047BdC4aE4483E11A21A6E54f0'
+const testPerpProxy = '0x65072Cb5aAe204f113bd04e02f0875eD477EB229'
 const testUser = '0x31Ebd457b999Bf99759602f5Ece5AA5033CB56B3' // address (1) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 
 extendExpect()
 
-it('param', async function() {
+it('param', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: GovParams = await getGovParams(contractReader, testPerp)
   expect(p.amm).toEqual(testAMM)
@@ -38,7 +38,7 @@ it('param', async function() {
   expect(p.fundingDampener).toBeBigNumber(normalizeBigNumberish('0.0005'))
 })
 
-it('perp', async function() {
+it('perp', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: PerpetualStorage = await getPerpetualStorage(contractReader, testPerp)
   expect(p.collateralTokenAddress).not.toEqual('')
@@ -57,10 +57,14 @@ it('perp', async function() {
   expect(p.fundingParams.lastFundingTimestamp).not.toEqual(0)
 })
 
-it('account', async function() {
+it('account', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: AccountStorage = await getAccountStroage(contractReader, testPerp, testUser)
   expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('5000')) // position * price
+  expect(p.broker.previousBroker).toEqual('0x0000000000000000000000000000000000000000')
+  expect(p.broker.previousAppliedHeight).toEqual(0)
+  expect(p.broker.currentBroker).toEqual(testAMM)
+  expect(p.broker.currentAppliedHeight).toBeGreaterThan(0)
   expect(p.withdrawalApplication.amount).toBeBigNumber(normalizeBigNumberish('0'))
   expect(p.withdrawalApplication.height).toEqual(0)
   expect(p.positionSide).toEqual(SIDE.Sell)

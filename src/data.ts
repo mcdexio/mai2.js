@@ -23,8 +23,8 @@ export async function getGovParams(
     poolAccount: p.poolAccount,
 
     // global
-    withdrawalLockBlockCount: parseInt(p.withdrawalLockBlockCount),
-    brokerLockBlockCount: parseInt(p.brokerLockBlockCount),
+    withdrawalLockBlockCount: p.withdrawalLockBlockCount.toNumber(),
+    brokerLockBlockCount: p.brokerLockBlockCount.toNumber(),
 
     // perpetual
     intialMargin: normalizeBigNumberish(p.perpGovernanceConfig.initialMarginRate).shiftedBy(-DECIMALS),
@@ -65,7 +65,7 @@ export async function getPerpetualStorage(
       lastEMAPremium: normalizeBigNumberish(p.fundingParams.lastEMAPremium).shiftedBy(-DECIMALS),
       lastPremium: normalizeBigNumberish(p.fundingParams.lastPremium).shiftedBy(-DECIMALS),
       lastIndexPrice: normalizeBigNumberish(p.fundingParams.lastIndexPrice).shiftedBy(-DECIMALS),
-      lastFundingTimestamp: parseInt(p.fundingParams.lastFundingTime)
+      lastFundingTimestamp: p.fundingParams.lastFundingTime.toNumber(),
     }
   }
 }
@@ -78,9 +78,15 @@ export async function getAccountStroage(
   const p = await contractReader.getAccountStroage(perpetualContractAddress, userAddress)
   return {
     cashBalance: normalizeBigNumberish(p.collateral.balance).shiftedBy(-DECIMALS),
+    broker: {
+      previousBroker: p.broker.previous.broker,
+      previousAppliedHeight: p.broker.previous.appliedHeight.toNumber(),
+      currentBroker: p.broker.current.broker,
+      currentAppliedHeight: p.broker.current.appliedHeight.toNumber(),
+    },
     withdrawalApplication: {
       amount: normalizeBigNumberish(p.collateral.appliedBalance).shiftedBy(-DECIMALS),
-      height: parseInt(p.collateral.appliedHeight)
+      height: p.collateral.appliedHeight.toNumber(),
     },
 
     positionSide: p.position.side as SIDE,

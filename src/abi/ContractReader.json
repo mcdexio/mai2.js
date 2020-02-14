@@ -238,6 +238,40 @@
             ],
             "name": "position",
             "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "name": "broker",
+                    "type": "address"
+                  },
+                  {
+                    "name": "appliedHeight",
+                    "type": "uint256"
+                  }
+                ],
+                "name": "previous",
+                "type": "tuple"
+              },
+              {
+                "components": [
+                  {
+                    "name": "broker",
+                    "type": "address"
+                  },
+                  {
+                    "name": "appliedHeight",
+                    "type": "uint256"
+                  }
+                ],
+                "name": "current",
+                "type": "tuple"
+              }
+            ],
+            "name": "broker",
+            "type": "tuple"
           }
         ],
         "name": "params",

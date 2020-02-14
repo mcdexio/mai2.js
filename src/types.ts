@@ -85,11 +85,21 @@ export interface AccountStorage {
   entrySocialLoss: BigNumber
   entryFundingLoss: BigNumber
   withdrawalApplication: WithdrawalApplication
+  broker: AccountBroker
 }
 
 export interface WithdrawalApplication {
   amount: BigNumber
   height: number
+}
+
+// delayed setBroker logic: if currentAppliedHeight <= blockNumber, the effective broker = currentBroker,
+// otherwise the effective broker = previousBroker
+export interface AccountBroker {
+  previousBroker: string,
+  previousAppliedHeight: number,
+  currentBroker: string,
+  currentAppliedHeight: number,
 }
 
 export interface AccountComputed {

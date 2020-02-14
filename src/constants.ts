@@ -34,7 +34,7 @@ export const _NETWORK_ID_NAME: { [key: number]: string } = {
 }
 
 export const CONTRACT_READER_ADDRESS: { [key: number]: string } = {
-  [SUPPORTED_NETWORK_ID.S1]: '0xA617Ec1F68766EEa619cD72d93067064D2765d39'
+  [SUPPORTED_NETWORK_ID.S1]: '0x5db42c452e16A0bD185EeA9a0e25Ca70807E62EA'
 }
 
 export const _E = new BigNumber('2.718281828459045235')
