@@ -81,6 +81,13 @@ const perpetualStorage: PerpetualStorage = {
 
 const fundingResult = computeFunding(perpetualStorage.fundingParams, govParams, timestamp)
 
+const broker = {
+  previousBroker: '',
+  previousAppliedHeight: 0,
+  currentBroker: '',
+  currentAppliedHeight: 0
+}
+
 const accountStorage1: AccountStorage = {
   cashBalance: new BigNumber('10000'),
   positionSide: SIDE.Buy,
@@ -91,7 +98,8 @@ const accountStorage1: AccountStorage = {
   withdrawalApplication: {
     amount: new BigNumber('10'),
     height: 123
-  }
+  },
+  broker
 }
 
 const accountStorage2: AccountStorage = {
@@ -104,7 +112,8 @@ const accountStorage2: AccountStorage = {
   withdrawalApplication: {
     amount: new BigNumber('10'),
     height: 123
-  }
+  },
+  broker
 }
 
 const accountStorage3: AccountStorage = {
@@ -117,7 +126,8 @@ const accountStorage3: AccountStorage = {
   withdrawalApplication: {
     amount: new BigNumber('10'),
     height: 123
-  }
+  },
+  broker
 }
 
 const accountStorage4: AccountStorage = {
@@ -130,7 +140,8 @@ const accountStorage4: AccountStorage = {
   withdrawalApplication: {
     amount: new BigNumber('10'),
     height: 123
-  }
+  },
+  broker
 }
 
 const accountDetails1 = computeAccount(accountStorage1, govParams, perpetualStorage, fundingResult)
@@ -305,7 +316,8 @@ const ammStorage: AccountStorage = {
   withdrawalApplication: {
     amount: new BigNumber('10'),
     height: 123
-  }
+  },
+  broker
 }
 
 const ammDetails = computeAMM(ammStorage, govParams, perpetualStorage, fundingResult)
