@@ -4,7 +4,11 @@ import { SUPPORTED_NETWORK_ID, SIDE } from './constants'
 
 export type BigNumberish = BigNumber | ethers.utils.BigNumber | string | number
 
-export type NetworkIdOrProvider = SUPPORTED_NETWORK_ID | ethers.providers.AsyncSendable | ethers.providers.Provider
+export type GeneralProvider =
+  | SUPPORTED_NETWORK_ID
+  | ethers.providers.AsyncSendable
+  | ethers.providers.Provider
+  | NetworkIdAndProvider
 
 export type SignerOrProvider = ethers.Signer | ethers.providers.Provider
 
@@ -132,7 +136,7 @@ export interface TransactGas {
   gasPrice: ethers.utils.BigNumber
 }
 
-export interface ChainIdAndProvider {
-  chainId: number
+export interface NetworkIdAndProvider {
+  networkId: number
   provider: ethers.providers.Provider
 }

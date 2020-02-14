@@ -1,12 +1,38 @@
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import { BigNumberish } from '../src/types'
-import { bigLn, normalizeBigNumberish, isNetworkId, isLowLevelProvider, bigPowi, isCollateralETH } from '../src/utils'
-import { SUPPORTED_NETWORK_ID, _0, ETH_COLLATERAL_ADDRESS } from '../src/constants'
+import { BigNumberish, NetworkIdAndProvider } from '../src/types'
+import {
+  bigLn,
+  normalizeBigNumberish,
+  isNetworkId,
+  isLowLevelProvider,
+  bigPowi,
+  isCollateralETH,
+  isNetworkIdAndProvider,
+  getChainIdAndProvider
+} from '../src/utils'
+import { SUPPORTED_NETWORK_ID, _0, ETH_COLLATERAL_ADDRESS, _E, _1 } from '../src/constants'
 
 import { extendExpect } from './helper'
 
 extendExpect()
+
+async function getDefaultNetworkIdAndProvider(): Promise<NetworkIdAndProvider> {
+  const provider = ethers.getDefaultProvider()
+  const { chainId }: ethers.utils.Network = await provider.getNetwork()
+  return { networkId: chainId, provider }
+}
+
+class DebugProvider extends ethers.providers.BaseProvider {
+  constructor() {
+    super('homestead')
+  }
+  getNetwork(): Promise<ethers.utils.Network> {
+    return new Promise((resolve) => {
+      resolve({ name: 'debug', chainId: 100000 })
+    })
+  }
+}
 
 describe('isNetworkId', function() {
   it('mainnet id', function() {
@@ -26,6 +52,54 @@ describe('isLowLevelProvider', function() {
   it('provider', function() {
     const provider = ethers.getDefaultProvider()
     expect(isLowLevelProvider(provider)).toBeFalsy()
+  })
+  it('networkIDAndProvider', async function() {
+    const networkIdAndProvider = await getDefaultNetworkIdAndProvider()
+    expect(isNetworkId(networkIdAndProvider)).toBeFalsy()
+  })
+})
+
+describe('isNetworkIdAndProvider', function() {
+  it('mainnet id', function() {
+    expect(isNetworkIdAndProvider(SUPPORTED_NETWORK_ID.Mainnet)).toBeFalsy()
+  })
+  it('provider', function() {
+    const provider = ethers.getDefaultProvider()
+    expect(isNetworkIdAndProvider(provider)).toBeFalsy()
+  })
+  it('networkIDAndProvider', async function() {
+    const networkIdAndProvider = await getDefaultNetworkIdAndProvider()
+    expect(isNetworkIdAndProvider(networkIdAndProvider)).toBeTruthy()
+  })
+})
+
+describe('getChainIdAndProvider', function() {
+  it('mainnet id', async function() {
+    expect(isNetworkIdAndProvider(await getChainIdAndProvider(SUPPORTED_NETWORK_ID.Mainnet))).toBeTruthy()
+  })
+  it('provider', async function() {
+    const provider = ethers.getDefaultProvider()
+    expect(isNetworkIdAndProvider(await getChainIdAndProvider(provider))).toBeTruthy()
+  })
+  it('networkIDAndProvider', async function() {
+    const networkIdAndProvider = await getDefaultNetworkIdAndProvider()
+    expect(isNetworkIdAndProvider(await getChainIdAndProvider(networkIdAndProvider))).toBeTruthy()
+  })
+  it('bad network id', async function() {
+    expect.assertions(1)
+    try {
+      await getChainIdAndProvider(100000)
+    } catch (e) {
+      expect(e).toEqual(Error('chainId 100000 is not valid.'))
+    }
+  })
+  it('bad network id', async function() {
+    expect.assertions(1)
+    try {
+      await getChainIdAndProvider(new DebugProvider())
+    } catch (e) {
+      expect(e).toEqual(Error('chainId 100000 is not valid.'))
+    }
   })
 })
 
@@ -61,6 +135,24 @@ describe('bigLn', function() {
   it('ln1.2345', function() {
     const i = bigLn(new BigNumber('1.2345'))
     expect(i).toApproximate(new BigNumber('0.210666029803097141'))
+  })
+  it('ln10000000000000000000000000000000000000000', function() {
+    const i = bigLn(new BigNumber('10000000000000000000000000000000000000000'))
+    expect(i).toApproximate(new BigNumber('92.10340371976183'))
+  })
+  it('ln(e)', function() {
+    const i = bigLn(_E)
+    expect(i).toBeBigNumber(_1)
+  })
+  it('ln(-1)', function() {
+    expect((): void => {
+      bigLn(new BigNumber(-1))
+    }).toThrow()
+  })
+  it('ln(-1)', function() {
+    expect((): void => {
+      bigLn(new BigNumber('10000000000000000000000000000000000000001'))
+    }).toThrow()
   })
 })
 

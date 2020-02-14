@@ -2,44 +2,56 @@ import { BigNumber } from 'bignumber.js'
 import { ethers } from 'ethers'
 
 import { SUPPORTED_NETWORK_ID, _NETWORK_ID_NAME, ETH_COLLATERAL_ADDRESS } from './constants'
-import { BigNumberish, NetworkIdOrProvider, ChainIdAndProvider } from './types'
+import { BigNumberish, GeneralProvider, NetworkIdAndProvider } from './types'
 import { _MAX_UINT8, _MAX_UINT256, _0, _0_1, _1, _10, _E, DECIMALS } from './constants'
 
-export function isNetworkId(idOrProvider: NetworkIdOrProvider): idOrProvider is SUPPORTED_NETWORK_ID {
-  const chainId: SUPPORTED_NETWORK_ID = idOrProvider as SUPPORTED_NETWORK_ID
+export function isNetworkId(generalProvider: GeneralProvider): generalProvider is SUPPORTED_NETWORK_ID {
+  const chainId: SUPPORTED_NETWORK_ID = generalProvider as SUPPORTED_NETWORK_ID
   return typeof chainId === 'number'
 }
 
-export function isLowLevelProvider(idOrProvider: NetworkIdOrProvider): idOrProvider is ethers.providers.AsyncSendable {
-  if (isNetworkId(idOrProvider)) {
+export function isLowLevelProvider(
+  generalProvider: GeneralProvider
+): generalProvider is ethers.providers.AsyncSendable {
+  if (isNetworkId(generalProvider)) {
     return false
   }
-  const provider: ethers.providers.Provider = idOrProvider as ethers.providers.Provider
+  const provider: ethers.providers.Provider = generalProvider as ethers.providers.Provider
   return !ethers.providers.Provider.isProvider(provider)
 }
 
-export async function getChainIdAndProvider(idOrProvider: NetworkIdOrProvider): Promise<ChainIdAndProvider> {
-  // if a id is provided, get a default provider for it
-  if (isNetworkId(idOrProvider)) {
-    if (!(idOrProvider in SUPPORTED_NETWORK_ID)) {
-      throw Error(`chainId ${idOrProvider} is not valid.`)
+export function isNetworkIdAndProvider(generalProvider: GeneralProvider): generalProvider is NetworkIdAndProvider {
+  const networkIdAndProvider: NetworkIdAndProvider = generalProvider as NetworkIdAndProvider
+  return (
+    typeof networkIdAndProvider.networkId === 'number' &&
+    ethers.providers.Provider.isProvider(networkIdAndProvider.provider)
+  )
+}
+
+export async function getChainIdAndProvider(generalProvider: GeneralProvider): Promise<NetworkIdAndProvider> {
+  if (isNetworkIdAndProvider(generalProvider)) {
+    return generalProvider
+  } else if (isNetworkId(generalProvider)) {
+    // if a id is provided, get a default provider for it
+    if (!(generalProvider in SUPPORTED_NETWORK_ID)) {
+      throw Error(`chainId ${generalProvider} is not valid.`)
     }
     return {
-      chainId: idOrProvider,
-      provider: ethers.getDefaultProvider(_NETWORK_ID_NAME[idOrProvider])
+      networkId: generalProvider,
+      provider: ethers.getDefaultProvider(_NETWORK_ID_NAME[generalProvider])
     }
   } else {
     // if a provider is provided, fetch the chainId from it
-    const provider: ethers.providers.Provider = isLowLevelProvider(idOrProvider)
-      ? new ethers.providers.Web3Provider(idOrProvider)
-      : idOrProvider
+    const provider: ethers.providers.Provider = isLowLevelProvider(generalProvider)
+      ? new ethers.providers.Web3Provider(generalProvider)
+      : generalProvider
     const { chainId }: ethers.utils.Network = await provider.getNetwork()
     if (!(chainId in SUPPORTED_NETWORK_ID)) {
       throw Error(`chainId ${chainId} is not valid.`)
     }
 
     return {
-      chainId,
+      networkId: chainId,
       provider
     }
   }
@@ -48,10 +60,10 @@ export async function getChainIdAndProvider(idOrProvider: NetworkIdOrProvider): 
 export async function getContract(
   address: string,
   ABI: string,
-  idOrProvider: NetworkIdOrProvider = SUPPORTED_NETWORK_ID.Mainnet
+  generalProvider: GeneralProvider = SUPPORTED_NETWORK_ID.Mainnet
 ): Promise<ethers.Contract> {
-  const chainIdAndProvider: ChainIdAndProvider = await getChainIdAndProvider(idOrProvider)
-  return new ethers.Contract(address, ABI, chainIdAndProvider.provider)
+  const networkIdAndProvider: NetworkIdAndProvider = await getChainIdAndProvider(generalProvider)
+  return new ethers.Contract(address, ABI, networkIdAndProvider.provider)
 }
 
 export function normalizeBigNumberish(bigNumberish: BigNumberish): BigNumber {
