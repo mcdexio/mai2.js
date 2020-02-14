@@ -17,9 +17,9 @@ export const AMM_ABI: string = JSON.stringify(AMMABI)
 export const ETH_COLLATERAL_ADDRESS = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
 export enum SIDE {
-  Buy,
+  Flat,
   Sell,
-  Flat
+  Buy
 }
 
 export enum TRADE_SIDE {
