@@ -28,7 +28,7 @@ export function isNetworkIdAndProvider(generalProvider: GeneralProvider): genera
   )
 }
 
-export async function getChainIdAndProvider(generalProvider: GeneralProvider): Promise<NetworkIdAndProvider> {
+export async function getNetworkIdAndProvider(generalProvider: GeneralProvider): Promise<NetworkIdAndProvider> {
   if (isNetworkIdAndProvider(generalProvider)) {
     return generalProvider
   } else if (isNetworkId(generalProvider)) {
@@ -62,7 +62,7 @@ export async function getContract(
   ABI: string,
   generalProvider: GeneralProvider = SUPPORTED_NETWORK_ID.Mainnet
 ): Promise<ethers.Contract> {
-  const networkIdAndProvider: NetworkIdAndProvider = await getChainIdAndProvider(generalProvider)
+  const networkIdAndProvider: NetworkIdAndProvider = await getNetworkIdAndProvider(generalProvider)
   return new ethers.Contract(address, ABI, networkIdAndProvider.provider)
 }
 

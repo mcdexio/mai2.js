@@ -2,12 +2,12 @@ import { ethers } from 'ethers'
 
 import { GeneralProvider, GovParams, PerpetualStorage, AccountStorage } from './types'
 import { SUPPORTED_NETWORK_ID, CONTRACT_READER_ADDRESS, CONTRACT_READER_ABI, SIDE, _0, _1, DECIMALS } from './constants'
-import { getChainIdAndProvider, normalizeBigNumberish, getContract, normalizeAddress } from './utils'
+import { getNetworkIdAndProvider, normalizeBigNumberish, getContract, normalizeAddress } from './utils'
 
 export async function getContractReader(
   generalProvider: GeneralProvider = SUPPORTED_NETWORK_ID.Mainnet
 ): Promise<ethers.Contract> {
-  const networkIdAndProvider = await getChainIdAndProvider(generalProvider)
+  const networkIdAndProvider = await getNetworkIdAndProvider(generalProvider)
   const address: string = CONTRACT_READER_ADDRESS[networkIdAndProvider.networkId]
   return getContract(address, CONTRACT_READER_ABI, generalProvider)
 }

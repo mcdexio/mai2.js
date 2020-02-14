@@ -9,7 +9,7 @@ import {
   bigPowi,
   isCollateralETH,
   isNetworkIdAndProvider,
-  getChainIdAndProvider
+  getNetworkIdAndProvider
 } from '../src/utils'
 import { SUPPORTED_NETWORK_ID, _0, ETH_COLLATERAL_ADDRESS, _E, _1 } from '../src/constants'
 
@@ -73,22 +73,22 @@ describe('isNetworkIdAndProvider', function() {
   })
 })
 
-describe('getChainIdAndProvider', function() {
+describe('getNetworkIdAndProvider', function() {
   it('mainnet id', async function() {
-    expect(isNetworkIdAndProvider(await getChainIdAndProvider(SUPPORTED_NETWORK_ID.Mainnet))).toBeTruthy()
+    expect(isNetworkIdAndProvider(await getNetworkIdAndProvider(SUPPORTED_NETWORK_ID.Mainnet))).toBeTruthy()
   })
   it('provider', async function() {
     const provider = ethers.getDefaultProvider()
-    expect(isNetworkIdAndProvider(await getChainIdAndProvider(provider))).toBeTruthy()
+    expect(isNetworkIdAndProvider(await getNetworkIdAndProvider(provider))).toBeTruthy()
   })
   it('networkIDAndProvider', async function() {
     const networkIdAndProvider = await getDefaultNetworkIdAndProvider()
-    expect(isNetworkIdAndProvider(await getChainIdAndProvider(networkIdAndProvider))).toBeTruthy()
+    expect(isNetworkIdAndProvider(await getNetworkIdAndProvider(networkIdAndProvider))).toBeTruthy()
   })
   it('bad network id', async function() {
     expect.assertions(1)
     try {
-      await getChainIdAndProvider(100000)
+      await getNetworkIdAndProvider(100000)
     } catch (e) {
       expect(e).toEqual(Error('chainId 100000 is not valid.'))
     }
@@ -96,7 +96,7 @@ describe('getChainIdAndProvider', function() {
   it('bad network id', async function() {
     expect.assertions(1)
     try {
-      await getChainIdAndProvider(new DebugProvider())
+      await getNetworkIdAndProvider(new DebugProvider())
     } catch (e) {
       expect(e).toEqual(Error('chainId 100000 is not valid.'))
     }
