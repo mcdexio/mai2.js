@@ -46,10 +46,6 @@ export async function getNetworkIdAndProvider(generalProvider: GeneralProvider):
       ? new ethers.providers.Web3Provider(generalProvider)
       : generalProvider
     const { chainId }: ethers.utils.Network = await provider.getNetwork()
-    if (!(chainId in SUPPORTED_NETWORK_ID)) {
-      throw Error(`chainId ${chainId} is not valid.`)
-    }
-
     return {
       networkId: chainId,
       provider

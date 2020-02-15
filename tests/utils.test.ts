@@ -23,17 +23,6 @@ async function getDefaultNetworkIdAndProvider(): Promise<NetworkIdAndProvider> {
   return { networkId: chainId, provider }
 }
 
-class DebugProvider extends ethers.providers.BaseProvider {
-  constructor() {
-    super('homestead')
-  }
-  getNetwork(): Promise<ethers.utils.Network> {
-    return new Promise((resolve) => {
-      resolve({ name: 'debug', chainId: 100000 })
-    })
-  }
-}
-
 describe('isNetworkId', function() {
   it('mainnet id', function() {
     expect(isNetworkId(SUPPORTED_NETWORK_ID.Mainnet)).toBeTruthy()
@@ -85,18 +74,10 @@ describe('getNetworkIdAndProvider', function() {
     const networkIdAndProvider = await getDefaultNetworkIdAndProvider()
     expect(isNetworkIdAndProvider(await getNetworkIdAndProvider(networkIdAndProvider))).toBeTruthy()
   })
-  it('bad network id', async function() {
+  it('bad default network id', async function() {
     expect.assertions(1)
     try {
       await getNetworkIdAndProvider(100000)
-    } catch (e) {
-      expect(e).toEqual(Error('chainId 100000 is not valid.'))
-    }
-  })
-  it('bad network id', async function() {
-    expect.assertions(1)
-    try {
-      await getNetworkIdAndProvider(new DebugProvider())
     } catch (e) {
       expect(e).toEqual(Error('chainId 100000 is not valid.'))
     }
