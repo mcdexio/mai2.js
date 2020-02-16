@@ -102,10 +102,22 @@ it('amm.depositAndBuy.zeroDeposit', async function() {
 it('amm.depositAndSell', async function() {
   const c = await getAMMContract(testAMM, walletWithProvider)
   const depositAmount = new BigNumber('0.005') // 1 / 200
-  const buyAmount = new BigNumber('1')
+  const amount = new BigNumber('1')
   const limitPrice = new BigNumber('0')
   const deadLine = 9999999999
-  const tx = await ammDepositAndSell(c, depositAmount, 18, buyAmount, limitPrice, deadLine, testGas)
+  const tx = await ammDepositAndSell(c, depositAmount, 18, amount, limitPrice, deadLine, testGas)
+  expect(tx.gasLimit.toString()).toEqual('1234567')
+  expect(tx.gasPrice.toString()).toEqual('12345')
+  await tx.wait()
+})
+
+it('amm.depositAndSell.zeroDeposit', async function() {
+  const c = await getAMMContract(testAMM, walletWithProvider)
+  const depositAmount = 0
+  const amount = new BigNumber('1')
+  const limitPrice = new BigNumber('0')
+  const deadLine = 9999999999
+  const tx = await ammDepositAndSell(c, depositAmount, 18, amount, limitPrice, deadLine, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
   await tx.wait()
