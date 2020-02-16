@@ -42,6 +42,17 @@ export async function perpetualDeposit(
   return await perpetualContract.deposit(largeAmount.toFixed(), gas)
 }
 
+export async function perpetualDepositAndSetBroker(
+  perpetualContract: ethers.Contract,
+  collateralAmount: BigNumberish, // should be a decimal number (ie: 1.234)
+  collateralDecimals: number,
+  brokerAddress: string, // AMM address or an ETH address
+  gas: TransactGas = defaultGas
+): Promise<ethers.providers.TransactionResponse> {
+  const largeAmount = normalizeBigNumberish(collateralAmount).shiftedBy(collateralDecimals).dp(0, BigNumber.ROUND_DOWN)
+  return await perpetualContract.depositAndSetBroker(largeAmount.toFixed(), brokerAddress, gas)
+}
+
 export async function perpetualApplyForWithdrawal(
   perpetualContract: ethers.Contract,
   collateralAmount: BigNumberish, // should be a decimal number (ie: 1.234)
