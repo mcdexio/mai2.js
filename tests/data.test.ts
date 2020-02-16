@@ -6,10 +6,10 @@ import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 
 const testRpc = 'http://s1.jy.mcarlo.com:8545'
-const testPerp = '0x4d4Aa606e4Cc72C88bF25CB77dB6D0F66E9614F2'
-const testAMM = '0xeC2289d88d06E2047BdC4aE4483E11A21A6E54f0'
-const testPerpProxy = '0x65072Cb5aAe204f113bd04e02f0875eD477EB229'
-const testUser = '0x31Ebd457b999Bf99759602f5Ece5AA5033CB56B3' // address (1) in our ganache test env
+const testPerp = '0x1AA25040Dbf401B3FDF67DceC5Bb2Fe2E531A55b'
+const testAMM = '0x9354C30a5d9f75785B711dDD3A7e134E1739b30A'
+const testPerpProxy = '0x36f179FF6E8a4816509ed867bd273fDdeB409331'
+const testUser = '0x6109d8fdb3104bc329f7fa1d29c6b4a9a4d3f6ac' // address (7) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 
 extendExpect()
