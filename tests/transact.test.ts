@@ -148,7 +148,7 @@ it('amm.sell', async function() {
 it('amm.addLiquidity', async function() {
   const c = await getAMMContract(testAMM, walletWithProvider)
   const collateralAmount = new BigNumber('0.1')
-  const tx = await ammAddLiquidity(c, collateralAmount, 18, testGas)
+  const tx = await ammAddLiquidity(c, collateralAmount, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
   await tx.wait()
