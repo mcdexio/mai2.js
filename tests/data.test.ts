@@ -26,13 +26,13 @@ it('param', async function () {
   expect(p.intialMargin).toBeBigNumber(normalizeBigNumberish('0.1'))
   expect(p.maintenanceMargin).toBeBigNumber(normalizeBigNumberish('0.05'))
   expect(p.liquidationSafetyFactor).toBeBigNumber(normalizeBigNumberish('0.2'))
-  expect(p.liquidationPenaltyRate).toBeBigNumber(normalizeBigNumberish('0.01'))
-  expect(p.penaltyFundRate).toBeBigNumber(normalizeBigNumberish('0.5'))
-  expect(p.makerDevRate).toBeBigNumber(normalizeBigNumberish('0.01'))
-  expect(p.takerDevRate).toBeBigNumber(normalizeBigNumberish('0.01'))
+  expect(p.liquidationPenaltyRate).toBeBigNumber(normalizeBigNumberish('0.005'))
+  expect(p.penaltyFundRate).toBeBigNumber(normalizeBigNumberish('0.005'))
+  expect(p.makerDevRate).toBeBigNumber(normalizeBigNumberish('-0.00025'))
+  expect(p.takerDevRate).toBeBigNumber(normalizeBigNumberish('0.00075'))
 
-  expect(p.poolFeeRate).toBeBigNumber(normalizeBigNumberish('0.01'))
-  expect(p.poolDevFeeRate).toBeBigNumber(normalizeBigNumberish('0.005'))
+  expect(p.poolFeeRate).toBeBigNumber(normalizeBigNumberish('0.000375'))
+  expect(p.poolDevFeeRate).toBeBigNumber(normalizeBigNumberish('0.000375'))
   expect(p.emaAlpha).toBeBigNumber(normalizeBigNumberish('0.003327787021630616')) // 2 / (600 + 1)
   expect(p.markPremiumLimit).toBeBigNumber(normalizeBigNumberish('0.005'))
   expect(p.fundingDampener).toBeBigNumber(normalizeBigNumberish('0.0005'))
@@ -60,7 +60,7 @@ it('perp', async function () {
 it('account', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: AccountStorage = await getAccountStroage(contractReader, testPerp, testUser)
-  expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('25000')) // position * price
+  expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('15000')) // position * 3 * price
   expect(p.broker.previousBroker).toEqual('0x0000000000000000000000000000000000000000')
   expect(p.broker.previousAppliedHeight).toEqual(0)
   expect(p.broker.currentBroker).toEqual(testAMM)
