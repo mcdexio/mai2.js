@@ -30,20 +30,6 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "shortTotalSize",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
     "name": "gov",
     "outputs": [
       {
@@ -68,11 +54,11 @@
       },
       {
         "name": "takerDevFeeRate",
-        "type": "uint256"
+        "type": "int256"
       },
       {
         "name": "makerDevFeeRate",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "payable": false,
@@ -132,29 +118,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "name": "markPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "drawableBalanceWithPrice",
-    "outputs": [
-      {
-        "name": "",
-        "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -235,52 +198,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "name": "markPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "marginBalanceWithPrice",
-    "outputs": [
-      {
-        "name": "",
-        "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "name": "markPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "availableMarginWithPrice",
-    "outputs": [
-      {
-        "name": "",
-        "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -370,20 +287,6 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "longSocialLossPerContract",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [
       {
         "name": "guy",
@@ -391,25 +294,6 @@
       }
     ],
     "name": "cashBalance",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "side",
-        "type": "uint8"
-      }
-    ],
-    "name": "getSocialLossPerContract",
     "outputs": [
       {
         "name": "",
@@ -657,52 +541,6 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "name": "markPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "maintenanceMarginWithPrice",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "name": "markPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "marginWithPrice",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
@@ -719,29 +557,6 @@
       {
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "name": "markPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "pnlWithPrice",
-    "outputs": [
-      {
-        "name": "",
-        "type": "int256"
       }
     ],
     "payable": false,
@@ -769,8 +584,32 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "totalSize",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "accountCreated",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "side",
+        "type": "uint8"
+      }
+    ],
+    "name": "socialLossPerContract",
     "outputs": [
       {
         "name": "",
@@ -786,14 +625,14 @@
     "inputs": [
       {
         "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
-    "name": "accountCreated",
+    "name": "socialLossPerContracts",
     "outputs": [
       {
         "name": "",
-        "type": "bool"
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -848,11 +687,11 @@
           },
           {
             "name": "takerDevFeeRate",
-            "type": "uint256"
+            "type": "int256"
           },
           {
             "name": "makerDevFeeRate",
-            "type": "uint256"
+            "type": "int256"
           }
         ],
         "name": "",
@@ -982,20 +821,6 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "longTotalSize",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [
       {
         "name": "trader",
@@ -1068,8 +893,32 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "shortSocialLossPerContract",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "totalSizes",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "side",
+        "type": "uint8"
+      }
+    ],
+    "name": "totalSize",
     "outputs": [
       {
         "name": "",
@@ -1191,31 +1040,29 @@
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "name": "side",
-            "type": "uint8"
-          },
-          {
-            "name": "size",
-            "type": "uint256"
-          },
-          {
-            "name": "entryValue",
-            "type": "uint256"
-          },
-          {
-            "name": "entrySocialLoss",
-            "type": "uint256"
-          },
-          {
-            "name": "entryFundingLoss",
-            "type": "int256"
-          }
-        ],
         "indexed": false,
-        "name": "account",
-        "type": "tuple"
+        "name": "side",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "name": "size",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entryValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entrySocialLoss",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entryFundingLoss",
+        "type": "int256"
       }
     ],
     "name": "Buy",
@@ -1245,31 +1092,29 @@
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "name": "side",
-            "type": "uint8"
-          },
-          {
-            "name": "size",
-            "type": "uint256"
-          },
-          {
-            "name": "entryValue",
-            "type": "uint256"
-          },
-          {
-            "name": "entrySocialLoss",
-            "type": "uint256"
-          },
-          {
-            "name": "entryFundingLoss",
-            "type": "int256"
-          }
-        ],
         "indexed": false,
-        "name": "account",
-        "type": "tuple"
+        "name": "side",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "name": "size",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entryValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entrySocialLoss",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entryFundingLoss",
+        "type": "int256"
       }
     ],
     "name": "Sell",
@@ -1299,31 +1144,29 @@
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "name": "side",
-            "type": "uint8"
-          },
-          {
-            "name": "size",
-            "type": "uint256"
-          },
-          {
-            "name": "entryValue",
-            "type": "uint256"
-          },
-          {
-            "name": "entrySocialLoss",
-            "type": "uint256"
-          },
-          {
-            "name": "entryFundingLoss",
-            "type": "int256"
-          }
-        ],
         "indexed": false,
-        "name": "account",
-        "type": "tuple"
+        "name": "side",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "name": "size",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entryValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entrySocialLoss",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entryFundingLoss",
+        "type": "int256"
       }
     ],
     "name": "Liquidator",
@@ -1353,31 +1196,29 @@
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "name": "side",
-            "type": "uint8"
-          },
-          {
-            "name": "size",
-            "type": "uint256"
-          },
-          {
-            "name": "entryValue",
-            "type": "uint256"
-          },
-          {
-            "name": "entrySocialLoss",
-            "type": "uint256"
-          },
-          {
-            "name": "entryFundingLoss",
-            "type": "int256"
-          }
-        ],
         "indexed": false,
-        "name": "account",
-        "type": "tuple"
+        "name": "side",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "name": "size",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entryValue",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entrySocialLoss",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "entryFundingLoss",
+        "type": "int256"
       }
     ],
     "name": "Liquidated",
@@ -1639,15 +1480,15 @@
     "constant": false,
     "inputs": [
       {
-        "name": "amount",
-        "type": "uint256"
+        "name": "guy",
+        "type": "address"
       },
       {
         "name": "broker",
         "type": "address"
       }
     ],
-    "name": "depositAndSetBroker",
+    "name": "setBrokerFor",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -1657,11 +1498,29 @@
     "constant": false,
     "inputs": [
       {
-        "name": "broker",
+        "name": "guy",
+        "type": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositFor",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "guy",
         "type": "address"
       }
     ],
-    "name": "depositEtherAndSetBroker",
+    "name": "depositEtherFor",
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",
@@ -1694,10 +1553,6 @@
     "constant": false,
     "inputs": [
       {
-        "name": "guy",
-        "type": "address"
-      },
-      {
         "name": "amount",
         "type": "uint256"
       },
@@ -1706,10 +1561,24 @@
         "type": "address"
       }
     ],
-    "name": "depositToAccountAndSetBroker",
+    "name": "depositAndSetBroker",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "broker",
+        "type": "address"
+      }
+    ],
+    "name": "depositEtherAndSetBroker",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
     "type": "function"
   },
   {

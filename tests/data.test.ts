@@ -6,9 +6,9 @@ import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 
 const testRpc = 'http://s1.jy.mcarlo.com:8545'
-const testPerp = '0x1AA25040Dbf401B3FDF67DceC5Bb2Fe2E531A55b'
-const testAMM = '0x9354C30a5d9f75785B711dDD3A7e134E1739b30A'
-const testPerpProxy = '0x36f179FF6E8a4816509ed867bd273fDdeB409331'
+const testPerp = '0x7e868621f89f212F078472c78080a73B049B5CC2'
+const testPerpProxy = '0x432766e4925A10e4791Cc453f6C05A936254606c'
+const testAMM = '0x762cf5d104F80427Cb640584520427afC8105873'
 const testUser = '0x6109d8fdb3104bc329f7fa1d29c6b4a9a4d3f6ac' // address (7) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 
@@ -60,7 +60,7 @@ it('perp', async function () {
 it('account', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: AccountStorage = await getAccountStroage(contractReader, testPerp, testUser)
-  expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('5000')) // position * price
+  expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('25000')) // position * price
   expect(p.broker.previousBroker).toEqual('0x0000000000000000000000000000000000000000')
   expect(p.broker.previousAppliedHeight).toEqual(0)
   expect(p.broker.currentBroker).toEqual(testAMM)
