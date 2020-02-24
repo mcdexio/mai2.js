@@ -14,7 +14,8 @@ import {
   AMMDetails,
   BigNumberish,
   FundingGovParams,
-  AccountComputed
+  AccountComputed,
+  TradeCost
 } from './types'
 import { _0, _1, _0_1, FUNDING_TIME, SIDE, TRADE_SIDE } from './constants'
 import { bigLog, normalizeBigNumberish } from './utils'
@@ -508,12 +509,6 @@ export function computeTrade(
   return storage
 }
 
-export interface TradeCost {
-  account: AccountDetails
-  marginCost: BigNumber
-  fee: BigNumber
-}
-
 export function computeTradeCost(
   g: GovParams,
   p: PerpetualStorage,
@@ -612,4 +607,68 @@ export function inverseSide(side: TRADE_SIDE): TRADE_SIDE {
 export function inversePrice(price: BigNumberish): BigNumber {
   const normalizedPrice = normalizeBigNumberish(price)
   return _1.div(normalizedPrice)
+}
+
+export function computeAMMTrade(
+  gov: GovParams,
+  perp: PerpetualStorage,
+  funding: FundingResult,
+  amm: AMMDetails,
+  side: TRADE_SIDE,
+  amount: BigNumberish
+) {
+  const price = computeAMMPrice(amm, side, amount)
+  const newAMM = computeTrade(
+    perp,
+    funding,
+    amm.accountStorage,
+    inverseSide(side),
+    price,
+    amount,
+    gov.poolFeeRate.negated()
+  )
+  return computeAMM(newAMM, gov, perp, funding)
+}
+
+export function computeAMMAddLiquidity(
+  perp: PerpetualStorage,
+  funding: FundingResult,
+  amm: AMMDetails,
+  user: AccountStorage,
+  totalShare: BigNumberish,
+  collateralAmount: BigNumberish
+): { amm: AccountStorage; user: AccountStorage; share: BigNumber } {
+  const normalizedCollateral = normalizeBigNumberish(collateralAmount)
+  const normalizedTotalShare = normalizeBigNumberish(totalShare)
+  const fairPrice = computeAMMPrice(amm, TRADE_SIDE.Sell, 0)
+  const size = normalizedCollateral.div(2).div(fairPrice)
+
+  const amm2 = { ...amm.accountStorage, cashBalance: amm.accountStorage.cashBalance.plus(normalizedCollateral) }
+  const user2 = { ...user, cashBalance: user.cashBalance.minus(normalizedCollateral) }
+  const newAMM = computeTrade(perp, funding, amm2, TRADE_SIDE.Buy, fairPrice, size, 0)
+  const newUser = computeTrade(perp, funding, user2, TRADE_SIDE.Sell, fairPrice, size, 0)
+  const share = size.div(amm.accountStorage.positionSize).times(normalizedTotalShare)
+  return { amm: newAMM, user: newUser, share }
+}
+
+export function computeAMMRemoveLiquidity(
+  perp: PerpetualStorage,
+  funding: FundingResult,
+  amm: AMMDetails,
+  user: AccountStorage,
+  totalShare: BigNumberish,
+  shareAmount: BigNumberish
+): { amm: AccountStorage; user: AccountStorage } {
+  const normalizedTotalShare = normalizeBigNumberish(totalShare)
+  const normalizedShare = normalizeBigNumberish(shareAmount)
+  const entryPrice = amm.accountComputed.entryPrice
+  const percent = normalizedShare.div(normalizedTotalShare)
+  const transferSize = amm.accountStorage.positionSize.times(percent)
+  const transferCollateral = amm.ammComputed.availableMargin.plus(amm.accountStorage.entryValue.times(percent))
+  const ammAccount = computeTrade(perp, funding, amm.accountStorage, TRADE_SIDE.Sell, entryPrice, transferSize, 0)
+  const userAccount = computeTrade(perp, funding, user, TRADE_SIDE.Buy, entryPrice, transferSize, 0)
+  const amm2 = { ...ammAccount, cashBalance: ammAccount.cashBalance.minus(transferCollateral) }
+  const user2 = { ...userAccount, cashBalance: userAccount.cashBalance.plus(transferCollateral) }
+
+  return { amm: amm2, user: user2 }
 }

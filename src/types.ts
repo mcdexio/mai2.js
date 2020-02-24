@@ -139,6 +139,12 @@ export interface AMMDetails extends AccountDetails {
   ammComputed: AMMComputed
 }
 
+export interface TradeCost {
+  account: AccountDetails
+  marginCost: BigNumber
+  fee: BigNumber
+}
+
 export interface TransactGas {
   // The maximum units of gas for the transaction to use
   gasLimit: number
