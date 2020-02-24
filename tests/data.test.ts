@@ -5,10 +5,10 @@ import { normalizeBigNumberish } from '../src/utils'
 import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 
-const testRpc = 'http://s1.jy.mcarlo.com:8545'
-const testPerp = '0x7e868621f89f212F078472c78080a73B049B5CC2'
-const testPerpProxy = '0x432766e4925A10e4791Cc453f6C05A936254606c'
-const testAMM = '0x762cf5d104F80427Cb640584520427afC8105873'
+const testRpc = 'http://server10.jy.mcarlo.com:8745'
+const testPerp = '0xBa89Ed2Dd93A63e75FA9e426ad59E3bC6E36EB8d'
+const testPerpProxy = '0xD642Fd6c338F9893AF2203FE18Cd2Bf5dEaa7867'
+const testAMM = '0x7c27F30a7f51932cdCf7Ac8593EEb7571141F220'
 const testUser = '0x6109d8fdb3104bc329f7fa1d29c6b4a9a4d3f6ac' // address (7) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 

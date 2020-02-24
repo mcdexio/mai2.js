@@ -145,6 +145,21 @@ export async function ammDepositAndSell(
     gas)
 }
 
+export async function ammDepositAndAddLiquidity(
+  ammContract: ethers.Contract,
+  depositAmount: BigNumberish, // should be a decimal number (ie: 1.234)
+  collateralDecimals: number,
+  liquidityCollateralAmount: BigNumberish, // should be a decimal number (ie: 1.234)
+  gas: TransactGas = defaultGas
+): Promise<ethers.providers.TransactionResponse> {
+  const largeDepositAmount = normalizeBigNumberish(depositAmount).shiftedBy(collateralDecimals).dp(0, BigNumber.ROUND_DOWN)
+  const largeTradeAmount = normalizeBigNumberish(liquidityCollateralAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
+  return await ammContract.depositAndAddLiquidity(
+    largeDepositAmount.toFixed(),
+    largeTradeAmount.toFixed(),
+    gas)
+}
+
 export async function ammAddLiquidity(
   ammContract: ethers.Contract,
   collateralAmount: BigNumberish, // should be a decimal number (ie: 1.234)
