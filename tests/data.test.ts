@@ -5,7 +5,7 @@ import { normalizeBigNumberish } from '../src/utils'
 import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 
-const testRpc = 'http://server10.jy.mcarlo.com:8745'
+const testRpc = 'http://10.30.204.90:8545'
 const testPerp = '0xBa89Ed2Dd93A63e75FA9e426ad59E3bC6E36EB8d'
 const testPerpProxy = '0xD642Fd6c338F9893AF2203FE18Cd2Bf5dEaa7867'
 const testAMM = '0x7c27F30a7f51932cdCf7Ac8593EEb7571141F220'

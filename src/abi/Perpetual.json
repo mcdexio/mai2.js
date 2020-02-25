@@ -1844,7 +1844,7 @@
         "type": "uint256"
       }
     ],
-    "name": "chargeTakerDevFee",
+    "name": "claimTakerDevFee",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -1870,7 +1870,7 @@
         "type": "uint256"
       }
     ],
-    "name": "chargeMakerDevFee",
+    "name": "claimMakerDevFee",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",

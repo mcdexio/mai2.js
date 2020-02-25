@@ -21,7 +21,7 @@ import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 import BigNumber from 'bignumber.js'
 
-const testRpc = 'http://server10.jy.mcarlo.com:8745'
+const testRpc = 'http://10.30.204.90:8545'
 const testPerp = '0xb5685A79a4C6E9A645Caf4339Be1c9d1d1F09b85'
 const testAMM = '0x40Adb526cB1c92838Df48eA3f7Ea1a3c1C12B4a9'
 const testUserPK = '0x1c6a05d6d52954b74407a62f000450d0a748d26a7cc3477cd7f8d7c41d4992ce' // address (2) in our ganache test env
