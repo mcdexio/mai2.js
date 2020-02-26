@@ -18,11 +18,17 @@ function appendValue(value: BigNumber, gas: TransactGas): Object {
   }
 }
 
-export async function getPerpetualContract(perpetualAddress: string, signerOrProvider: SignerOrProvider): Promise<ethers.Contract> {
+export async function getPerpetualContract(
+  perpetualAddress: string,
+  signerOrProvider: SignerOrProvider
+): Promise<ethers.Contract> {
   return new ethers.Contract(perpetualAddress, PERPETUAL_ABI, signerOrProvider)
 }
 
-export async function getAMMContract(ammAddressOrGovParams: string | GovParams, signerOrProvider: SignerOrProvider): Promise<ethers.Contract> {
+export async function getAMMContract(
+  ammAddressOrGovParams: string | GovParams,
+  signerOrProvider: SignerOrProvider
+): Promise<ethers.Contract> {
   let address: string
   if (typeof ammAddressOrGovParams === 'string') {
     address = ammAddressOrGovParams as string
@@ -109,11 +115,7 @@ export async function ammBuy(
 ): Promise<ethers.providers.TransactionResponse> {
   const largeTradeAmount = normalizeBigNumberish(tradeAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
   const largeLimitPrice = normalizeBigNumberish(limitPrice).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
-  return await ammContract.buy(
-    largeTradeAmount.toFixed(),
-    largeLimitPrice.toFixed(),
-    deadline,
-    gas)
+  return await ammContract.buy(largeTradeAmount.toFixed(), largeLimitPrice.toFixed(), deadline, gas)
 }
 
 export async function ammSell(
@@ -125,11 +127,7 @@ export async function ammSell(
 ): Promise<ethers.providers.TransactionResponse> {
   const largeTradeAmount = normalizeBigNumberish(tradeAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
   const largeLimitPrice = normalizeBigNumberish(limitPrice).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
-  return await ammContract.sell(
-    largeTradeAmount.toFixed(),
-    largeLimitPrice.toFixed(),
-    deadline,
-    gas)
+  return await ammContract.sell(largeTradeAmount.toFixed(), largeLimitPrice.toFixed(), deadline, gas)
 }
 
 export async function ammDepositAndBuy(
@@ -141,7 +139,9 @@ export async function ammDepositAndBuy(
   deadline: number, // unix timestamp
   gas: TransactGas = defaultGas
 ): Promise<ethers.providers.TransactionResponse> {
-  const largeDepositAmount = normalizeBigNumberish(depositAmount).shiftedBy(collateralDecimals).dp(0, BigNumber.ROUND_DOWN)
+  const largeDepositAmount = normalizeBigNumberish(depositAmount)
+    .shiftedBy(collateralDecimals)
+    .dp(0, BigNumber.ROUND_DOWN)
   const largeTradeAmount = normalizeBigNumberish(tradeAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
   const largeLimitPrice = normalizeBigNumberish(limitPrice).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
   return await ammContract.depositAndBuy(
@@ -149,7 +149,8 @@ export async function ammDepositAndBuy(
     largeTradeAmount.toFixed(),
     largeLimitPrice.toFixed(),
     deadline,
-    gas)
+    gas
+  )
 }
 
 export async function ammDepositEtherAndBuy(
@@ -167,7 +168,8 @@ export async function ammDepositEtherAndBuy(
     largeTradeAmount.toFixed(),
     largeLimitPrice.toFixed(),
     deadline,
-    appendValue(largeDepositAmount, gas))
+    appendValue(largeDepositAmount, gas)
+  )
 }
 
 export async function ammDepositAndSell(
@@ -179,7 +181,9 @@ export async function ammDepositAndSell(
   deadline: number, // unix timestamp
   gas: TransactGas = defaultGas
 ): Promise<ethers.providers.TransactionResponse> {
-  const largeDepositAmount = normalizeBigNumberish(depositAmount).shiftedBy(collateralDecimals).dp(0, BigNumber.ROUND_DOWN)
+  const largeDepositAmount = normalizeBigNumberish(depositAmount)
+    .shiftedBy(collateralDecimals)
+    .dp(0, BigNumber.ROUND_DOWN)
   const largeTradeAmount = normalizeBigNumberish(tradeAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
   const largeLimitPrice = normalizeBigNumberish(limitPrice).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
   return await ammContract.depositAndSell(
@@ -187,7 +191,8 @@ export async function ammDepositAndSell(
     largeTradeAmount.toFixed(),
     largeLimitPrice.toFixed(),
     deadline,
-    gas)
+    gas
+  )
 }
 
 export async function ammDepositEtherAndSell(
@@ -205,7 +210,8 @@ export async function ammDepositEtherAndSell(
     largeTradeAmount.toFixed(),
     largeLimitPrice.toFixed(),
     deadline,
-    appendValue(largeDepositAmount, gas))
+    appendValue(largeDepositAmount, gas)
+  )
 }
 
 export async function ammDepositAndAddLiquidity(
@@ -215,12 +221,13 @@ export async function ammDepositAndAddLiquidity(
   liquidityCollateralAmount: BigNumberish, // should be a decimal number (ie: 1.234)
   gas: TransactGas = defaultGas
 ): Promise<ethers.providers.TransactionResponse> {
-  const largeDepositAmount = normalizeBigNumberish(depositAmount).shiftedBy(collateralDecimals).dp(0, BigNumber.ROUND_DOWN)
-  const largeTradeAmount = normalizeBigNumberish(liquidityCollateralAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
-  return await ammContract.depositAndAddLiquidity(
-    largeDepositAmount.toFixed(),
-    largeTradeAmount.toFixed(),
-    gas)
+  const largeDepositAmount = normalizeBigNumberish(depositAmount)
+    .shiftedBy(collateralDecimals)
+    .dp(0, BigNumber.ROUND_DOWN)
+  const largeTradeAmount = normalizeBigNumberish(liquidityCollateralAmount)
+    .shiftedBy(collateralDecimals)
+    .dp(0, BigNumber.ROUND_DOWN)
+  return await ammContract.depositAndAddLiquidity(largeDepositAmount.toFixed(), largeTradeAmount.toFixed(), gas)
 }
 
 export async function ammDepositEtherAndAddLiquidity(
@@ -230,10 +237,10 @@ export async function ammDepositEtherAndAddLiquidity(
   gas: TransactGas = defaultGas
 ): Promise<ethers.providers.TransactionResponse> {
   const largeDepositAmount = normalizeBigNumberish(depositAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
-  const largeTradeAmount = normalizeBigNumberish(liquidityCollateralAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
-  return await ammContract.depositEtherAndAddLiquidity(
-    largeTradeAmount.toFixed(),
-    appendValue(largeDepositAmount, gas))
+  const largeTradeAmount = normalizeBigNumberish(liquidityCollateralAmount)
+    .shiftedBy(DECIMALS)
+    .dp(0, BigNumber.ROUND_DOWN)
+  return await ammContract.depositEtherAndAddLiquidity(largeTradeAmount.toFixed(), appendValue(largeDepositAmount, gas))
 }
 
 export async function ammAddLiquidity(
@@ -242,9 +249,7 @@ export async function ammAddLiquidity(
   gas: TransactGas = defaultGas
 ): Promise<ethers.providers.TransactionResponse> {
   const largeTradeAmount = normalizeBigNumberish(collateralAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
-  return await ammContract.addLiquidity(
-    largeTradeAmount.toFixed(),
-    gas)
+  return await ammContract.addLiquidity(largeTradeAmount.toFixed(), gas)
 }
 
 export async function ammRemoveLiquidity(
@@ -253,7 +258,5 @@ export async function ammRemoveLiquidity(
   gas: TransactGas = defaultGas
 ): Promise<ethers.providers.TransactionResponse> {
   const largeTradeAmount = normalizeBigNumberish(shareAmount).shiftedBy(DECIMALS).dp(0, BigNumber.ROUND_DOWN)
-  return await ammContract.removeLiquidity(
-    largeTradeAmount.toFixed(),
-    gas)
+  return await ammContract.removeLiquidity(largeTradeAmount.toFixed(), gas)
 }
