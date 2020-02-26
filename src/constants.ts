@@ -14,7 +14,7 @@ export const FUNDING_TIME = 28800
 export const CONTRACT_READER_ABI: string = JSON.stringify(ContractReaderABI)
 export const PERPETUAL_ABI: string = JSON.stringify(PerpetualABI)
 export const AMM_ABI: string = JSON.stringify(AMMABI)
-export const ETH_COLLATERAL_ADDRESS = '0x0000000000000000000000000000000000000000000000000000000000000000'
+export const ETH_COLLATERAL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 export enum SIDE {
   Flat,

@@ -647,7 +647,6 @@ export function computeAMMAddLiquidity(
   const user2 = { ...user, cashBalance: user.cashBalance.minus(normalizedCollateral) }
   const newAMM = computeTrade(perp, funding, amm2, TRADE_SIDE.Buy, fairPrice, size, 0)
   const newUser = computeTrade(perp, funding, user2, TRADE_SIDE.Sell, fairPrice, size, 0)
-
   const share = normalizedTotalShare.isZero()
     ? normalizedCollateral
     : size.div(amm.accountStorage.positionSize).times(normalizedTotalShare)
