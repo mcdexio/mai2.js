@@ -121,6 +121,10 @@
             "type": "address"
           },
           {
+            "name": "shareTokenAddress",
+            "type": "address"
+          },
+          {
             "name": "totalSize",
             "type": "uint256"
           },

@@ -1,19 +1,5 @@
 [
   {
-    "constant": true,
-    "inputs": [],
-    "name": "MAX_DECIMALS",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
@@ -416,33 +402,6 @@
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "cashBalances",
-    "outputs": [
-      {
-        "name": "balance",
-        "type": "uint256"
-      },
-      {
-        "name": "appliedBalance",
-        "type": "uint256"
-      },
-      {
-        "name": "appliedHeight",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [],
     "name": "isEmergency",
     "outputs": [
@@ -624,25 +583,6 @@
     "constant": true,
     "inputs": [
       {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "socialLossPerContracts",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
         "name": "guy",
         "type": "address"
       }
@@ -656,6 +596,20 @@
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_globalConfig",
+        "type": "address"
+      }
+    ],
+    "name": "setGlobalConfig",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -820,6 +774,20 @@
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_devAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setDevAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [
       {
@@ -885,25 +853,6 @@
       {
         "name": "",
         "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "totalSizes",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
       }
     ],
     "payable": false,
@@ -1234,16 +1183,38 @@
       },
       {
         "indexed": true,
-        "name": "oldAMM",
+        "name": "previous",
         "type": "address"
       },
       {
         "indexed": true,
-        "name": "newAMM",
+        "name": "current",
         "type": "address"
       }
     ],
     "name": "AMMUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "guy",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "previous",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "current",
+        "type": "address"
+      }
+    ],
+    "name": "GlobalConfigUpdated",
     "type": "event"
   },
   {
@@ -1455,15 +1426,6 @@
   },
   {
     "constant": false,
-    "inputs": [],
-    "name": "settle",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
     "inputs": [
       {
         "name": "broker",
@@ -1590,6 +1552,15 @@
       }
     ],
     "name": "applyForWithdrawal",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "settle",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -1762,9 +1733,74 @@
       {
         "name": "guy",
         "type": "address"
+      },
+      {
+        "name": "currentMarkPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "isSafeWithPrice",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "guy",
+        "type": "address"
       }
     ],
     "name": "isBankrupt",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "guy",
+        "type": "address"
+      }
+    ],
+    "name": "isIMSafe",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "guy",
+        "type": "address"
+      },
+      {
+        "name": "currentMarkPrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "isIMSafeWithPrice",
     "outputs": [
       {
         "name": "",

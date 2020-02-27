@@ -52,6 +52,7 @@ export async function getPerpetualStorage(
   const p = await contractReader.getPerpetualStorage(perpetualContractAddress)
   return {
     collateralTokenAddress: normalizeAddress(p.collateralTokenAddress),
+    shareTokenAddress: normalizeAddress(p.shareTokenAddress),
     totalSize: normalizeBigNumberish(p.totalSize).shiftedBy(-DECIMALS),
     longSocialLossPerContract: normalizeBigNumberish(p.longSocialLossPerContract).shiftedBy(-DECIMALS),
     shortSocialLossPerContract: normalizeBigNumberish(p.shortSocialLossPerContract).shiftedBy(-DECIMALS),

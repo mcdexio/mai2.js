@@ -54,20 +54,6 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
     "name": "priceFeeder",
     "outputs": [
       {
@@ -168,6 +154,20 @@
     "type": "function"
   },
   {
+    "constant": true,
+    "inputs": [],
+    "name": "shareToken",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": false,
     "inputs": [
       {
@@ -189,39 +189,6 @@
       {
         "name": "",
         "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "shareBalance",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "exchangeAddress",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
       }
     ],
     "payable": false,
@@ -339,6 +306,10 @@
       {
         "name": "_priceFeeder",
         "type": "address"
+      },
+      {
+        "name": "_shareToken",
+        "type": "address"
       }
     ],
     "payable": false,
@@ -412,17 +383,12 @@
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "shareBalanceOf",
+    "inputs": [],
+    "name": "shareTokenAddress",
     "outputs": [
       {
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "payable": false,

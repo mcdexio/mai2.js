@@ -1,5 +1,5 @@
 import { getContractReader, getGovParams } from '../src/data'
-import { GovParams, TransactGas } from '../src/types'
+import { TransactGas } from '../src/types'
 import { getPerpetualContract, getAMMContract } from '../src/transact'
 import {
   perpetualSetBroker,
@@ -22,23 +22,15 @@ import { ethers } from 'ethers'
 import BigNumber from 'bignumber.js'
 
 const testRpc = 'http://10.30.204.90:8545'
-const testPerp = '0xb5685A79a4C6E9A645Caf4339Be1c9d1d1F09b85'
-const testAMM = '0x40Adb526cB1c92838Df48eA3f7Ea1a3c1C12B4a9'
+const testPerp = '0x42212a08a58fBFBCC05016010FDFda825DCB4406'
+const testPerpProxy = '0x1F5A10E2224F861e91cfc11E789d8090E6f9e03d'
+const testAMM = '0xf3785D2F5A8ccF8FA91aE0cf3A1e9C4C0074D137'
 const testUserPK = '0x1c6a05d6d52954b74407a62f000450d0a748d26a7cc3477cd7f8d7c41d4992ce' // address (2) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 const walletWithProvider = new ethers.Wallet(testUserPK, rpcProvider)
 const testGas: TransactGas = { gasLimit: 1234567, gasPrice: new ethers.utils.BigNumber('12345') }
 
 extendExpect()
-
-let govParams: GovParams
-let testAMMAddress: string
-
-beforeAll(async function () {
-  const contractReader: ethers.Contract = await getContractReader(rpcProvider)
-  govParams = await getGovParams(contractReader, testPerp)
-  testAMMAddress = govParams.amm
-})
 
 it('perp.applyForWithdrawal', async function () {
   const c = await getPerpetualContract(testPerp, walletWithProvider)
@@ -50,7 +42,7 @@ it('perp.applyForWithdrawal', async function () {
 
 it('perp.setBroker', async function () {
   const c = await getPerpetualContract(testPerp, walletWithProvider)
-  const tx = await perpetualSetBroker(c, testAMM, testGas)
+  const tx = await perpetualSetBroker(c, testPerpProxy, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
   await tx.wait()
@@ -66,15 +58,17 @@ it('perp.deposit', async function () {
 
 it('perp.depositAndSetBroker', async function () {
   const c = await getPerpetualContract(testPerp, walletWithProvider)
-  const tx = await perpetualDepositAndSetBroker(c, new BigNumber('2'), 18, testAMM, testGas)
+  const tx = await perpetualDepositAndSetBroker(c, new BigNumber('2'), 18, testPerpProxy, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
   await tx.wait()
 })
 
 it('get AMM by GovParams', async function () {
+  const contractReader: ethers.Contract = await getContractReader(rpcProvider)
+  const govParams = await getGovParams(contractReader, testPerp)
   const c = await getAMMContract(govParams, walletWithProvider)
-  expect(c.address).toEqual(testAMMAddress)
+  expect(c.address).toEqual(testAMM)
 })
 
 it('amm.depositAndBuy', async function () {

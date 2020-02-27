@@ -14,8 +14,8 @@ import { ethers } from 'ethers'
 import BigNumber from 'bignumber.js'
 
 const testRpc = 'http://10.30.204.90:8545'
-const testPerp = '0x1d9dce39b8421498df93655C071540C687EfB738'
-const testAMM = '0x5879B3F2533f95A4B9B68943D8FDB8940f0D06A0'
+const testPerp = '0x1dA36c182fEb87fd6b81688AD2b011Af7C751117'
+const testAMM = '0x26016acC523F0c8fF00a10a9746cAa7163311722'
 const testUserPK = '0x1c6a05d6d52954b74407a62f000450d0a748d26a7cc3477cd7f8d7c41d4992ce' // address (2) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 const walletWithProvider = new ethers.Wallet(testUserPK, rpcProvider)

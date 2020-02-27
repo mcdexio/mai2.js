@@ -6,9 +6,9 @@ import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 
 const testRpc = 'http://10.30.204.90:8545'
-const testPerp = '0xBa89Ed2Dd93A63e75FA9e426ad59E3bC6E36EB8d'
-const testPerpProxy = '0xD642Fd6c338F9893AF2203FE18Cd2Bf5dEaa7867'
-const testAMM = '0x7c27F30a7f51932cdCf7Ac8593EEb7571141F220'
+const testPerp = '0x38c2f2E9c2Fc188199eD09c601f753Cf4e8e5bBB'
+const testPerpProxy = '0xfd0cD3e51C8eC50004462204F0bC949f22A91594'
+const testAMM = '0x31F9C5476dDA1E4BF1BDe4Ca5B74eFa4c1d2282e'
 const testUser = '0x6109d8fdb3104bc329f7fa1d29c6b4a9a4d3f6ac' // address (7) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 
@@ -44,6 +44,10 @@ it('perp', async function () {
   expect(p.collateralTokenAddress).not.toEqual('')
   expect(p.collateralTokenAddress).not.toEqual('0x')
   expect(p.collateralTokenAddress).not.toEqual('0x0000000000000000000000000000000000000000')
+  expect(p.shareTokenAddress).not.toEqual('')
+  expect(p.shareTokenAddress).not.toEqual('0x')
+  expect(p.shareTokenAddress).not.toEqual('0x0000000000000000000000000000000000000000')
+  expect(p.shareTokenAddress).not.toEqual(p.collateralTokenAddress)
   expect(p.totalSize).toBeBigNumber(normalizeBigNumberish('1000000'))
   expect(p.longSocialLossPerContract).toBeBigNumber(normalizeBigNumberish('0'))
   expect(p.shortSocialLossPerContract).toBeBigNumber(normalizeBigNumberish('0'))

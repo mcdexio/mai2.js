@@ -51,6 +51,7 @@ export interface GovParams extends FundingGovParams {
 
 export interface PerpetualStorage {
   collateralTokenAddress: string
+  shareTokenAddress: string
   totalSize: BigNumber
   longSocialLossPerContract: BigNumber
   shortSocialLossPerContract: BigNumber
