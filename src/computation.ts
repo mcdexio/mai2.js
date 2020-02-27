@@ -663,12 +663,19 @@ export function computeAMMRemoveLiquidity(
 ): { amm: AccountStorage; user: AccountStorage } {
   const normalizedTotalShare = normalizeBigNumberish(totalShare)
   const normalizedShare = normalizeBigNumberish(shareAmount)
-  const entryPrice = amm.accountComputed.entryPrice
   const percent = normalizedShare.div(normalizedTotalShare)
   const transferSize = amm.accountStorage.positionSize.times(percent)
-  const transferCollateral = amm.ammComputed.availableMargin.plus(amm.accountStorage.entryValue.times(percent))
-  const ammAccount = computeTrade(perp, funding, amm.accountStorage, TRADE_SIDE.Sell, entryPrice, transferSize, 0)
-  const userAccount = computeTrade(perp, funding, user, TRADE_SIDE.Buy, entryPrice, transferSize, 0)
+  const transferCollateral = amm.ammComputed.fairPrice.times(transferSize).times(2)
+  const ammAccount = computeTrade(
+    perp,
+    funding,
+    amm.accountStorage,
+    TRADE_SIDE.Sell,
+    funding.markPrice,
+    transferSize,
+    0
+  )
+  const userAccount = computeTrade(perp, funding, user, TRADE_SIDE.Buy, funding.markPrice, transferSize, 0)
   const amm2 = { ...ammAccount, cashBalance: ammAccount.cashBalance.minus(transferCollateral) }
   const user2 = { ...userAccount, cashBalance: userAccount.cashBalance.plus(transferCollateral) }
 
