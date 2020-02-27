@@ -76,6 +76,7 @@ const perpetualStorage: PerpetualStorage = {
   isEmergency: false,
   isGlobalSettled: false,
   globalSettlePrice: new BigNumber(0),
+  shareTokenAddress: '',
   fundingParams: fundingParams
 }
 
