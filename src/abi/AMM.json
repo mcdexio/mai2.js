@@ -19,10 +19,6 @@
     "name": "gov",
     "outputs": [
       {
-        "name": "minPoolSize",
-        "type": "uint256"
-      },
-      {
         "name": "poolFeeRate",
         "type": "uint256"
       },
@@ -63,24 +59,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "key",
-        "type": "bytes32"
-      },
-      {
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "setGovernanceParameter",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -203,10 +181,6 @@
       {
         "components": [
           {
-            "name": "minPoolSize",
-            "type": "uint256"
-          },
-          {
             "name": "poolFeeRate",
             "type": "uint256"
           },
@@ -237,6 +211,24 @@
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "name": "value",
+        "type": "int256"
+      }
+    ],
+    "name": "setGovernanceParameter",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -327,7 +319,7 @@
       {
         "indexed": false,
         "name": "value",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "name": "ContractParameterUpdated",

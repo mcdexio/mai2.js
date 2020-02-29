@@ -56,10 +56,6 @@
           {
             "components": [
               {
-                "name": "minPoolSize",
-                "type": "uint256"
-              },
-              {
                 "name": "poolFeeRate",
                 "type": "uint256"
               },
@@ -203,11 +199,11 @@
             "components": [
               {
                 "name": "balance",
-                "type": "uint256"
+                "type": "int256"
               },
               {
                 "name": "appliedBalance",
-                "type": "uint256"
+                "type": "int256"
               },
               {
                 "name": "appliedHeight",

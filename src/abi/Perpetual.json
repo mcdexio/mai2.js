@@ -120,11 +120,11 @@
         "components": [
           {
             "name": "balance",
-            "type": "uint256"
+            "type": "int256"
           },
           {
             "name": "appliedBalance",
-            "type": "uint256"
+            "type": "int256"
           },
           {
             "name": "appliedHeight",
@@ -283,7 +283,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "payable": false,
@@ -469,7 +469,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "payable": false,
@@ -591,7 +591,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "payable": false,
@@ -986,7 +986,7 @@
       {
         "indexed": false,
         "name": "cashBalance",
-        "type": "uint256"
+        "type": "int256"
       },
       {
         "indexed": false,
@@ -1038,7 +1038,7 @@
       {
         "indexed": false,
         "name": "cashBalance",
-        "type": "uint256"
+        "type": "int256"
       },
       {
         "indexed": false,
@@ -1090,7 +1090,7 @@
       {
         "indexed": false,
         "name": "cashBalance",
-        "type": "uint256"
+        "type": "int256"
       },
       {
         "indexed": false,
@@ -1142,7 +1142,7 @@
       {
         "indexed": false,
         "name": "cashBalance",
-        "type": "uint256"
+        "type": "int256"
       },
       {
         "indexed": false,
@@ -1310,13 +1310,13 @@
       },
       {
         "indexed": false,
-        "name": "amount",
-        "type": "uint256"
+        "name": "wadAmount",
+        "type": "int256"
       },
       {
         "indexed": false,
         "name": "balance",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "name": "Deposit",
@@ -1332,18 +1332,18 @@
       },
       {
         "indexed": false,
-        "name": "amount",
-        "type": "uint256"
+        "name": "wadAmount",
+        "type": "int256"
       },
       {
         "indexed": false,
         "name": "balance",
-        "type": "uint256"
+        "type": "int256"
       },
       {
         "indexed": false,
         "name": "appliedBalance",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "name": "Withdraw",
@@ -1359,7 +1359,12 @@
       },
       {
         "indexed": false,
-        "name": "amount",
+        "name": "wadAmount",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "name": "appliedHeight",
         "type": "uint256"
       }
     ],
@@ -1381,8 +1386,8 @@
       },
       {
         "indexed": false,
-        "name": "amount",
-        "type": "uint256"
+        "name": "wadAmount",
+        "type": "int256"
       }
     ],
     "name": "Transfer",

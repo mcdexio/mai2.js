@@ -6,9 +6,9 @@ import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 
 const testRpc = 'http://10.30.204.90:8545'
-const testPerp = '0x38c2f2E9c2Fc188199eD09c601f753Cf4e8e5bBB'
-const testPerpProxy = '0xfd0cD3e51C8eC50004462204F0bC949f22A91594'
-const testAMM = '0x31F9C5476dDA1E4BF1BDe4Ca5B74eFa4c1d2282e'
+const testPerp = '0x51f6951A9341b9f0e35ED65581F5f19355D2C209'
+const testPerpProxy = '0x7491A05F9443D0Cc900D5A6fE608C9b34CC00531'
+const testAMM = '0xD6E3B17706Ef068345B45f56FDeEd93239587764'
 const testUser = '0x6109d8fdb3104bc329f7fa1d29c6b4a9a4d3f6ac' // address (7) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 
