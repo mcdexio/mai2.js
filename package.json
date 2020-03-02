@@ -1,10 +1,10 @@
 {
   "name": "mai2.js",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Mai Protocol v2 JavaScript API",
-  "homepage": "http://",
+  "homepage": "http://github.com/mcdex/mai2.js",
   "author": "Liu Jie <jie@mcarlo.com> (https://github.com/jie85)",
-  "contributors": [],
+  "contributors": ["Zhu Tianchi <zhutianchi@mcarlo.com>"],
   "keywords": [ "mai", "protocol", "mcdex" ],
   "main": "./dist/index.js",
   "jsnext:main": "./dist/index.js",
@@ -14,12 +14,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mcdexio/mai2.js"
+    "url": "https://github.com/mcarloai/mai2.js"
   },
   "bugs": {
-    "url": "https://github.com/mcdexio/mai2.js/issues"
+    "url": "https://github.com/mcarloai/mai2.js/issues"
   },
-  "license": "GPLv3",
+  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^24.0.25",
     "jest": "^24.9.0",
