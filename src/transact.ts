@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import { SignerOrProvider, GovParams } from './types'
 import { PERPETUAL_ABI, AMM_ABI, DECIMALS } from './constants'
 import { BigNumberish, TransactGas } from './types'
-import { normalizeBigNumberish } from '../src/utils'
+import { normalizeBigNumberish } from './utils'
 import BigNumber from 'bignumber.js'
 
 export let defaultGas: TransactGas = {
