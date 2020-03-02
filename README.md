@@ -2,11 +2,13 @@
 
 
 ## INSTALL
-```npm install @mcdex/mai2.js
+```
+npm install @mcdex/mai2.js
 ```
 
 ## TEST
-```npm run test
+```
+npm run test
 ```
 
 ### mai2.js devloper only: prepare an env for unit tests
