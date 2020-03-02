@@ -21,10 +21,10 @@ import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 import BigNumber from 'bignumber.js'
 
-const testRpc = 'http://10.30.204.90:8545'
-const testPerp = '0x3d6859586e849Ba91F1a1b607F955C997af09da7'
-const testPerpProxy = '0x2C653F1a13A16F759AedfFE9C38287Ce6B2E98DA'
-const testAMM = '0x412A9DBDeC9Ef2156aa7eeFA9Eff335C870face0'
+const testRpc = 'http://server10.jy.mcarlo.com:8745'
+const testPerp = '0xdd22dF8d692f9e4727A2a5a8Ed1C2d1354793389'
+const testPerpProxy = '0xF070E6C301C9Cd082d136Ef8d8C8ff4915fB7ADe'
+const testAMM = '0xb5220f24124A6D43CB0EF360236bd10Ba4170e94'
 const testUserPK = '0x1c6a05d6d52954b74407a62f000450d0a748d26a7cc3477cd7f8d7c41d4992ce' // address (2) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 const walletWithProvider = new ethers.Wallet(testUserPK, rpcProvider)
