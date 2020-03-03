@@ -4,7 +4,7 @@
   "description": "Mai Protocol v2 JavaScript API",
   "homepage": "http://github.com/mcdex/mai2.js",
   "author": "Liu Jie <jie@mcarlo.com> (https://github.com/jie85)",
-  "contributors": ["Zhu Tianchi <zhutianchi@mcarlo.com>"],
+  "contributors": [ "Zhu Tianchi <zhutianchi@mcarlo.com>" ],
   "keywords": [ "mai", "protocol", "mcdex" ],
   "main": "./dist/index.js",
   "jsnext:main": "./dist/index.js",
@@ -31,6 +31,7 @@
     "bignumber.js": "^9.0.0",
     "ethers": "^4.0.43"
   },
+  "prepare": "npm run build",
   "scripts": {
     "test": "jest",
     "coverage": "jest --coverage",
