@@ -6,11 +6,30 @@ import { extendExpect } from './helper'
 import { ethers } from 'ethers'
 import { testRpc, testUser, dataTestAddress } from './eth_address'
 
+import { mintTestToken, createPoolForTestToken, approvePerp, isPoolEmpty } from './init_env'
+import { testAdmin, testU2, testContractReader } from './eth_address'
+import { CONTRACT_READER_ADDRESS, SUPPORTED_NETWORK_ID } from '../src/constants'
+
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
+
+beforeAll(async done => {
+  if (await isPoolEmpty(dataTestAddress, rpcProvider)) {
+    console.log('> initializing dataTestAddress')
+    await mintTestToken(dataTestAddress, testAdmin, rpcProvider)
+    await createPoolForTestToken(dataTestAddress, testUser, rpcProvider)
+    await approvePerp(dataTestAddress, testU2, rpcProvider)
+    console.log('> initializing dataTestAddress done')
+  } else {
+    console.log('> already initialized')
+  }
+
+  CONTRACT_READER_ADDRESS[SUPPORTED_NETWORK_ID.S1] = testContractReader
+  done()
+})
 
 extendExpect()
 
-it('param', async function () {
+it('param', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: GovParams = await getGovParams(contractReader, dataTestAddress.perp)
   expect(p.amm).toEqual(dataTestAddress.amm)
@@ -34,7 +53,7 @@ it('param', async function () {
   expect(p.fundingDampener).toBeBigNumber(normalizeBigNumberish('0.0005'))
 })
 
-it('perp', async function () {
+it('perp', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: PerpetualStorage = await getPerpetualStorage(contractReader, dataTestAddress.perp)
   expect(p.collateralTokenAddress).not.toEqual('')
@@ -57,7 +76,7 @@ it('perp', async function () {
   expect(p.fundingParams.lastFundingTimestamp).not.toEqual(0)
 })
 
-it('account', async function () {
+it('account', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: AccountStorage = await getAccountStorage(contractReader, dataTestAddress.perp, testUser)
   expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('15000')) // position * 3 * price

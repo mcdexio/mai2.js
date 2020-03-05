@@ -145,14 +145,6 @@ export interface TradeCost {
   marginCost: BigNumber
   fee: BigNumber
 }
-
-export interface TransactGas {
-  // The maximum units of gas for the transaction to use
-  gasLimit: number
-  // The price (in wei) per unit of gas, set null use
-  gasPrice?: ethers.utils.BigNumber | null
-}
-
 export interface NetworkIdAndProvider {
   networkId: number
   provider: ethers.providers.Provider
