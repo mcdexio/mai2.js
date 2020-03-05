@@ -71,12 +71,12 @@ export async function getPerpetualStorage(
   }
 }
 
-export async function getAccountStroage(
+export async function getAccountStorage(
   contractReader: ethers.Contract,
   perpetualContractAddress: string,
   userAddress: string
 ): Promise<AccountStorage> {
-  const p = await contractReader.getAccountStroage(perpetualContractAddress, userAddress)
+  const p = await contractReader.getAccountStorage(perpetualContractAddress, userAddress)
   return {
     cashBalance: normalizeBigNumberish(p.collateral.balance).shiftedBy(-DECIMALS),
     broker: {

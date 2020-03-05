@@ -191,7 +191,7 @@
         "type": "address"
       }
     ],
-    "name": "getAccountStroage",
+    "name": "getAccountStorage",
     "outputs": [
       {
         "components": [

@@ -1,4 +1,4 @@
-import { getContractReader, getGovParams, getPerpetualStorage, getAccountStroage } from '../src/data'
+import { getContractReader, getGovParams, getPerpetualStorage, getAccountStorage } from '../src/data'
 import { SIDE, _0, _1, _1000, _0_1, _0_01 } from '../src/constants'
 import { GovParams, PerpetualStorage, AccountStorage } from '../src/types'
 import { normalizeBigNumberish } from '../src/utils'
@@ -59,7 +59,7 @@ it('perp', async function () {
 
 it('account', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
-  const p: AccountStorage = await getAccountStroage(contractReader, dataTestAddress.perp, testUser)
+  const p: AccountStorage = await getAccountStorage(contractReader, dataTestAddress.perp, testUser)
   expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('15000')) // position * 3 * price
   expect(p.broker.previousBroker).toEqual('0x0000000000000000000000000000000000000000')
   expect(p.broker.previousAppliedHeight).toEqual(0)
