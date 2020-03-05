@@ -220,7 +220,8 @@ describe('funding', function() {
   })
 
   const perpetualStorage: PerpetualStorage = {
-    collateralTokenAddress: 'xxxx',
+    collateralTokenAddress: '0x0000000000000000000000000000000000000000',
+    shareTokenAddress: '0x0000000000000000000000000000000000000000',
     totalSize: new BigNumber('1000'),
     longSocialLossPerContract: new BigNumber('0.1'),
     shortSocialLossPerContract: new BigNumber('0.5'),

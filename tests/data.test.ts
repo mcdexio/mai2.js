@@ -4,21 +4,17 @@ import { GovParams, PerpetualStorage, AccountStorage } from '../src/types'
 import { normalizeBigNumberish } from '../src/utils'
 import { extendExpect } from './helper'
 import { ethers } from 'ethers'
+import { testRpc, testUser, dataTestAddress } from './eth_address'
 
-const testRpc = 'http://server10.jy.mcarlo.com:8745'
-const testPerp = '0x434ae4b4dD0069D59a4774d4FE8eE293F84c0baE'
-const testPerpProxy = '0x9Cd17af25a2C4a0089805D23e1290B21C03868b7'
-const testAMM = '0xeC3Be94B89219E73fAB12D3C0E3a1B9E4E62d482'
-const testUser = '0x6109d8fdb3104bc329f7fa1d29c6b4a9a4d3f6ac' // address (7) in our ganache test env
 const rpcProvider = new ethers.providers.JsonRpcProvider(testRpc)
 
 extendExpect()
 
 it('param', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
-  const p: GovParams = await getGovParams(contractReader, testPerp)
-  expect(p.amm).toEqual(testAMM)
-  expect(p.poolAccount).toEqual(testPerpProxy)
+  const p: GovParams = await getGovParams(contractReader, dataTestAddress.perp)
+  expect(p.amm).toEqual(dataTestAddress.amm)
+  expect(p.poolAccount).toEqual(dataTestAddress.perpProxy)
 
   expect(p.withdrawalLockBlockCount).toEqual(5)
   expect(p.brokerLockBlockCount).toEqual(5)
@@ -40,7 +36,7 @@ it('param', async function () {
 
 it('perp', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
-  const p: PerpetualStorage = await getPerpetualStorage(contractReader, testPerp)
+  const p: PerpetualStorage = await getPerpetualStorage(contractReader, dataTestAddress.perp)
   expect(p.collateralTokenAddress).not.toEqual('')
   expect(p.collateralTokenAddress).not.toEqual('0x')
   expect(p.collateralTokenAddress).not.toEqual('0x0000000000000000000000000000000000000000')
@@ -63,11 +59,11 @@ it('perp', async function () {
 
 it('account', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
-  const p: AccountStorage = await getAccountStroage(contractReader, testPerp, testUser)
+  const p: AccountStorage = await getAccountStroage(contractReader, dataTestAddress.perp, testUser)
   expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('15000')) // position * 3 * price
   expect(p.broker.previousBroker).toEqual('0x0000000000000000000000000000000000000000')
   expect(p.broker.previousAppliedHeight).toEqual(0)
-  expect(p.broker.currentBroker).toEqual(testAMM)
+  expect(p.broker.currentBroker).toEqual(dataTestAddress.amm)
   expect(p.broker.currentAppliedHeight).toBeGreaterThan(0)
   expect(p.withdrawalApplication.amount).toBeBigNumber(normalizeBigNumberish('0'))
   expect(p.withdrawalApplication.height).toEqual(0)
