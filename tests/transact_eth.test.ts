@@ -69,7 +69,7 @@ it('amm.depositAndSell', async function() {
 
 it('amm.depositAndAddLiquidity', async function() {
   const c = await getAMMContract(transactEthTestAddress.amm, walletWithProvider)
-  const depositAmount = new BigNumber('0.005') // 1 / 200
+  const depositAmount = new BigNumber('0.21') // 1 / 200
   const collateralAmount = new BigNumber('0.1')
   const tx = await ammDepositEtherAndAddLiquidity(c, depositAmount, collateralAmount, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
