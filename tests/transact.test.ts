@@ -35,7 +35,7 @@ extendExpect()
 
 beforeAll(async done => {
   if (await isPoolEmpty(transactTestAddress, rpcProvider)) {
-    console.log('   > initializing transactTestAddress')
+    console.log('> initializing transactTestAddress')
     await mintTestToken(transactTestAddress, testAdmin, rpcProvider)
     await createPoolForTestToken(transactTestAddress, testU7, rpcProvider)
     await approvePerp(transactTestAddress, testU2, rpcProvider)
@@ -108,6 +108,7 @@ it('amm.depositAndBuy.zeroDeposit', async function() {
   const tx = await ammDepositAndBuy(c, depositAmount, 18, buyAmount, limitPrice, deadLine, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
+  await tx.wait()
 })
 
 it('amm.depositAndSell', async function() {

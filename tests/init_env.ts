@@ -16,14 +16,14 @@ const toWad = (x: any) => {
   return new BigNumber(x).times(weis).toFixed()
 }
 
-const getTestToken = async (address: string, provider: any) => {
-  return await getContract(address, MINTABLE_ERC20_ABI, provider)
+const getTestToken = async (address: string, operator: string, provider: any) => {
+  let testToken = await getContract(address, MINTABLE_ERC20_ABI)
+  return testToken.connect(provider.getSigner(operator))
 }
 
 // approve_test_token as u2
 export const approvePerp = async (addresses: any, operator: string, rpcProvider: any) => {
-  let testToken = await getTestToken(addresses.testToken, rpcProvider)
-  testToken = testToken.connect(rpcProvider.getSigner(operator))
+  let testToken = await getTestToken(addresses.testToken, operator, rpcProvider)
 
   const allowance = new BigNumber(await testToken.allowance(operator, addresses.perp))
   if (allowance.eq('0')) {
@@ -34,8 +34,7 @@ export const approvePerp = async (addresses: any, operator: string, rpcProvider:
 
 // mint_test_token as admin
 export const mintTestToken = async (addresses: any, operator: string, rpcProvider: any) => {
-  let testToken = await getTestToken(addresses.testToken, rpcProvider)
-  testToken = testToken.connect(rpcProvider.getSigner(operator))
+  let testToken = await getTestToken(addresses.testToken, operator, rpcProvider)
 
   await testToken.mint(testU7, toWad(1000000 * 3 * (1 / 120)))
   await testToken.mint(testU2, toWad(70000))

@@ -20,15 +20,16 @@ const testGas: ethers.providers.TransactionRequest = {
 
 extendExpect()
 
-beforeAll(async () => {
+beforeAll(async done => {
   if (await isPoolEmpty(transactEthTestAddress, rpcProvider)) {
-    console.log('   > initializing transactEthTestAddress')
+    console.log('> initializing transactEthTestAddress')
     await createPoolForETH(transactEthTestAddress, testU7, rpcProvider)
     console.log('> initializing transactEthTestAddress done')
   } else {
     console.log('> already initialized')
   }
   CONTRACT_READER_ADDRESS[SUPPORTED_NETWORK_ID.S1] = testContractReader
+  done()
 })
 
 it('amm.depositAndBuy', async function() {
