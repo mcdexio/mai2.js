@@ -1,0 +1,25 @@
+name: Publish
+
+on: push
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.14.1'
+          registry-url: https://npm.pkg.github.com
+          scope: '@mcarloai'
+
+      - run: npm install
+      # prepare ganache env
+      - run: npm run start_testrpc
+      - run: npm run deploy_contract
+        env:
+          ADDRESS_OUTPUT_PATH: /tmp/addresses.json
+          WRAPPER_OUTPUT_PATH: $(pwd)/tests/eth_address.ts
+          CHECKOUT_PAT: ${{ secrets.CHECKOUT_PAT }}
+
+      - run: npm test
