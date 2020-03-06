@@ -16,10 +16,19 @@ jobs:
       - run: npm install
       # prepare ganache env
       - run: npm run start_testrpc
-      - run: npm run deploy_contract
+
+      - run: |
+          git clone https://${CHECKOUT_PAT}@github.com/mcarloai/mai-protocol-v2.git
+          cd mai-protocol-v2
+          git checkout v2.5
+          npm install
+          npm run compile
+          sed -i "s/migrations_directory.*/migrations_directory: \"test_migrations\",/g" truffle.js
+          ${NPM} run migrate
+          cd ${{ github.workspace }}
         env:
-          ADDRESS_OUTPUT_PATH: /tmp/addresses.json
-          WRAPPER_OUTPUT_PATH: $(pwd)/tests/eth_address.ts
+          ADDRESS_OUTPUT_PATH: '/tmp/addresses.json'
+          WRAPPER_OUTPUT_PATH: ${{ github.workspace }}/tests/eth_address.ts
           CHECKOUT_PAT: ${{ secrets.CHECKOUT_PAT }}
 
       - run: npm test
