@@ -24,7 +24,7 @@ jobs:
           npm install
           npm run compile
           sed -i "s/migrations_directory.*/migrations_directory: \"test_migrations\",/g" truffle.js
-          ${NPM} run migrate
+          npm run migrate
           cd ${{ github.workspace }}
         env:
           ADDRESS_OUTPUT_PATH: '/tmp/addresses.json'
