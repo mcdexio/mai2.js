@@ -950,6 +950,29 @@
   },
   {
     "anonymous": false,
+    "inputs": [],
+    "name": "PerpetualCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "name": "guy",
+        "type": "address"
+      }
+    ],
+    "name": "AccountCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       {
         "indexed": true,
@@ -982,36 +1005,6 @@
         "indexed": false,
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "cashBalance",
-        "type": "int256"
-      },
-      {
-        "indexed": false,
-        "name": "side",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "name": "size",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entryValue",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entrySocialLoss",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entryFundingLoss",
-        "type": "int256"
       }
     ],
     "name": "Buy",
@@ -1034,36 +1027,6 @@
         "indexed": false,
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "cashBalance",
-        "type": "int256"
-      },
-      {
-        "indexed": false,
-        "name": "side",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "name": "size",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entryValue",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entrySocialLoss",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entryFundingLoss",
-        "type": "int256"
       }
     ],
     "name": "Sell",
@@ -1074,56 +1037,9 @@
     "inputs": [
       {
         "indexed": true,
-        "name": "guy",
+        "name": "keeper",
         "type": "address"
       },
-      {
-        "indexed": false,
-        "name": "price",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "cashBalance",
-        "type": "int256"
-      },
-      {
-        "indexed": false,
-        "name": "side",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "name": "size",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entryValue",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entrySocialLoss",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entryFundingLoss",
-        "type": "int256"
-      }
-    ],
-    "name": "Liquidator",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
       {
         "indexed": true,
         "name": "guy",
@@ -1138,39 +1054,9 @@
         "indexed": false,
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "cashBalance",
-        "type": "int256"
-      },
-      {
-        "indexed": false,
-        "name": "side",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "name": "size",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entryValue",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entrySocialLoss",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "entryFundingLoss",
-        "type": "int256"
       }
     ],
-    "name": "Liquidated",
+    "name": "Liquidate",
     "type": "event"
   },
   {
@@ -1368,7 +1254,7 @@
         "type": "uint256"
       }
     ],
-    "name": "ApplyToWithdraw",
+    "name": "ApplyForWithdrawal",
     "type": "event"
   },
   {
@@ -1820,6 +1706,37 @@
     "constant": false,
     "inputs": [
       {
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "name": "guy",
+        "type": "address"
+      },
+      {
+        "name": "maxAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "liquidateFrom",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
         "name": "guy",
         "type": "address"
       },
@@ -1829,7 +1746,16 @@
       }
     ],
     "name": "liquidate",
-    "outputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"

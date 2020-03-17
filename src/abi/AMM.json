@@ -322,7 +322,7 @@
         "type": "int256"
       }
     ],
-    "name": "ContractParameterUpdated",
+    "name": "GovernanceParameterUpdated",
     "type": "event"
   },
   {
