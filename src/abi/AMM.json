@@ -312,6 +312,40 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "name": "lastFundingTime",
+            "type": "uint256"
+          },
+          {
+            "name": "lastPremium",
+            "type": "int256"
+          },
+          {
+            "name": "lastEMAPremium",
+            "type": "int256"
+          },
+          {
+            "name": "lastIndexPrice",
+            "type": "uint256"
+          },
+          {
+            "name": "accumulatedFundingPerContract",
+            "type": "int256"
+          }
+        ],
+        "indexed": false,
+        "name": "fundingState",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpdateFundingRate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "name": "key",
         "type": "bytes32"
@@ -740,37 +774,6 @@
         "type": "uint256"
       }
     ],
-    "name": "buyFrom",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "trader",
-        "type": "address"
-      },
-      {
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "name": "limitPrice",
-        "type": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256"
-      }
-    ],
     "name": "buyFromWhitelisted",
     "outputs": [
       {
@@ -821,37 +824,6 @@
     "outputs": [
       {
         "name": "price",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "trader",
-        "type": "address"
-      },
-      {
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "name": "limitPrice",
-        "type": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256"
-      }
-    ],
-    "name": "sellFrom",
-    "outputs": [
-      {
-        "name": "",
         "type": "uint256"
       }
     ],

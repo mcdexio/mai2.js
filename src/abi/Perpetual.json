@@ -950,12 +950,6 @@
   },
   {
     "anonymous": false,
-    "inputs": [],
-    "name": "PerpetualCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [
       {
         "indexed": true,
@@ -968,7 +962,7 @@
         "type": "address"
       }
     ],
-    "name": "AccountCreated",
+    "name": "CreateAccount",
     "type": "event"
   },
   {
@@ -1057,6 +1051,79 @@
       }
     ],
     "name": "Liquidate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "side",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "name": "newVal",
+        "type": "uint256"
+      }
+    ],
+    "name": "SocialLoss",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "guy",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "name": "side",
+            "type": "uint8"
+          },
+          {
+            "name": "size",
+            "type": "uint256"
+          },
+          {
+            "name": "entryValue",
+            "type": "uint256"
+          },
+          {
+            "name": "entrySocialLoss",
+            "type": "uint256"
+          },
+          {
+            "name": "entryFundingLoss",
+            "type": "int256"
+          }
+        ],
+        "indexed": false,
+        "name": "account",
+        "type": "tuple"
+      },
+      {
+        "indexed": false,
+        "name": "perpetualTotalSize",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdatePositionAccount",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "newVal",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdateInsuranceFund",
     "type": "event"
   },
   {

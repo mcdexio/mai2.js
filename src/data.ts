@@ -56,6 +56,7 @@ export async function getPerpetualStorage(
     totalSize: normalizeBigNumberish(p.totalSize).shiftedBy(-DECIMALS),
     longSocialLossPerContract: normalizeBigNumberish(p.longSocialLossPerContract).shiftedBy(-DECIMALS),
     shortSocialLossPerContract: normalizeBigNumberish(p.shortSocialLossPerContract).shiftedBy(-DECIMALS),
+    insuranceFundBalance: normalizeBigNumberish(p.insuranceFundBalance).shiftedBy(-DECIMALS),
     isEmergency: p.isEmergency,
     isGlobalSettled: p.isGlobalSettled,
     globalSettlePrice: normalizeBigNumberish(p.globalSettlePrice).shiftedBy(-DECIMALS),

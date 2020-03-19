@@ -133,6 +133,10 @@
             "type": "uint256"
           },
           {
+            "name": "insuranceFundBalance",
+            "type": "uint256"
+          },
+          {
             "name": "isEmergency",
             "type": "bool"
           },

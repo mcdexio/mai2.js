@@ -55,6 +55,7 @@ export interface PerpetualStorage {
   totalSize: BigNumber
   longSocialLossPerContract: BigNumber
   shortSocialLossPerContract: BigNumber
+  insuranceFundBalance: BigNumber
   isEmergency: boolean
   isGlobalSettled: boolean
   globalSettlePrice: BigNumber
