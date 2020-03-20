@@ -244,7 +244,7 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
   const entryPrice = s.positionSize.isZero() ? _0 : s.entryValue.div(s.positionSize)
   const markPrice = f.markPrice
   const positionValue = markPrice.times(s.positionSize)
-  const positionMargin = markPrice.times(s.positionSize).times(g.intialMargin)
+  const positionMargin = markPrice.times(s.positionSize).times(g.initialMargin)
   const maintenanceMargin = markPrice.times(s.positionSize).times(g.maintenanceMargin)
   const longFundingLoss = f.accumulatedFundingPerContract.times(s.positionSize).minus(s.entryFundingLoss)
   let socialLoss, fundingLoss, pnl1, liquidationPrice, inverseEntryPrice, inverseLiquidationPrice: BigNumber

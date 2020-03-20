@@ -38,7 +38,7 @@ it('param', async function () {
   expect(p.withdrawalLockBlockCount).toEqual(5)
   expect(p.brokerLockBlockCount).toEqual(5)
 
-  expect(p.intialMargin).toBeBigNumber(normalizeBigNumberish('0.1'))
+  expect(p.initialMargin).toBeBigNumber(normalizeBigNumberish('0.1'))
   expect(p.maintenanceMargin).toBeBigNumber(normalizeBigNumberish('0.05'))
   expect(p.liquidationSafetyFactor).toBeBigNumber(normalizeBigNumberish('0.2'))
   expect(p.liquidationPenaltyRate).toBeBigNumber(normalizeBigNumberish('0.005'))

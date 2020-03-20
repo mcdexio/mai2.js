@@ -27,7 +27,7 @@ export async function getGovParams(
     brokerLockBlockCount: p.brokerLockBlockCount.toNumber(),
 
     // perpetual
-    intialMargin: normalizeBigNumberish(p.perpGovernanceConfig.initialMarginRate).shiftedBy(-DECIMALS),
+    initialMargin: normalizeBigNumberish(p.perpGovernanceConfig.initialMarginRate).shiftedBy(-DECIMALS),
     maintenanceMargin: normalizeBigNumberish(p.perpGovernanceConfig.maintenanceMarginRate).shiftedBy(-DECIMALS),
     liquidationSafetyFactor: normalizeBigNumberish(p.perpGovernanceConfig.liquidationSafetyFactor).shiftedBy(-DECIMALS),
     liquidationPenaltyRate: normalizeBigNumberish(p.perpGovernanceConfig.liquidationPenaltyRate).shiftedBy(-DECIMALS),

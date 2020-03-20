@@ -32,7 +32,7 @@ export interface GovParams extends FundingGovParams {
   brokerLockBlockCount: number
 
   // perpetual
-  intialMargin: BigNumber
+  initialMargin: BigNumber
   maintenanceMargin: BigNumber
   liquidationSafetyFactor: BigNumber
   liquidationPenaltyRate: BigNumber

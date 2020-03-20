@@ -33,7 +33,7 @@ extendExpect()
 const govParams: GovParams = {
   withdrawalLockBlockCount: 2,
   brokerLockBlockCount: 2,
-  intialMargin: new BigNumber(0.1),
+  initialMargin: new BigNumber(0.1),
   maintenanceMargin: new BigNumber(0.05),
   liquidationSafetyFactor: new BigNumber(0.1),
   liquidationPenaltyRate: new BigNumber(0.01),
