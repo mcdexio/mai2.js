@@ -228,7 +228,8 @@ describe('funding', function () {
     isEmergency: false,
     isGlobalSettled: false,
     globalSettlePrice: new BigNumber(0),
-    fundingParams: fundingParams
+    fundingParams: fundingParams,
+    insuranceFundBalance: new BigNumber(0)
   }
 
   getAccumulatedFundingCase1.forEach((element, index) => {
