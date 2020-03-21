@@ -950,6 +950,12 @@
   },
   {
     "anonymous": false,
+    "inputs": [],
+    "name": "CreatePerpetual",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       {
         "indexed": true,
