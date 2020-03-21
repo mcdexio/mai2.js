@@ -6,7 +6,8 @@ import AMMABI from './abi/AMM.json'
 export enum SUPPORTED_NETWORK_ID {
   Mainnet = 1,
   Ropsten = 3,
-  S1 = 66
+  S1 = 66,
+  S10POA = 1337
 }
 
 export const DECIMALS = 18
