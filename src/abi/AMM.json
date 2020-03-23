@@ -310,6 +310,12 @@
   },
   {
     "anonymous": false,
+    "inputs": [],
+    "name": "CreateAMM",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       {
         "components": [

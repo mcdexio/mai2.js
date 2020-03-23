@@ -320,20 +320,6 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "isTokenizedCollateral",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [
       {
         "name": "",
@@ -923,11 +909,11 @@
   {
     "inputs": [
       {
-        "name": "_globalConfig",
+        "name": "globalConfig",
         "type": "address"
       },
       {
-        "name": "_devAddress",
+        "name": "devAddress",
         "type": "address"
       },
       {
@@ -1142,11 +1128,6 @@
       },
       {
         "indexed": true,
-        "name": "previous",
-        "type": "address"
-      },
-      {
-        "indexed": true,
         "name": "current",
         "type": "address"
       }
@@ -1164,7 +1145,19 @@
       },
       {
         "indexed": true,
-        "name": "previous",
+        "name": "current",
+        "type": "address"
+      }
+    ],
+    "name": "DevAddressUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "guy",
         "type": "address"
       },
       {
