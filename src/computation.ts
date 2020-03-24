@@ -533,6 +533,30 @@ export function computeTradeCost(
   return { account, marginCost, fee }
 }
 
+export function computeInverseTradeCost(
+  g: GovParams,
+  p: PerpetualStorage,
+  f: FundingResult,
+  a: AccountDetails,
+  side: TRADE_SIDE,
+  price: BigNumberish,
+  amount: BigNumberish,
+  leverage: BigNumberish,
+  feeRate: BigNumberish
+): TradeCost {
+  const normalizedLeverage = normalizeBigNumberish(leverage)
+  if (!normalizedLeverage.isPositive()) {
+    throw Error(`bad leverage ${normalizedLeverage}`)
+  }
+  const accountStorage = computeTrade(p, f, a.accountStorage, inverseSide(side), inversePrice(price), amount, feeRate)
+  const account = computeAccount(accountStorage, g, p, f)
+  const positionMargin = accountStorage.positionSize.times(f.markPrice).div(normalizedLeverage)
+  const marginCost = BigNumber.max(_0, positionMargin.minus(account.accountComputed.marginBalance))
+  const fee = computeFee(inversePrice(price), amount, feeRate)
+
+  return { account, marginCost, fee }
+}
+
 export interface AMMTradeCost extends TradeCost {
   estimatedPrice: BigNumber
   limitSlippage: BigNumber
