@@ -967,23 +967,6 @@
       },
       {
         "indexed": false,
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "Pay",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "name": "price",
         "type": "uint256"
       },
@@ -1100,6 +1083,11 @@
       {
         "indexed": false,
         "name": "perpetualTotalSize",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "price",
         "type": "uint256"
       }
     ],
@@ -1340,9 +1328,41 @@
         "indexed": false,
         "name": "wadAmount",
         "type": "int256"
+      },
+      {
+        "indexed": false,
+        "name": "balanceFrom",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "name": "balanceTo",
+        "type": "int256"
       }
     ],
     "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "guy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "wadAmount",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "name": "balance",
+        "type": "int256"
+      }
+    ],
+    "name": "InternalUpdateBalance",
     "type": "event"
   },
   {
