@@ -49,7 +49,7 @@ export interface GovParams extends FundingGovParams {
   fundingDampener: BigNumber
 }
 
-export interface PerpetualStorage {
+export interface PerpetualStorage extends FundingParams {
   collateralTokenAddress: string
   shareTokenAddress: string
   totalSize: BigNumber
@@ -59,7 +59,6 @@ export interface PerpetualStorage {
   isEmergency: boolean
   isGlobalSettled: boolean
   globalSettlePrice: BigNumber
-  fundingParams: FundingParams
 }
 
 export interface FundingParams {
@@ -79,20 +78,18 @@ export interface FundingResult {
   fundingRate: BigNumber
 }
 
-export interface AccountStorage {
+export interface AccountStorage extends WithdrawalApplication, AccountBroker {
   cashBalance: BigNumber
   positionSide: SIDE
   positionSize: BigNumber
   entryValue: BigNumber
   entrySocialLoss: BigNumber
   entryFundingLoss: BigNumber
-  withdrawalApplication: WithdrawalApplication
-  broker: AccountBroker
 }
 
 export interface WithdrawalApplication {
-  amount: BigNumber
-  height: number
+  withdrawalApplicationAmount: BigNumber
+  withdrawalApplicationHeight: number
 }
 
 // delayed setBroker logic: if currentAppliedHeight <= blockNumber, the effective broker = currentBroker,

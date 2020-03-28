@@ -60,15 +60,13 @@ export async function getPerpetualStorage(
     isEmergency: p.isEmergency,
     isGlobalSettled: p.isGlobalSettled,
     globalSettlePrice: normalizeBigNumberish(p.globalSettlePrice).shiftedBy(-DECIMALS),
-    fundingParams: {
-      accumulatedFundingPerContract: normalizeBigNumberish(p.fundingParams.accumulatedFundingPerContract).shiftedBy(
-        -DECIMALS
-      ),
-      lastEMAPremium: normalizeBigNumberish(p.fundingParams.lastEMAPremium).shiftedBy(-DECIMALS),
-      lastPremium: normalizeBigNumberish(p.fundingParams.lastPremium).shiftedBy(-DECIMALS),
-      lastIndexPrice: normalizeBigNumberish(p.fundingParams.lastIndexPrice).shiftedBy(-DECIMALS),
-      lastFundingTimestamp: p.fundingParams.lastFundingTime.toNumber(),
-    }
+    accumulatedFundingPerContract: normalizeBigNumberish(p.fundingParams.accumulatedFundingPerContract).shiftedBy(
+      -DECIMALS
+    ),
+    lastEMAPremium: normalizeBigNumberish(p.fundingParams.lastEMAPremium).shiftedBy(-DECIMALS),
+    lastPremium: normalizeBigNumberish(p.fundingParams.lastPremium).shiftedBy(-DECIMALS),
+    lastIndexPrice: normalizeBigNumberish(p.fundingParams.lastIndexPrice).shiftedBy(-DECIMALS),
+    lastFundingTimestamp: p.fundingParams.lastFundingTime.toNumber()
   }
 }
 
@@ -80,17 +78,12 @@ export async function getAccountStorage(
   const p = await contractReader.getAccountStorage(perpetualContractAddress, userAddress)
   return {
     cashBalance: normalizeBigNumberish(p.collateral.balance).shiftedBy(-DECIMALS),
-    broker: {
-      previousBroker: p.broker.previous.broker,
-      previousAppliedHeight: p.broker.previous.appliedHeight.toNumber(),
-      currentBroker: p.broker.current.broker,
-      currentAppliedHeight: p.broker.current.appliedHeight.toNumber(),
-    },
-    withdrawalApplication: {
-      amount: normalizeBigNumberish(p.collateral.appliedBalance).shiftedBy(-DECIMALS),
-      height: p.collateral.appliedHeight.toNumber(),
-    },
-
+    previousBroker: p.broker.previous.broker,
+    previousAppliedHeight: p.broker.previous.appliedHeight.toNumber(),
+    currentBroker: p.broker.current.broker,
+    currentAppliedHeight: p.broker.current.appliedHeight.toNumber(),
+    withdrawalApplicationAmount: normalizeBigNumberish(p.collateral.appliedBalance).shiftedBy(-DECIMALS),
+    withdrawalApplicationHeight: p.collateral.appliedHeight.toNumber(),
     positionSide: p.position.side as SIDE,
     positionSize: normalizeBigNumberish(p.position.size).shiftedBy(-DECIMALS),
     entryValue: normalizeBigNumberish(p.position.entryValue).shiftedBy(-DECIMALS),
