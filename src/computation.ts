@@ -230,7 +230,7 @@ export function computeAccumulatedFunding(
 
 export function computeFunding(f: FundingParams, g: FundingGovParams, timestamp: number): FundingResult {
   if (timestamp < f.lastFundingTimestamp) {
-    throw Error(`funding timestamp '${timestamp}' is early than last funding timestamp '${f.lastFundingTimestamp}'`)
+    throw Error(`funding timestamp '${timestamp}' is earlier than last funding timestamp '${f.lastFundingTimestamp}'`)
   }
 
   let { acc, emaPremium } = computeAccumulatedFunding(f, g, timestamp)
@@ -251,22 +251,6 @@ export function computeFunding(f: FundingParams, g: FundingGovParams, timestamp:
   return { timestamp, accumulatedFundingPerContract, emaPremium, markPrice, premiumRate, fundingRate }
 }
 
-export function updateFundingParams(
-  f: FundingParams,
-  g: FundingGovParams,
-  timestamp: number,
-  newIndexPrice: BigNumber,
-  newFairPrice: BigNumber
-): FundingParams {
-  const result = computeFunding(f, g, timestamp)
-  const accumulatedFundingPerContract = result.accumulatedFundingPerContract
-  const lastFundingTimestamp = timestamp
-  const lastEMAPremium = result.emaPremium
-  const lastPremium = newFairPrice.minus(newIndexPrice)
-  const lastIndexPrice = newIndexPrice
-  return { accumulatedFundingPerContract, lastFundingTimestamp, lastEMAPremium, lastPremium, lastIndexPrice }
-}
-
 export function funding(
   p: PerpetualStorage,
   g: FundingGovParams,
@@ -274,8 +258,15 @@ export function funding(
   newIndexPrice: BigNumber,
   newFairPrice: BigNumber
 ): PerpetualStorage {
-  const newFundingParams = updateFundingParams(p, g, timestamp, newIndexPrice, newFairPrice)
-  return { ...p, ...newFundingParams }
+  const result = computeFunding(p, g, timestamp)
+  const accumulatedFundingPerContract = result.accumulatedFundingPerContract
+  const lastFundingTimestamp = timestamp
+  const lastEMAPremium = result.emaPremium
+  const lastPremium = newFairPrice.minus(newIndexPrice)
+  const lastIndexPrice = newIndexPrice
+  const newParams = { accumulatedFundingPerContract, lastFundingTimestamp, lastEMAPremium, lastPremium, lastIndexPrice }
+
+  return { ...p, ...newParams }
 }
 
 export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStorage, f: FundingResult): AccountDetails {
