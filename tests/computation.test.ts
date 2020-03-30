@@ -554,7 +554,7 @@ describe('computeTradeCost', function() {
           entrySocialLoss: '0.2',
           entryFundingLoss: '8.9959375'
         },
-        marginCost: 0,
+        marginCost: '-17148.19634375',
         fee: 20
       }
     },
@@ -646,7 +646,7 @@ describe('computeTradeCost', function() {
           */
           marginBalance: '18710.44634375'
         },
-        marginCost: 0,
+        marginCost: '-14183.19634375',
         fee: 20
       }
     },
@@ -699,7 +699,7 @@ describe('computeTradeCost', function() {
           */
           marginBalance: '7244.94634375'
         },
-        marginCost: 0,
+        marginCost: '-279.946343749999999999999',
         fee: 66
       }
     },
@@ -784,7 +784,7 @@ describe('computeTradeCost', function() {
           */
           marginBalance: '5248.37365625'
         },
-        marginCost: 0,
+        marginCost: '-721.12365625',
         fee: 20
       }
     },

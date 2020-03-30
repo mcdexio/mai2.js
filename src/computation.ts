@@ -569,8 +569,12 @@ export function computeTradeCost(
   }
   const accountStorage = computeTrade(p, f, a.accountStorage, side, price, amount, feeRate)
   const account = computeAccount(accountStorage, g, p, f)
-  const positionMargin = accountStorage.positionSize.times(f.markPrice).div(normalizedLeverage)
-  const marginCost = BigNumber.max(_0, positionMargin.minus(account.accountComputed.marginBalance))
+  let marginCost = _0
+  if (accountStorage.positionSize.gt(0)) {
+    const positionMargin = accountStorage.positionSize.times(f.markPrice).div(normalizedLeverage)
+    marginCost = positionMargin.minus(account.accountComputed.marginBalance)
+  }
+
   const fee = computeFee(price, amount, feeRate)
 
   return { account, marginCost, fee }
@@ -593,8 +597,11 @@ export function computeInverseTradeCost(
   }
   const accountStorage = computeTrade(p, f, a.accountStorage, inverseSide(side), inversePrice(price), amount, feeRate)
   const account = computeAccount(accountStorage, g, p, f)
-  const positionMargin = accountStorage.positionSize.times(f.markPrice).div(normalizedLeverage)
-  const marginCost = BigNumber.max(_0, positionMargin.minus(account.accountComputed.marginBalance))
+  let marginCost = _0
+  if (accountStorage.positionSize.gt(0)) {
+    const positionMargin = accountStorage.positionSize.times(f.markPrice).div(normalizedLeverage)
+    marginCost = positionMargin.minus(account.accountComputed.marginBalance)
+  }
   const fee = computeFee(inversePrice(price), amount, feeRate)
 
   return { account, marginCost, fee }
