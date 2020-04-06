@@ -16,5 +16,5 @@ npm run test
 
 ```
 ADDRESS_OUTPUT_PATH=/tmp/address.js WRAPPER_OUTPUT_PATH=~/contract/mai2.js/tests/eth_address.ts \
-    node_modules/.bin/truffle --network=mai2js_admin migrate --reset
+    node_modules/.bin/truffle --network=mai2js_admin migrate --reset --migrations_directory=test_migrations
 ```
