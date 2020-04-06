@@ -14,7 +14,9 @@ import {
   ammBuy,
   ammSell,
   ammAddLiquidity,
-  ammRemoveLiquidity
+  ammRemoveLiquidity,
+  ammBuyAndWithdraw,
+  ammSellAndWithdraw
 } from '../src/transact'
 import { extendExpect } from './helper'
 import { ethers } from 'ethers'
@@ -114,7 +116,7 @@ it('amm.depositAndBuy.zeroDeposit', async function() {
 it('amm.depositAndSell', async function() {
   const c = await getAMMContract(transactTestAddress.amm, walletWithProvider)
   const depositAmount = new BigNumber('0.005') // 1 / 200
-  const amount = new BigNumber('1')
+  const amount = new BigNumber('2')
   const limitPrice = new BigNumber('0')
   const deadLine = 9999999999
   const tx = await ammDepositAndSell(c, depositAmount, 18, amount, limitPrice, deadLine, testGas)
@@ -126,8 +128,8 @@ it('amm.depositAndSell', async function() {
 it('amm.depositAndAddLiquidity', async function() {
   const c = await getAMMContract(transactTestAddress.amm, walletWithProvider)
   const depositAmount = new BigNumber('0.005') // 1 / 200
-  const collateralAmount = new BigNumber('0.1')
-  const tx = await ammDepositAndAddLiquidity(c, depositAmount, 18, collateralAmount, testGas)
+  const liquidityAmount = new BigNumber('1')
+  const tx = await ammDepositAndAddLiquidity(c, depositAmount, 18, liquidityAmount, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
   await tx.wait()
@@ -157,8 +159,8 @@ it('amm.sell', async function() {
 
 it('amm.addLiquidity', async function() {
   const c = await getAMMContract(transactTestAddress.amm, walletWithProvider)
-  const collateralAmount = new BigNumber('0.1')
-  const tx = await ammAddLiquidity(c, collateralAmount, testGas)
+  const liquidityAmount = new BigNumber('1')
+  const tx = await ammAddLiquidity(c, liquidityAmount, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
   await tx.wait()
@@ -176,6 +178,30 @@ it('amm.removeLiquidity', async function() {
 it('perp.withdraw', async function() {
   const c = await getPerpetualContract(transactTestAddress.perp, walletWithProvider)
   const tx = await perpetualWithdraw(c, new BigNumber('1'), 18, testGas)
+  expect(tx.gasLimit.toString()).toEqual('1234567')
+  expect(tx.gasPrice.toString()).toEqual('12345')
+  await tx.wait()
+})
+
+it('amm.buyAndWithdraw', async function() {
+  const c = await getAMMContract(transactTestAddress.amm, walletWithProvider)
+  const withdrawAmount = new BigNumber('0.005') // 1 / 200
+  const buyAmount = new BigNumber('1')
+  const limitPrice = new BigNumber('1')
+  const deadLine = 9999999999
+  const tx = await ammBuyAndWithdraw(c, buyAmount, limitPrice, deadLine, withdrawAmount, 18, testGas)
+  expect(tx.gasLimit.toString()).toEqual('1234567')
+  expect(tx.gasPrice.toString()).toEqual('12345')
+  await tx.wait()
+})
+
+it('amm.sellAndWidthdraw', async function() {
+  const c = await getAMMContract(transactTestAddress.amm, walletWithProvider)
+  const withdrawAmount = new BigNumber('0.005') // 1 / 200
+  const buyAmount = new BigNumber('1')
+  const limitPrice = new BigNumber('0')
+  const deadLine = 9999999999
+  const tx = await ammSellAndWithdraw(c, buyAmount, limitPrice, deadLine, withdrawAmount, 18, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
   await tx.wait()

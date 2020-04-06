@@ -16,31 +16,11 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "gov",
+    "name": "priceFeeder",
     "outputs": [
       {
-        "name": "poolFeeRate",
-        "type": "uint256"
-      },
-      {
-        "name": "poolDevFeeRate",
-        "type": "uint256"
-      },
-      {
-        "name": "emaAlpha",
-        "type": "int256"
-      },
-      {
-        "name": "updatePremiumPrize",
-        "type": "uint256"
-      },
-      {
-        "name": "markPremiumLimit",
-        "type": "int256"
-      },
-      {
-        "name": "fundingDampener",
-        "type": "int256"
+        "name": "",
+        "type": "address"
       }
     ],
     "payable": false,
@@ -50,11 +30,37 @@
   {
     "constant": true,
     "inputs": [],
-    "name": "priceFeeder",
+    "name": "getGovernance",
     "outputs": [
       {
+        "components": [
+          {
+            "name": "poolFeeRate",
+            "type": "uint256"
+          },
+          {
+            "name": "poolDevFeeRate",
+            "type": "uint256"
+          },
+          {
+            "name": "emaAlpha",
+            "type": "int256"
+          },
+          {
+            "name": "updatePremiumPrize",
+            "type": "uint256"
+          },
+          {
+            "name": "markPremiumLimit",
+            "type": "int256"
+          },
+          {
+            "name": "fundingDampener",
+            "type": "int256"
+          }
+        ],
         "name": "",
-        "type": "address"
+        "type": "tuple"
       }
     ],
     "payable": false,
@@ -134,6 +140,40 @@
   {
     "constant": true,
     "inputs": [],
+    "name": "governance",
+    "outputs": [
+      {
+        "name": "poolFeeRate",
+        "type": "uint256"
+      },
+      {
+        "name": "poolDevFeeRate",
+        "type": "uint256"
+      },
+      {
+        "name": "emaAlpha",
+        "type": "int256"
+      },
+      {
+        "name": "updatePremiumPrize",
+        "type": "uint256"
+      },
+      {
+        "name": "markPremiumLimit",
+        "type": "int256"
+      },
+      {
+        "name": "fundingDampener",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
     "name": "shareToken",
     "outputs": [
       {
@@ -167,46 +207,6 @@
       {
         "name": "",
         "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getGov",
-    "outputs": [
-      {
-        "components": [
-          {
-            "name": "poolFeeRate",
-            "type": "uint256"
-          },
-          {
-            "name": "poolDevFeeRate",
-            "type": "uint256"
-          },
-          {
-            "name": "emaAlpha",
-            "type": "int256"
-          },
-          {
-            "name": "updatePremiumPrize",
-            "type": "uint256"
-          },
-          {
-            "name": "markPremiumLimit",
-            "type": "int256"
-          },
-          {
-            "name": "fundingDampener",
-            "type": "int256"
-          }
-        ],
-        "name": "",
-        "type": "tuple"
       }
     ],
     "payable": false,
@@ -362,7 +362,7 @@
         "type": "int256"
       }
     ],
-    "name": "GovernanceParameterUpdated",
+    "name": "UpdateGovernanceParameter",
     "type": "event"
   },
   {
@@ -899,7 +899,7 @@
     "constant": false,
     "inputs": [
       {
-        "name": "collateralAmount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
@@ -1023,11 +1023,63 @@
     "constant": false,
     "inputs": [
       {
+        "name": "tradeAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "name": "withdrawAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "buyAndWithdraw",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "tradeAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "name": "withdrawAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "sellAndWithdraw",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
         "name": "depositAmount",
         "type": "uint256"
       },
       {
-        "name": "liquidityCollateralAmount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
@@ -1041,7 +1093,7 @@
     "constant": false,
     "inputs": [
       {
-        "name": "liquidityCollateralAmount",
+        "name": "amount",
         "type": "uint256"
       }
     ],

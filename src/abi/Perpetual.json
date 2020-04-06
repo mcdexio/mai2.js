@@ -15,44 +15,6 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "gov",
-    "outputs": [
-      {
-        "name": "initialMarginRate",
-        "type": "uint256"
-      },
-      {
-        "name": "maintenanceMarginRate",
-        "type": "uint256"
-      },
-      {
-        "name": "liquidationSafetyFactor",
-        "type": "uint256"
-      },
-      {
-        "name": "liquidationPenaltyRate",
-        "type": "uint256"
-      },
-      {
-        "name": "penaltyFundRate",
-        "type": "uint256"
-      },
-      {
-        "name": "takerDevFeeRate",
-        "type": "int256"
-      },
-      {
-        "name": "makerDevFeeRate",
-        "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [
       {
         "name": "guy",
@@ -77,7 +39,7 @@
           },
           {
             "name": "entrySocialLoss",
-            "type": "uint256"
+            "type": "int256"
           },
           {
             "name": "entryFundingLoss",
@@ -90,6 +52,24 @@
     ],
     "payable": false,
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "name": "value",
+        "type": "address"
+      }
+    ],
+    "name": "setGovernanceAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -140,6 +120,54 @@
     "type": "function"
   },
   {
+    "constant": true,
+    "inputs": [],
+    "name": "getGovernance",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "initialMarginRate",
+            "type": "uint256"
+          },
+          {
+            "name": "maintenanceMarginRate",
+            "type": "uint256"
+          },
+          {
+            "name": "liquidationPenaltyRate",
+            "type": "uint256"
+          },
+          {
+            "name": "penaltyFundRate",
+            "type": "uint256"
+          },
+          {
+            "name": "takerDevFeeRate",
+            "type": "int256"
+          },
+          {
+            "name": "makerDevFeeRate",
+            "type": "int256"
+          },
+          {
+            "name": "lotSize",
+            "type": "uint256"
+          },
+          {
+            "name": "tradingLotSize",
+            "type": "uint256"
+          }
+        ],
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": false,
     "inputs": [
       {
@@ -161,44 +189,6 @@
       {
         "name": "",
         "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "positionEntryValue",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "averageEntryPrice",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
       }
     ],
     "payable": false,
@@ -240,46 +230,8 @@
   },
   {
     "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "positionSide",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [],
     "name": "insuranceFundBalance",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "cashBalance",
     "outputs": [
       {
         "name": "",
@@ -331,41 +283,6 @@
       {
         "name": "",
         "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "positions",
-    "outputs": [
-      {
-        "name": "side",
-        "type": "uint8"
-      },
-      {
-        "name": "size",
-        "type": "uint256"
-      },
-      {
-        "name": "entryValue",
-        "type": "uint256"
-      },
-      {
-        "name": "entrySocialLoss",
-        "type": "uint256"
-      },
-      {
-        "name": "entryFundingLoss",
-        "type": "int256"
       }
     ],
     "payable": false,
@@ -444,25 +361,6 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "name": "",
-        "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
@@ -512,25 +410,6 @@
     "constant": true,
     "inputs": [
       {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "positionEntrySocialLoss",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
         "name": "",
         "type": "address"
       }
@@ -558,84 +437,7 @@
     "outputs": [
       {
         "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "appliedBalanceOf",
-    "outputs": [
-      {
-        "name": "",
         "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_globalConfig",
-        "type": "address"
-      }
-    ],
-    "name": "setGlobalConfig",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getGov",
-    "outputs": [
-      {
-        "components": [
-          {
-            "name": "initialMarginRate",
-            "type": "uint256"
-          },
-          {
-            "name": "maintenanceMarginRate",
-            "type": "uint256"
-          },
-          {
-            "name": "liquidationSafetyFactor",
-            "type": "uint256"
-          },
-          {
-            "name": "liquidationPenaltyRate",
-            "type": "uint256"
-          },
-          {
-            "name": "penaltyFundRate",
-            "type": "uint256"
-          },
-          {
-            "name": "takerDevFeeRate",
-            "type": "int256"
-          },
-          {
-            "name": "makerDevFeeRate",
-            "type": "int256"
-          }
-        ],
-        "name": "",
-        "type": "tuple"
       }
     ],
     "payable": false,
@@ -676,34 +478,6 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "isPositionBalanced",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_amm",
-        "type": "address"
-      }
-    ],
-    "name": "setAMM",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [
       {
         "name": "account",
@@ -719,58 +493,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "positionSize",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      }
-    ],
-    "name": "positionEntryFundingLoss",
-    "outputs": [
-      {
-        "name": "",
-        "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_devAddress",
-        "type": "address"
-      }
-    ],
-    "name": "setDevAddress",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1039,7 +761,7 @@
       {
         "indexed": false,
         "name": "newVal",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "name": "SocialLoss",
@@ -1069,7 +791,7 @@
           },
           {
             "name": "entrySocialLoss",
-            "type": "uint256"
+            "type": "int256"
           },
           {
             "name": "entryFundingLoss",
@@ -1100,61 +822,10 @@
       {
         "indexed": false,
         "name": "newVal",
-        "type": "uint256"
+        "type": "int256"
       }
     ],
     "name": "UpdateInsuranceFund",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "current",
-        "type": "address"
-      }
-    ],
-    "name": "AMMUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "current",
-        "type": "address"
-      }
-    ],
-    "name": "DevAddressUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "current",
-        "type": "address"
-      }
-    ],
-    "name": "GlobalConfigUpdated",
     "type": "event"
   },
   {
@@ -1189,7 +860,24 @@
         "type": "int256"
       }
     ],
-    "name": "GovernanceParameterUpdated",
+    "name": "UpdateGovernanceParameter",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "name": "value",
+        "type": "address"
+      }
+    ],
+    "name": "UpdateGovernanceAddress",
     "type": "event"
   },
   {
@@ -1547,6 +1235,24 @@
     "constant": false,
     "inputs": [
       {
+        "name": "guy",
+        "type": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawFor",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
         "name": "amount",
         "type": "uint256"
       }
@@ -1561,11 +1267,34 @@
     "constant": false,
     "inputs": [
       {
-        "name": "amount",
+        "name": "rawAmount",
         "type": "uint256"
       }
     ],
-    "name": "withdrawInsuranceFund",
+    "name": "depositToInsuranceFund",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "depositEtherToInsuranceFund",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "rawAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawFromInsuranceFund",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -1873,58 +1602,6 @@
         "type": "uint256"
       }
     ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "name": "price",
-        "type": "uint256"
-      },
-      {
-        "name": "openedAmount",
-        "type": "uint256"
-      },
-      {
-        "name": "closedAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "claimTakerDevFee",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "guy",
-        "type": "address"
-      },
-      {
-        "name": "price",
-        "type": "uint256"
-      },
-      {
-        "name": "openedAmount",
-        "type": "uint256"
-      },
-      {
-        "name": "closedAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "claimMakerDevFee",
-    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"

@@ -29,11 +29,12 @@ export async function getGovParams(
     // perpetual
     initialMargin: normalizeBigNumberish(p.perpGovernanceConfig.initialMarginRate).shiftedBy(-DECIMALS),
     maintenanceMargin: normalizeBigNumberish(p.perpGovernanceConfig.maintenanceMarginRate).shiftedBy(-DECIMALS),
-    liquidationSafetyFactor: normalizeBigNumberish(p.perpGovernanceConfig.liquidationSafetyFactor).shiftedBy(-DECIMALS),
     liquidationPenaltyRate: normalizeBigNumberish(p.perpGovernanceConfig.liquidationPenaltyRate).shiftedBy(-DECIMALS),
     penaltyFundRate: normalizeBigNumberish(p.perpGovernanceConfig.penaltyFundRate).shiftedBy(-DECIMALS),
     makerDevRate: normalizeBigNumberish(p.perpGovernanceConfig.makerDevFeeRate).shiftedBy(-DECIMALS),
     takerDevRate: normalizeBigNumberish(p.perpGovernanceConfig.takerDevFeeRate).shiftedBy(-DECIMALS),
+    lotSize: normalizeBigNumberish(p.perpGovernanceConfig.lotSize).shiftedBy(-DECIMALS),
+    tradingLotSize: normalizeBigNumberish(p.perpGovernanceConfig.tradingLotSize).shiftedBy(-DECIMALS),
 
     // amm
     poolFeeRate: normalizeBigNumberish(p.ammGovernanceConfig.poolFeeRate).shiftedBy(-DECIMALS),

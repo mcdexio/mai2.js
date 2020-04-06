@@ -35,11 +35,12 @@ const govParams: GovParams = {
   brokerLockBlockCount: 2,
   initialMargin: new BigNumber(0.1),
   maintenanceMargin: new BigNumber(0.05),
-  liquidationSafetyFactor: new BigNumber(0.1),
   liquidationPenaltyRate: new BigNumber(0.01),
   penaltyFundRate: new BigNumber(0.2),
   makerDevRate: new BigNumber(-0.0005),
   takerDevRate: new BigNumber(0.0015),
+  lotSize: new BigNumber(1),
+  tradingLotSize: new BigNumber(1),
   poolFeeRate: new BigNumber(0.001),
   poolDevFeeRate: new BigNumber(0.0015),
   markPremiumLimit: new BigNumber('0.005'), //0.5%

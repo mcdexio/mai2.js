@@ -30,10 +30,6 @@
                 "type": "uint256"
               },
               {
-                "name": "liquidationSafetyFactor",
-                "type": "uint256"
-              },
-              {
                 "name": "liquidationPenaltyRate",
                 "type": "uint256"
               },
@@ -48,6 +44,14 @@
               {
                 "name": "makerDevFeeRate",
                 "type": "int256"
+              },
+              {
+                "name": "lotSize",
+                "type": "uint256"
+              },
+              {
+                "name": "tradingLotSize",
+                "type": "uint256"
               }
             ],
             "name": "perpGovernanceConfig",
@@ -125,16 +129,16 @@
             "type": "uint256"
           },
           {
+            "name": "insuranceFundBalance",
+            "type": "int256"
+          },
+          {
             "name": "longSocialLossPerContract",
-            "type": "uint256"
+            "type": "int256"
           },
           {
             "name": "shortSocialLossPerContract",
-            "type": "uint256"
-          },
-          {
-            "name": "insuranceFundBalance",
-            "type": "uint256"
+            "type": "int256"
           },
           {
             "name": "isEmergency",
@@ -233,7 +237,7 @@
               },
               {
                 "name": "entrySocialLoss",
-                "type": "uint256"
+                "type": "int256"
               },
               {
                 "name": "entryFundingLoss",

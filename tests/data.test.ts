@@ -40,11 +40,12 @@ it('param', async function() {
 
   expect(p.initialMargin).toBeBigNumber(normalizeBigNumberish('0.1'))
   expect(p.maintenanceMargin).toBeBigNumber(normalizeBigNumberish('0.05'))
-  expect(p.liquidationSafetyFactor).toBeBigNumber(normalizeBigNumberish('0.2'))
   expect(p.liquidationPenaltyRate).toBeBigNumber(normalizeBigNumberish('0.005'))
   expect(p.penaltyFundRate).toBeBigNumber(normalizeBigNumberish('0.005'))
   expect(p.makerDevRate).toBeBigNumber(normalizeBigNumberish('-0.00025'))
   expect(p.takerDevRate).toBeBigNumber(normalizeBigNumberish('0.00075'))
+  expect(p.lotSize).toBeBigNumber(normalizeBigNumberish('1e-18'))
+  expect(p.tradingLotSize).toBeBigNumber(normalizeBigNumberish('1e-18'))
 
   expect(p.poolFeeRate).toBeBigNumber(normalizeBigNumberish('0.000375'))
   expect(p.poolDevFeeRate).toBeBigNumber(normalizeBigNumberish('0.000375'))

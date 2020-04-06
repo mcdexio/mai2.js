@@ -34,11 +34,12 @@ export interface GovParams extends FundingGovParams {
   // perpetual
   initialMargin: BigNumber
   maintenanceMargin: BigNumber
-  liquidationSafetyFactor: BigNumber
   liquidationPenaltyRate: BigNumber
   penaltyFundRate: BigNumber
   makerDevRate: BigNumber
   takerDevRate: BigNumber
+  lotSize: BigNumber
+  tradingLotSize: BigNumber
 
   // amm
   poolFeeRate: BigNumber

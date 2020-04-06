@@ -151,7 +151,7 @@
         "type": "uint256"
       }
     ],
-    "name": "GlobalParameterUpdated",
+    "name": "UpdateGlobalParameter",
     "type": "event"
   },
   {
