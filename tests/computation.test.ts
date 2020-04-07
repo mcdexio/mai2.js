@@ -146,19 +146,6 @@ const accountDetails2 = computeAccount(accountStorage2, govParams, perpetualStor
 const accountDetails3 = computeAccount(accountStorage3, govParams, perpetualStorage, fundingResult)
 const accountDetails4 = computeAccount(accountStorage4, govParams, perpetualStorage, fundingResult)
 
-it('Bad Funding Timestamp', function() {
-  const fp: FundingParams = {
-    accumulatedFundingPerContract: _0,
-    lastEMAPremium: _0,
-    lastPremium: _0,
-    lastIndexPrice: new BigNumber(7000),
-    lastFundingTimestamp: 20000
-  }
-  expect((): void => {
-    computeFunding(fp, govParams, 10000)
-  }).toThrow()
-})
-
 describe('computeAccount', function() {
   interface ComputeAccountCase {
     accountStorage: AccountStorage

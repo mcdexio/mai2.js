@@ -230,7 +230,8 @@ export function computeAccumulatedFunding(
 
 export function computeFunding(f: FundingParams, g: FundingGovParams, timestamp: number): FundingResult {
   if (timestamp < f.lastFundingTimestamp) {
-    throw Error(`funding timestamp '${timestamp}' is earlier than last funding timestamp '${f.lastFundingTimestamp}'`)
+    console.log(`warn: funding timestamp '${timestamp}' is earlier than last funding timestamp '${f.lastFundingTimestamp}'`)
+    timestamp = f.lastFundingTimestamp
   }
 
   let { acc, emaPremium } = computeAccumulatedFunding(f, g, timestamp)
