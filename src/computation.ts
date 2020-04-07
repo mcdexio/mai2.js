@@ -711,20 +711,20 @@ export function computeAMMAddLiquidity(
   amm: AMMDetails,
   user: AccountStorage,
   totalShare: BigNumberish,
-  collateralAmount: BigNumberish
+  amount: BigNumberish
 ): { amm: AccountStorage; user: AccountStorage; share: BigNumber } {
-  const normalizedCollateral = normalizeBigNumberish(collateralAmount)
+  const normalizedAmount = normalizeBigNumberish(amount)
   const normalizedTotalShare = normalizeBigNumberish(totalShare)
   const fairPrice = computeAMMPrice(amm, TRADE_SIDE.Sell, 0)
-  const size = normalizedCollateral.div(2).div(fairPrice)
+  const normalizedCollateral = normalizedAmount.times(fairPrice).times(2)
 
   const amm2 = { ...amm.accountStorage, cashBalance: amm.accountStorage.cashBalance.plus(normalizedCollateral) }
   const user2 = { ...user, cashBalance: user.cashBalance.minus(normalizedCollateral) }
-  const newAMM = computeTrade(perp, funding, amm2, TRADE_SIDE.Buy, fairPrice, size, 0)
-  const newUser = computeTrade(perp, funding, user2, TRADE_SIDE.Sell, fairPrice, size, 0)
+  const newAMM = computeTrade(perp, funding, amm2, TRADE_SIDE.Buy, fairPrice, normalizedAmount, 0)
+  const newUser = computeTrade(perp, funding, user2, TRADE_SIDE.Sell, fairPrice, normalizedAmount, 0)
   const share = normalizedTotalShare.isZero()
-    ? normalizedCollateral
-    : size.div(amm.accountStorage.positionSize).times(normalizedTotalShare)
+    ? normalizedAmount
+    : normalizedAmount.div(amm.accountStorage.positionSize).times(normalizedTotalShare)
   return { amm: newAMM, user: newUser, share }
 }
 
