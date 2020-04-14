@@ -1,6 +1,6 @@
 # mai2.js - Mai Protocol v2 JavaScript API
 
-![CoverageStatus](https://github.com/mcarloai/mai2.js/workflows/Coverage/badge.svg)
+![CoverageStatus](https://github.com/mcdexio/mai2.js/workflows/Coverage/badge.svg)
 
 ## INSTALL
 ```

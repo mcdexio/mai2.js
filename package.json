@@ -1,8 +1,8 @@
 {
-  "name": "@mcarloai/mai2.js",
-  "version": "0.2.8",
+  "name": "@mcdex/mai2.js",
+  "version": "0.1.0",
   "description": "Mai Protocol v2 JavaScript API",
-  "homepage": "http://github.com/mcdex/mai2.js",
+  "homepage": "http://github.com/mcdexio/mai2.js",
   "author": "Liu Jie <jie@mcarlo.com> (https://github.com/jie85)",
   "contributors": [
     "Zhu Tianchi <zhutianchi@mcarlo.com>"
@@ -20,10 +20,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mcarloai/mai2.js"
+    "url": "https://github.com/mcdexio/mai2.js"
   },
   "bugs": {
-    "url": "https://github.com/mcarloai/mai2.js/issues"
+    "url": "https://github.com/mcdexio/mai2.js/issues"
   },
   "license": "MIT",
   "devDependencies": {
@@ -51,6 +51,6 @@
     "dist/**/*"
   ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://registry.npmjs.com/"
   }
 }
