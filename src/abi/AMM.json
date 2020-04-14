@@ -1,48 +1,26 @@
 [
   {
-    "constant": true,
-    "inputs": [],
-    "name": "shareTokenAddress",
-    "outputs": [
+    "constant": false,
+    "inputs": [
       {
-        "name": "",
+        "name": "account",
         "type": "address"
       }
     ],
+    "name": "addWhitelisted",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "lastFundingState",
+    "name": "priceFeeder",
     "outputs": [
       {
-        "components": [
-          {
-            "name": "lastFundingTime",
-            "type": "uint256"
-          },
-          {
-            "name": "lastPremium",
-            "type": "int256"
-          },
-          {
-            "name": "lastEMAPremium",
-            "type": "int256"
-          },
-          {
-            "name": "lastIndexPrice",
-            "type": "uint256"
-          },
-          {
-            "name": "accumulatedFundingPerContract",
-            "type": "int256"
-          }
-        ],
         "name": "",
-        "type": "tuple"
+        "type": "address"
       }
     ],
     "payable": false,
@@ -90,6 +68,53 @@
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "removeWhitelisted",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "isWhitelisted",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "emaAlpha2",
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [],
     "name": "perpetualProxy",
@@ -106,11 +131,336 @@
   {
     "constant": false,
     "inputs": [],
-    "name": "currentMarkPrice",
+    "name": "renounceWhitelistAdmin",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "addWhitelistAdmin",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "emaAlpha2Ln",
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "name": "value",
+        "type": "int256"
+      }
+    ],
+    "name": "setGovernanceParameter",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "isWhitelistAdmin",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "renounceWhitelisted",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "name": "_perpetualProxy",
+        "type": "address"
+      },
+      {
+        "name": "_priceFeeder",
+        "type": "address"
+      },
+      {
+        "name": "_shareToken",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "CreateAMM",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "name": "lastFundingTime",
+            "type": "uint256"
+          },
+          {
+            "name": "lastPremium",
+            "type": "int256"
+          },
+          {
+            "name": "lastEMAPremium",
+            "type": "int256"
+          },
+          {
+            "name": "lastIndexPrice",
+            "type": "uint256"
+          },
+          {
+            "name": "accumulatedFundingPerContract",
+            "type": "int256"
+          }
+        ],
+        "indexed": false,
+        "name": "fundingState",
+        "type": "tuple"
+      }
+    ],
+    "name": "UpdateFundingRate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "name": "value",
+        "type": "int256"
+      }
+    ],
+    "name": "UpdateGovernanceParameter",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "WhitelistedAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "WhitelistedRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "WhitelistAdminAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "WhitelistAdminRemoved",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "shareTokenAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "indexPrice",
+    "outputs": [
+      {
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "positionSize",
     "outputs": [
       {
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "lastFundingState",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "lastFundingTime",
+            "type": "uint256"
+          },
+          {
+            "name": "lastPremium",
+            "type": "int256"
+          },
+          {
+            "name": "lastEMAPremium",
+            "type": "int256"
+          },
+          {
+            "name": "lastIndexPrice",
+            "type": "uint256"
+          },
+          {
+            "name": "accumulatedFundingPerContract",
+            "type": "int256"
+          }
+        ],
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "lastFundingRate",
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "currentFundingState",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "lastFundingTime",
+            "type": "uint256"
+          },
+          {
+            "name": "lastPremium",
+            "type": "int256"
+          },
+          {
+            "name": "lastEMAPremium",
+            "type": "int256"
+          },
+          {
+            "name": "lastIndexPrice",
+            "type": "uint256"
+          },
+          {
+            "name": "accumulatedFundingPerContract",
+            "type": "int256"
+          }
+        ],
+        "name": "",
+        "type": "tuple"
       }
     ],
     "payable": false,
@@ -148,11 +498,53 @@
   {
     "constant": false,
     "inputs": [],
-    "name": "positionSize",
+    "name": "currentPremium",
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "currentMarkPrice",
     "outputs": [
       {
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "currentPremiumRate",
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "currentFundingRate",
+    "outputs": [
+      {
+        "name": "",
+        "type": "int256"
       }
     ],
     "payable": false,
@@ -177,66 +569,12 @@
     "constant": false,
     "inputs": [
       {
-        "name": "shareAmount",
+        "name": "amount",
         "type": "uint256"
       }
     ],
-    "name": "settleShare",
+    "name": "createPool",
     "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "name": "limitPrice",
-        "type": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256"
-      }
-    ],
-    "name": "buy",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "name": "limitPrice",
-        "type": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256"
-      }
-    ],
-    "name": "sell",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
@@ -262,6 +600,33 @@
       }
     ],
     "name": "buyFromWhitelisted",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
+    "name": "buy",
     "outputs": [
       {
         "name": "",
@@ -307,10 +672,6 @@
     "constant": false,
     "inputs": [
       {
-        "name": "trader",
-        "type": "address"
-      },
-      {
         "name": "amount",
         "type": "uint256"
       },
@@ -323,7 +684,7 @@
         "type": "uint256"
       }
     ],
-    "name": "buyFrom",
+    "name": "sell",
     "outputs": [
       {
         "name": "",
@@ -338,11 +699,48 @@
     "constant": false,
     "inputs": [
       {
-        "name": "trader",
-        "type": "address"
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "addLiquidity",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "shareAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeLiquidity",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "settleShare",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "depositAmount",
+        "type": "uint256"
       },
       {
-        "name": "amount",
+        "name": "tradeAmount",
         "type": "uint256"
       },
       {
@@ -354,13 +752,180 @@
         "type": "uint256"
       }
     ],
-    "name": "sellFrom",
-    "outputs": [
+    "name": "depositAndBuy",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
       {
-        "name": "",
+        "name": "tradeAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
         "type": "uint256"
       }
     ],
+    "name": "depositEtherAndBuy",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "depositAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "tradeAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositAndSell",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "tradeAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositEtherAndSell",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "tradeAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "name": "withdrawAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "buyAndWithdraw",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "tradeAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "limitPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "deadline",
+        "type": "uint256"
+      },
+      {
+        "name": "withdrawAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "sellAndWithdraw",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "depositAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositAndAddLiquidity",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositEtherAndAddLiquidity",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "updateIndex",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "funding",
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
