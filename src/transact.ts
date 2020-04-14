@@ -107,6 +107,13 @@ export async function perpetualWithdraw(
   return await perpetualContract.withdraw(largeAmount.toFixed(), gas)
 }
 
+export async function perpetualSettle(
+  perpetualContract: ethers.Contract,
+  gas: ethers.providers.TransactionRequest = {}
+): Promise<ethers.providers.TransactionResponse> {
+  return await perpetualContract.settle(gas)
+}
+
 export async function ammCreatePool(
   ammContract: ethers.Contract,
   amount: BigNumberish, // should be a decimal number (ie: 1.234)
@@ -353,3 +360,11 @@ export async function ammRemoveLiquidity(
     .dp(0, BigNumber.ROUND_DOWN)
   return await ammContract.removeLiquidity(largeTradeAmount.toFixed(), gas)
 }
+
+export async function ammSettleShare(
+  ammContract: ethers.Contract,
+  gas: ethers.providers.TransactionRequest = {}
+): Promise<ethers.providers.TransactionResponse> {
+  return await ammContract.settleShare(gas)
+}
+
