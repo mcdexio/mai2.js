@@ -14,15 +14,15 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '12.14.1'
-          registry-url: https://npm.pkg.github.com
-          scope: '@mcarloai'
+          registry-url: https://registry.npmjs.com/
+          scope: '@mcdexio'
 
       - run: npm install
       # prepare ganache env
       - run: npm run start_testrpc
 
       - run: |
-          git clone https://${CHECKOUT_PAT}@github.com/mcarloai/mai-protocol-v2.git
+          git clone https://${CHECKOUT_PAT}@github.com/mcdexio/mai-protocol-v2.git
           cd mai-protocol-v2
           git checkout v2.5
           npm install
