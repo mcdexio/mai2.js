@@ -305,20 +305,6 @@
   },
   {
     "constant": true,
-    "inputs": [],
-    "name": "isEmergency",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [
       {
         "name": "",
@@ -369,15 +355,6 @@
       }
     ],
     "name": "addWhitelistAdmin",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "endGlobalSettlement",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -615,20 +592,6 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "isGlobalSettled",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "name": "globalConfig",
@@ -752,6 +715,12 @@
   },
   {
     "anonymous": false,
+    "inputs": [],
+    "name": "EndGlobalSettlement",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       {
         "indexed": false,
@@ -838,12 +807,6 @@
       }
     ],
     "name": "BeginGlobalSettlement",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [],
-    "name": "EndGlobalSettlement",
     "type": "event"
   },
   {
@@ -1226,6 +1189,15 @@
     "constant": false,
     "inputs": [],
     "name": "settle",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "endGlobalSettlement",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
