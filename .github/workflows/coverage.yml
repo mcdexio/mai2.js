@@ -24,7 +24,6 @@ jobs:
       - run: |
           git clone https://${CHECKOUT_PAT}@github.com/mcdexio/mai-protocol-v2.git
           cd mai-protocol-v2
-          git checkout v2.5
           npm install
           npm run compile
           sed -i "s/migrations_directory.*/migrations_directory: \"test_migrations\",/g" truffle.js
