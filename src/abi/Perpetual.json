@@ -387,25 +387,6 @@
     "constant": true,
     "inputs": [
       {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "accountCreated",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
         "name": "side",
         "type": "uint8"
       }
@@ -1037,6 +1018,24 @@
     ],
     "name": "BrokerUpdate",
     "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "guy",
+        "type": "address"
+      },
+      {
+        "name": "amount",
+        "type": "int256"
+      }
+    ],
+    "name": "setCashBalance",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "constant": false,

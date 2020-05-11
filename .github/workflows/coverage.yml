@@ -14,8 +14,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '12.14.1'
-          registry-url: https://registry.npmjs.com/
-          scope: '@mcdexio'
 
       - run: npm install
       # prepare ganache env
@@ -26,7 +24,7 @@ jobs:
           cd mai-protocol-v2
           npm install
           npm run compile
-          sed -i "s/migrations_directory.*/migrations_directory: \"test_migrations\",/g" truffle.js
+          sed -i "s/migrations_directory.*/migrations_directory: \"migrations_mai2js\",/g" truffle.js
           npm run migrate
           cd ${{ github.workspace }}
         env:
