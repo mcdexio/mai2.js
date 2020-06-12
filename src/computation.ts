@@ -231,7 +231,9 @@ export function computeAccumulatedFunding(
 // NOTE: do not call this function if perpetualStorage.isEmergency or perpetualStorage.isGlobalSettled
 export function computeFunding(f: FundingParams, g: FundingGovParams, timestamp: number): FundingResult {
   if (timestamp < f.lastFundingTimestamp) {
-    console.log(`warn: funding timestamp '${timestamp}' is earlier than last funding timestamp '${f.lastFundingTimestamp}'`)
+    console.log(
+      `warn: funding timestamp '${timestamp}' is earlier than last funding timestamp '${f.lastFundingTimestamp}'`
+    )
     timestamp = f.lastFundingTimestamp
   }
 
@@ -273,7 +275,7 @@ export function funding(
 
 export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStorage, f: FundingResult): AccountDetails {
   const entryPrice = s.positionSize.isZero() ? _0 : s.entryValue.div(s.positionSize)
-  const markPrice = f.markPrice
+  const markPrice = p.isEmergency || p.isGlobalSettled ? p.globalSettlePrice : f.markPrice
   const positionValue = markPrice.times(s.positionSize)
   const positionMargin = markPrice.times(s.positionSize).times(g.initialMargin)
   const maintenanceMargin = markPrice.times(s.positionSize).times(g.maintenanceMargin)
