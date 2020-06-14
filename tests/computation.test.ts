@@ -31,8 +31,6 @@ import { extendExpect, getBN } from './helper'
 extendExpect()
 
 const govParams: GovParams = {
-  withdrawalLockBlockCount: 2,
-  brokerLockBlockCount: 2,
   initialMargin: new BigNumber(0.1),
   maintenanceMargin: new BigNumber(0.05),
   liquidationPenaltyRate: new BigNumber(0.01),
@@ -84,13 +82,6 @@ const perpetualStorage: PerpetualStorage = {
 
 const fundingResult = computeFunding(perpetualStorage, govParams, timestamp)
 
-const broker = {
-  previousBroker: '',
-  previousAppliedHeight: 0,
-  currentBroker: '',
-  currentAppliedHeight: 0
-}
-
 const accountStorage1: AccountStorage = {
   cashBalance: new BigNumber('10000'),
   positionSide: SIDE.Buy,
@@ -98,9 +89,6 @@ const accountStorage1: AccountStorage = {
   entryValue: new BigNumber('2300.23'),
   entrySocialLoss: new BigNumber('0.1'),
   entryFundingLoss: new BigNumber('-0.91'),
-  withdrawalApplicationAmount: new BigNumber('10'),
-  withdrawalApplicationHeight: 123,
-  ...broker
 }
 
 const accountStorage2: AccountStorage = {
@@ -110,9 +98,6 @@ const accountStorage2: AccountStorage = {
   entryValue: new BigNumber('2300.23'),
   entrySocialLoss: new BigNumber('0.1'),
   entryFundingLoss: new BigNumber('-0.91'),
-  withdrawalApplicationAmount: new BigNumber('10'),
-  withdrawalApplicationHeight: 123,
-  ...broker
 }
 
 const accountStorage3: AccountStorage = {
@@ -122,9 +107,6 @@ const accountStorage3: AccountStorage = {
   entryValue: new BigNumber('2300.23'),
   entrySocialLoss: new BigNumber('0.1'),
   entryFundingLoss: new BigNumber('-0.91'),
-  withdrawalApplicationAmount: new BigNumber('10'),
-  withdrawalApplicationHeight: 123,
-  ...broker
 }
 
 const accountStorage4: AccountStorage = {
@@ -134,9 +116,6 @@ const accountStorage4: AccountStorage = {
   entryValue: _0,
   entrySocialLoss: _0,
   entryFundingLoss: _0,
-  withdrawalApplicationAmount: new BigNumber('10'),
-  withdrawalApplicationHeight: 123,
-  ...broker
 }
 
 const accountDetails1 = computeAccount(accountStorage1, govParams, perpetualStorage, fundingResult)
@@ -165,8 +144,8 @@ describe('computeAccount', function() {
     liquidationPrice: _0,
     marginBalance: new BigNumber('23695.44634375'),
     maxWithdrawable: new BigNumber('22093.49634375'),
-    availableMargin: new BigNumber('22083.49634375'),
-    withdrawableBalance: new BigNumber('10'),
+    availableMargin: new BigNumber('22093.49634375'),
+    withdrawableBalance: new BigNumber('22093.49634375'),
     leverage: new BigNumber('0.67605816609676835812'),
     isSafe: true,
     inverseSide: SIDE.Sell,
@@ -187,8 +166,8 @@ describe('computeAccount', function() {
     liquidationPrice: new BigNumber('605.97421338672768878719'),
     marginBalance: new BigNumber('14695.44634375'),
     maxWithdrawable: new BigNumber('13093.49634375'),
-    availableMargin: new BigNumber('13083.49634375'),
-    withdrawableBalance: new BigNumber('10'),
+    availableMargin: new BigNumber('13093.49634375'),
+    withdrawableBalance: new BigNumber('13093.49634375'),
     leverage: new BigNumber('1.09009958767350557018'),
     isSafe: true,
     inverseSide: SIDE.Sell,
@@ -230,9 +209,9 @@ describe('computeAccount', function() {
     roe: _0,
     liquidationPrice: _0,
     marginBalance: new BigNumber('10000'),
-    availableMargin: new BigNumber('9990'),
+    availableMargin: new BigNumber('10000'),
     maxWithdrawable: new BigNumber('10000'),
-    withdrawableBalance: new BigNumber('10'),
+    withdrawableBalance: new BigNumber('10000'),
     leverage: _0,
     isSafe: true,
     inverseSide: SIDE.Flat,
@@ -295,9 +274,6 @@ const ammStorage: AccountStorage = {
   entryValue: new BigNumber('2300.23'),
   entrySocialLoss: new BigNumber('0.1'),
   entryFundingLoss: new BigNumber('-0.91'),
-  withdrawalApplicationAmount: new BigNumber('10'),
-  withdrawalApplicationHeight: 123,
-  ...broker
 }
 
 const ammDetails = computeAMM(ammStorage, govParams, perpetualStorage, fundingResult)

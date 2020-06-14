@@ -1,5 +1,5 @@
 import { getPerpetualContract, getAMMContract } from '../src/transact'
-import { perpetualDepositEther, perpetualDepositEtherAndSetBroker } from '../src/transact'
+import { perpetualDepositEther } from '../src/transact'
 import { ammDepositEtherAndBuy, ammDepositEtherAndSell, ammDepositEtherAndAddLiquidity } from '../src/transact'
 import { extendExpect } from './helper'
 import { ethers } from 'ethers'
@@ -72,14 +72,6 @@ it('amm.depositAndAddLiquidity', async function() {
   const depositAmount = new BigNumber('0.21') // 1 / 200
   const collateralAmount = new BigNumber('0.1')
   const tx = await ammDepositEtherAndAddLiquidity(c, depositAmount, collateralAmount, testGas)
-  expect(tx.gasLimit.toString()).toEqual('1234567')
-  expect(tx.gasPrice.toString()).toEqual('12345')
-  await tx.wait()
-})
-
-it('perp.depositAndSetBroker', async function() {
-  const c = await getPerpetualContract(transactEthTestAddress.perp, walletWithProvider)
-  const tx = await perpetualDepositEtherAndSetBroker(c, new BigNumber('2'), transactEthTestAddress.perpProxy, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
   await tx.wait()

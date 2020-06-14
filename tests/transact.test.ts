@@ -1,10 +1,7 @@
 import { getContractReader, getGovParams } from '../src/data'
 import { getPerpetualContract, getAMMContract } from '../src/transact'
 import {
-  perpetualSetBroker,
   perpetualDeposit,
-  perpetualDepositAndSetBroker,
-  perpetualApplyForWithdrawal,
   perpetualWithdraw
 } from '../src/transact'
 import {
@@ -50,33 +47,9 @@ beforeAll(async done => {
   done()
 })
 
-it('perp.applyForWithdrawal', async function() {
-  const c = await getPerpetualContract(transactTestAddress.perp, walletWithProvider)
-  const tx = await perpetualApplyForWithdrawal(c, new BigNumber('1'), 18, testGas)
-  expect(tx.gasLimit.toString()).toEqual('1234567')
-  expect(tx.gasPrice.toString()).toEqual('12345')
-  await tx.wait()
-})
-
-it('perp.setBroker', async function() {
-  const c = await getPerpetualContract(transactTestAddress.perp, walletWithProvider)
-  const tx = await perpetualSetBroker(c, transactTestAddress.perpProxy, testGas)
-  expect(tx.gasLimit.toString()).toEqual('1234567')
-  expect(tx.gasPrice.toString()).toEqual('12345')
-  await tx.wait()
-})
-
 it('perp.deposit', async function() {
   const c = await getPerpetualContract(transactTestAddress.perp, walletWithProvider)
   const tx = await perpetualDeposit(c, new BigNumber('2'), 18, testGas)
-  expect(tx.gasLimit.toString()).toEqual('1234567')
-  expect(tx.gasPrice.toString()).toEqual('12345')
-  await tx.wait()
-})
-
-it('perp.depositAndSetBroker', async function() {
-  const c = await getPerpetualContract(transactTestAddress.perp, walletWithProvider)
-  const tx = await perpetualDepositAndSetBroker(c, new BigNumber('2'), 18, transactTestAddress.perpProxy, testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')
   expect(tx.gasPrice.toString()).toEqual('12345')
   await tx.wait()

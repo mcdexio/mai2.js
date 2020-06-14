@@ -1,227 +1,18 @@
 [
   {
-    "constant": false,
     "inputs": [
       {
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "addWhitelisted",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "priceFeeder",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "getGovernance",
-    "outputs": [
-      {
-        "components": [
-          {
-            "name": "poolFeeRate",
-            "type": "uint256"
-          },
-          {
-            "name": "poolDevFeeRate",
-            "type": "uint256"
-          },
-          {
-            "name": "emaAlpha",
-            "type": "int256"
-          },
-          {
-            "name": "updatePremiumPrize",
-            "type": "uint256"
-          },
-          {
-            "name": "markPremiumLimit",
-            "type": "int256"
-          },
-          {
-            "name": "fundingDampener",
-            "type": "int256"
-          }
-        ],
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "removeWhitelisted",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "isWhitelisted",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "emaAlpha2",
-    "outputs": [
-      {
-        "name": "",
-        "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "perpetualProxy",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "renounceWhitelistAdmin",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "addWhitelistAdmin",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "emaAlpha2Ln",
-    "outputs": [
-      {
-        "name": "",
-        "type": "int256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "key",
-        "type": "bytes32"
-      },
-      {
-        "name": "value",
-        "type": "int256"
-      }
-    ],
-    "name": "setGovernanceParameter",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "isWhitelistAdmin",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "renounceWhitelisted",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
+        "internalType": "address",
         "name": "_perpetualProxy",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "_priceFeeder",
         "type": "address"
       },
       {
+        "internalType": "address",
         "name": "_shareToken",
         "type": "address"
       }
@@ -242,27 +33,33 @@
       {
         "components": [
           {
+            "internalType": "uint256",
             "name": "lastFundingTime",
             "type": "uint256"
           },
           {
+            "internalType": "int256",
             "name": "lastPremium",
             "type": "int256"
           },
           {
+            "internalType": "int256",
             "name": "lastEMAPremium",
             "type": "int256"
           },
           {
+            "internalType": "uint256",
             "name": "lastIndexPrice",
             "type": "uint256"
           },
           {
+            "internalType": "int256",
             "name": "accumulatedFundingPerContract",
             "type": "int256"
           }
         ],
         "indexed": false,
+        "internalType": "struct LibTypes.FundingState",
         "name": "fundingState",
         "type": "tuple"
       }
@@ -275,11 +72,13 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "bytes32",
         "name": "key",
         "type": "bytes32"
       },
       {
         "indexed": false,
+        "internalType": "int256",
         "name": "value",
         "type": "int256"
       }
@@ -292,30 +91,7 @@
     "inputs": [
       {
         "indexed": true,
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "WhitelistedAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "WhitelistedRemoved",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
+        "internalType": "address",
         "name": "account",
         "type": "address"
       }
@@ -328,6 +104,7 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "address",
         "name": "account",
         "type": "address"
       }
@@ -336,11 +113,270 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "WhitelistedAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "WhitelistedRemoved",
+    "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "addWhitelistAdmin",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "addWhitelisted",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "emaAlpha2",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "emaAlpha2Ln",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getGovernance",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "poolFeeRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "poolDevFeeRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "emaAlpha",
+            "type": "int256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "updatePremiumPrize",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "markPremiumLimit",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "fundingDampener",
+            "type": "int256"
+          }
+        ],
+        "internalType": "struct LibTypes.AMMGovernanceConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "isWhitelistAdmin",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "isWhitelisted",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "perpetualProxy",
+    "outputs": [
+      {
+        "internalType": "contract IPerpetual",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "priceFeeder",
+    "outputs": [
+      {
+        "internalType": "contract IPriceFeeder",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "removeWhitelisted",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "renounceWhitelistAdmin",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "renounceWhitelisted",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "int256",
+        "name": "value",
+        "type": "int256"
+      }
+    ],
+    "name": "setGovernanceParameter",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "constant": true,
     "inputs": [],
     "name": "shareTokenAddress",
     "outputs": [
       {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -355,10 +391,12 @@
     "name": "indexPrice",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "price",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "timestamp",
         "type": "uint256"
       }
@@ -373,6 +411,7 @@
     "name": "positionSize",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -389,26 +428,32 @@
       {
         "components": [
           {
+            "internalType": "uint256",
             "name": "lastFundingTime",
             "type": "uint256"
           },
           {
+            "internalType": "int256",
             "name": "lastPremium",
             "type": "int256"
           },
           {
+            "internalType": "int256",
             "name": "lastEMAPremium",
             "type": "int256"
           },
           {
+            "internalType": "uint256",
             "name": "lastIndexPrice",
             "type": "uint256"
           },
           {
+            "internalType": "int256",
             "name": "accumulatedFundingPerContract",
             "type": "int256"
           }
         ],
+        "internalType": "struct LibTypes.FundingState",
         "name": "",
         "type": "tuple"
       }
@@ -423,6 +468,7 @@
     "name": "lastFundingRate",
     "outputs": [
       {
+        "internalType": "int256",
         "name": "",
         "type": "int256"
       }
@@ -439,26 +485,32 @@
       {
         "components": [
           {
+            "internalType": "uint256",
             "name": "lastFundingTime",
             "type": "uint256"
           },
           {
+            "internalType": "int256",
             "name": "lastPremium",
             "type": "int256"
           },
           {
+            "internalType": "int256",
             "name": "lastEMAPremium",
             "type": "int256"
           },
           {
+            "internalType": "uint256",
             "name": "lastIndexPrice",
             "type": "uint256"
           },
           {
+            "internalType": "int256",
             "name": "accumulatedFundingPerContract",
             "type": "int256"
           }
         ],
+        "internalType": "struct LibTypes.FundingState",
         "name": "",
         "type": "tuple"
       }
@@ -473,6 +525,7 @@
     "name": "currentAvailableMargin",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -487,6 +540,7 @@
     "name": "currentFairPrice",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -501,6 +555,7 @@
     "name": "currentPremium",
     "outputs": [
       {
+        "internalType": "int256",
         "name": "",
         "type": "int256"
       }
@@ -515,6 +570,7 @@
     "name": "currentMarkPrice",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -529,6 +585,7 @@
     "name": "currentPremiumRate",
     "outputs": [
       {
+        "internalType": "int256",
         "name": "",
         "type": "int256"
       }
@@ -543,6 +600,7 @@
     "name": "currentFundingRate",
     "outputs": [
       {
+        "internalType": "int256",
         "name": "",
         "type": "int256"
       }
@@ -557,6 +615,7 @@
     "name": "currentAccumulatedFundingPerContract",
     "outputs": [
       {
+        "internalType": "int256",
         "name": "",
         "type": "int256"
       }
@@ -569,6 +628,7 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       }
@@ -583,18 +643,22 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "address",
         "name": "trader",
         "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "limitPrice",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
       }
@@ -602,6 +666,7 @@
     "name": "buyFromWhitelisted",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -614,14 +679,17 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "limitPrice",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
       }
@@ -629,6 +697,7 @@
     "name": "buy",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -641,18 +710,22 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "address",
         "name": "trader",
         "type": "address"
       },
       {
+        "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "limitPrice",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
       }
@@ -660,6 +733,7 @@
     "name": "sellFromWhitelisted",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -672,14 +746,17 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "limitPrice",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
       }
@@ -687,6 +764,7 @@
     "name": "sell",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -699,6 +777,7 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       }
@@ -713,6 +792,7 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "shareAmount",
         "type": "uint256"
       }
@@ -736,46 +816,28 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "depositAmount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "tradeAmount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "limitPrice",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
       }
     ],
     "name": "depositAndBuy",
     "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "tradeAmount",
-        "type": "uint256"
-      },
-      {
-        "name": "limitPrice",
-        "type": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256"
-      }
-    ],
-    "name": "depositEtherAndBuy",
-    "outputs": [],
     "payable": true,
     "stateMutability": "payable",
     "type": "function"
@@ -784,46 +846,28 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "depositAmount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "tradeAmount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "limitPrice",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
       }
     ],
     "name": "depositAndSell",
     "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "tradeAmount",
-        "type": "uint256"
-      },
-      {
-        "name": "limitPrice",
-        "type": "uint256"
-      },
-      {
-        "name": "deadline",
-        "type": "uint256"
-      }
-    ],
-    "name": "depositEtherAndSell",
-    "outputs": [],
     "payable": true,
     "stateMutability": "payable",
     "type": "function"
@@ -832,18 +876,22 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "tradeAmount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "limitPrice",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "withdrawAmount",
         "type": "uint256"
       }
@@ -858,18 +906,22 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "tradeAmount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "limitPrice",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "withdrawAmount",
         "type": "uint256"
       }
@@ -884,29 +936,17 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "uint256",
         "name": "depositAmount",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       }
     ],
     "name": "depositAndAddLiquidity",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "depositEtherAndAddLiquidity",
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",
@@ -916,15 +956,6 @@
     "constant": false,
     "inputs": [],
     "name": "updateIndex",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "funding",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",

@@ -3,6 +3,7 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "perpetualAddress",
         "type": "address"
       }
@@ -12,90 +13,101 @@
       {
         "components": [
           {
-            "name": "withdrawalLockBlockCount",
-            "type": "uint256"
-          },
-          {
-            "name": "brokerLockBlockCount",
-            "type": "uint256"
-          },
-          {
             "components": [
               {
+                "internalType": "uint256",
                 "name": "initialMarginRate",
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
                 "name": "maintenanceMarginRate",
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
                 "name": "liquidationPenaltyRate",
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
                 "name": "penaltyFundRate",
                 "type": "uint256"
               },
               {
+                "internalType": "int256",
                 "name": "takerDevFeeRate",
                 "type": "int256"
               },
               {
+                "internalType": "int256",
                 "name": "makerDevFeeRate",
                 "type": "int256"
               },
               {
+                "internalType": "uint256",
                 "name": "lotSize",
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
                 "name": "tradingLotSize",
                 "type": "uint256"
               }
             ],
+            "internalType": "struct LibTypes.PerpGovernanceConfig",
             "name": "perpGovernanceConfig",
             "type": "tuple"
           },
           {
             "components": [
               {
+                "internalType": "uint256",
                 "name": "poolFeeRate",
                 "type": "uint256"
               },
               {
+                "internalType": "uint256",
                 "name": "poolDevFeeRate",
                 "type": "uint256"
               },
               {
+                "internalType": "int256",
                 "name": "emaAlpha",
                 "type": "int256"
               },
               {
+                "internalType": "uint256",
                 "name": "updatePremiumPrize",
                 "type": "uint256"
               },
               {
+                "internalType": "int256",
                 "name": "markPremiumLimit",
                 "type": "int256"
               },
               {
+                "internalType": "int256",
                 "name": "fundingDampener",
                 "type": "int256"
               }
             ],
+            "internalType": "struct LibTypes.AMMGovernanceConfig",
             "name": "ammGovernanceConfig",
             "type": "tuple"
           },
           {
+            "internalType": "address",
             "name": "amm",
             "type": "address"
           },
           {
+            "internalType": "address",
             "name": "poolAccount",
             "type": "address"
           }
         ],
+        "internalType": "struct ContractReader.GovParams",
         "name": "params",
         "type": "tuple"
       }
@@ -108,6 +120,7 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "perpetualAddress",
         "type": "address"
       }
@@ -117,68 +130,84 @@
       {
         "components": [
           {
+            "internalType": "address",
             "name": "collateralTokenAddress",
             "type": "address"
           },
           {
+            "internalType": "address",
             "name": "shareTokenAddress",
             "type": "address"
           },
           {
+            "internalType": "uint256",
             "name": "totalSize",
             "type": "uint256"
           },
           {
+            "internalType": "int256",
             "name": "insuranceFundBalance",
             "type": "int256"
           },
           {
+            "internalType": "int256",
             "name": "longSocialLossPerContract",
             "type": "int256"
           },
           {
+            "internalType": "int256",
             "name": "shortSocialLossPerContract",
             "type": "int256"
           },
           {
+            "internalType": "bool",
             "name": "isEmergency",
             "type": "bool"
           },
           {
+            "internalType": "bool",
             "name": "isGlobalSettled",
             "type": "bool"
           },
           {
+            "internalType": "uint256",
             "name": "globalSettlePrice",
             "type": "uint256"
           },
           {
             "components": [
               {
+                "internalType": "uint256",
                 "name": "lastFundingTime",
                 "type": "uint256"
               },
               {
+                "internalType": "int256",
                 "name": "lastPremium",
                 "type": "int256"
               },
               {
+                "internalType": "int256",
                 "name": "lastEMAPremium",
                 "type": "int256"
               },
               {
+                "internalType": "uint256",
                 "name": "lastIndexPrice",
                 "type": "uint256"
               },
               {
+                "internalType": "int256",
                 "name": "accumulatedFundingPerContract",
                 "type": "int256"
               }
             ],
+            "internalType": "struct LibTypes.FundingState",
             "name": "fundingParams",
             "type": "tuple"
           }
         ],
+        "internalType": "struct ContractReader.PerpetualStorage",
         "name": "params",
         "type": "tuple"
       }
@@ -191,11 +220,13 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
         "name": "perpetualAddress",
         "type": "address"
       },
       {
-        "name": "guy",
+        "internalType": "address",
+        "name": "trader",
         "type": "address"
       }
     ],
@@ -204,85 +235,96 @@
       {
         "components": [
           {
-            "components": [
-              {
-                "name": "balance",
-                "type": "int256"
-              },
-              {
-                "name": "appliedBalance",
-                "type": "int256"
-              },
-              {
-                "name": "appliedHeight",
-                "type": "uint256"
-              }
-            ],
-            "name": "collateral",
-            "type": "tuple"
+            "internalType": "enum LibTypes.Side",
+            "name": "side",
+            "type": "uint8"
           },
           {
-            "components": [
-              {
-                "name": "side",
-                "type": "uint8"
-              },
-              {
-                "name": "size",
-                "type": "uint256"
-              },
-              {
-                "name": "entryValue",
-                "type": "uint256"
-              },
-              {
-                "name": "entrySocialLoss",
-                "type": "int256"
-              },
-              {
-                "name": "entryFundingLoss",
-                "type": "int256"
-              }
-            ],
-            "name": "position",
-            "type": "tuple"
+            "internalType": "uint256",
+            "name": "size",
+            "type": "uint256"
           },
           {
-            "components": [
-              {
-                "components": [
-                  {
-                    "name": "broker",
-                    "type": "address"
-                  },
-                  {
-                    "name": "appliedHeight",
-                    "type": "uint256"
-                  }
-                ],
-                "name": "previous",
-                "type": "tuple"
-              },
-              {
-                "components": [
-                  {
-                    "name": "broker",
-                    "type": "address"
-                  },
-                  {
-                    "name": "appliedHeight",
-                    "type": "uint256"
-                  }
-                ],
-                "name": "current",
-                "type": "tuple"
-              }
-            ],
-            "name": "broker",
-            "type": "tuple"
+            "internalType": "uint256",
+            "name": "entryValue",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "entrySocialLoss",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "entryFundingLoss",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "cashBalance",
+            "type": "int256"
           }
         ],
-        "name": "params",
+        "internalType": "struct LibTypes.MarginAccount",
+        "name": "margin",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "perpetualAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "trader",
+        "type": "address"
+      }
+    ],
+    "name": "getBetaAccountStorage",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum LibTypes.Side",
+            "name": "side",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "size",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "entryValue",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "entrySocialLoss",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "entryFundingLoss",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "cashBalance",
+            "type": "int256"
+          }
+        ],
+        "internalType": "struct LibTypes.MarginAccount",
+        "name": "margin",
         "type": "tuple"
       }
     ],

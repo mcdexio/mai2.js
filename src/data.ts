@@ -22,10 +22,6 @@ export async function getGovParams(
     amm: p.amm,
     poolAccount: p.poolAccount,
 
-    // global
-    withdrawalLockBlockCount: p.withdrawalLockBlockCount.toNumber(),
-    brokerLockBlockCount: p.brokerLockBlockCount.toNumber(),
-
     // perpetual
     initialMargin: normalizeBigNumberish(p.perpGovernanceConfig.initialMarginRate).shiftedBy(-DECIMALS),
     maintenanceMargin: normalizeBigNumberish(p.perpGovernanceConfig.maintenanceMarginRate).shiftedBy(-DECIMALS),
@@ -78,17 +74,28 @@ export async function getAccountStorage(
 ): Promise<AccountStorage> {
   const p = await contractReader.getAccountStorage(perpetualContractAddress, userAddress)
   return {
-    cashBalance: normalizeBigNumberish(p.collateral.balance).shiftedBy(-DECIMALS),
-    previousBroker: p.broker.previous.broker,
-    previousAppliedHeight: p.broker.previous.appliedHeight.toNumber(),
-    currentBroker: p.broker.current.broker,
-    currentAppliedHeight: p.broker.current.appliedHeight.toNumber(),
-    withdrawalApplicationAmount: normalizeBigNumberish(p.collateral.appliedBalance).shiftedBy(-DECIMALS),
-    withdrawalApplicationHeight: p.collateral.appliedHeight.toNumber(),
-    positionSide: p.position.side as SIDE,
-    positionSize: normalizeBigNumberish(p.position.size).shiftedBy(-DECIMALS),
-    entryValue: normalizeBigNumberish(p.position.entryValue).shiftedBy(-DECIMALS),
-    entrySocialLoss: normalizeBigNumberish(p.position.entrySocialLoss).shiftedBy(-DECIMALS),
-    entryFundingLoss: normalizeBigNumberish(p.position.entryFundingLoss).shiftedBy(-DECIMALS)
+    cashBalance: normalizeBigNumberish(p.cashBalance).shiftedBy(-DECIMALS),
+    positionSide: p.side as SIDE,
+    positionSize: normalizeBigNumberish(p.size).shiftedBy(-DECIMALS),
+    entryValue: normalizeBigNumberish(p.entryValue).shiftedBy(-DECIMALS),
+    entrySocialLoss: normalizeBigNumberish(p.entrySocialLoss).shiftedBy(-DECIMALS),
+    entryFundingLoss: normalizeBigNumberish(p.entryFundingLoss).shiftedBy(-DECIMALS)
   }
 }
+
+export async function getBetaAccountStorage(
+  contractReader: ethers.Contract,
+  perpetualContractAddress: string,
+  userAddress: string
+): Promise<AccountStorage> {
+  const p = await contractReader.getBetaAccountStorage(perpetualContractAddress, userAddress)
+  return {
+    cashBalance: normalizeBigNumberish(p.cashBalance).shiftedBy(-DECIMALS),
+    positionSide: p.side as SIDE,
+    positionSize: normalizeBigNumberish(p.size).shiftedBy(-DECIMALS),
+    entryValue: normalizeBigNumberish(p.entryValue).shiftedBy(-DECIMALS),
+    entrySocialLoss: normalizeBigNumberish(p.entrySocialLoss).shiftedBy(-DECIMALS),
+    entryFundingLoss: normalizeBigNumberish(p.entryFundingLoss).shiftedBy(-DECIMALS)
+  }
+}
+

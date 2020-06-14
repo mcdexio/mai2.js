@@ -323,8 +323,8 @@ export function computeAccount(s: AccountStorage, g: GovParams, p: PerpetualStor
   const marginBalance = s.cashBalance.plus(pnl2)
   const roe = s.cashBalance.gt(0) ? pnl2.div(s.cashBalance) : _0
   const maxWithdrawable = BigNumber.max(_0, marginBalance.minus(positionMargin))
-  const availableMargin = BigNumber.max(_0, maxWithdrawable.minus(s.withdrawalApplicationAmount))
-  const withdrawableBalance = BigNumber.min(maxWithdrawable, s.withdrawalApplicationAmount)
+  const availableMargin = BigNumber.max(_0, maxWithdrawable)
+  const withdrawableBalance = maxWithdrawable
   const isSafe = maintenanceMargin.isLessThanOrEqualTo(marginBalance)
   const leverage = marginBalance.gt(0) ? positionValue.div(marginBalance) : _0
 

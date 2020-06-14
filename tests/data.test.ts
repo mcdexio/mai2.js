@@ -35,9 +35,6 @@ it('param', async function() {
   expect(p.amm).toEqual(dataTestAddress.amm)
   expect(p.poolAccount).toEqual(dataTestAddress.perpProxy)
 
-  expect(p.withdrawalLockBlockCount).toEqual(5)
-  expect(p.brokerLockBlockCount).toEqual(5)
-
   expect(p.initialMargin).toBeBigNumber(normalizeBigNumberish('0.1'))
   expect(p.maintenanceMargin).toBeBigNumber(normalizeBigNumberish('0.05'))
   expect(p.liquidationPenaltyRate).toBeBigNumber(normalizeBigNumberish('0.005'))
@@ -82,12 +79,6 @@ it('account', async function() {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: AccountStorage = await getAccountStorage(contractReader, dataTestAddress.perp, testUser)
   expect(p.cashBalance).toBeBigNumber(normalizeBigNumberish('15000')) // position * 3 * price
-  expect(p.previousBroker).toEqual('0x0000000000000000000000000000000000000000')
-  expect(p.previousAppliedHeight).toEqual(0)
-  expect(p.currentBroker).toEqual(dataTestAddress.amm)
-  expect(p.currentAppliedHeight).toBeGreaterThan(0)
-  expect(p.withdrawalApplicationAmount).toBeBigNumber(normalizeBigNumberish('0'))
-  expect(p.withdrawalApplicationHeight).toEqual(0)
   expect(p.positionSide).toEqual(SIDE.Sell)
   expect(p.positionSize).toBeBigNumber(normalizeBigNumberish('1000000'))
   expect(p.entryValue).toBeBigNumber(normalizeBigNumberish('5000')) // position * price

@@ -28,8 +28,6 @@ export interface GovParams extends FundingGovParams {
   poolAccount: string // AMM account address
 
   // global
-  withdrawalLockBlockCount: number
-  brokerLockBlockCount: number
 
   // perpetual
   initialMargin: BigNumber
@@ -79,27 +77,13 @@ export interface FundingResult {
   fundingRate: BigNumber
 }
 
-export interface AccountStorage extends WithdrawalApplication, AccountBroker {
+export interface AccountStorage {
   cashBalance: BigNumber
   positionSide: SIDE
   positionSize: BigNumber
   entryValue: BigNumber
   entrySocialLoss: BigNumber
   entryFundingLoss: BigNumber
-}
-
-export interface WithdrawalApplication {
-  withdrawalApplicationAmount: BigNumber
-  withdrawalApplicationHeight: number
-}
-
-// delayed setBroker logic: if currentAppliedHeight <= blockNumber, the effective broker = currentBroker,
-// otherwise the effective broker = previousBroker
-export interface AccountBroker {
-  previousBroker: string
-  previousAppliedHeight: number
-  currentBroker: string
-  currentAppliedHeight: number
 }
 
 export interface AccountComputed {
