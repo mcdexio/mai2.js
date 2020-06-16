@@ -175,6 +175,16 @@
             "type": "uint256"
           },
           {
+            "internalType": "bool",
+            "name": "isPaused",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isWithdrawDisabled",
+            "type": "bool"
+          },
+          {
             "components": [
               {
                 "internalType": "uint256",
@@ -205,6 +215,16 @@
             "internalType": "struct LibTypes.FundingState",
             "name": "fundingParams",
             "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "oraclePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "oracleTime",
+            "type": "uint256"
           }
         ],
         "internalType": "struct ContractReader.PerpetualStorage",
@@ -325,6 +345,126 @@
         ],
         "internalType": "struct LibTypes.MarginAccount",
         "name": "margin",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "perpetualAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getBetaPerpetualStorage",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "collateralTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "shareTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSize",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "insuranceFundBalance",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "longSocialLossPerContract",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "shortSocialLossPerContract",
+            "type": "int256"
+          },
+          {
+            "internalType": "bool",
+            "name": "isEmergency",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isGlobalSettled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "globalSettlePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "isPaused",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isWithdrawDisabled",
+            "type": "bool"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "lastFundingTime",
+                "type": "uint256"
+              },
+              {
+                "internalType": "int256",
+                "name": "lastPremium",
+                "type": "int256"
+              },
+              {
+                "internalType": "int256",
+                "name": "lastEMAPremium",
+                "type": "int256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lastIndexPrice",
+                "type": "uint256"
+              },
+              {
+                "internalType": "int256",
+                "name": "accumulatedFundingPerContract",
+                "type": "int256"
+              }
+            ],
+            "internalType": "struct LibTypes.FundingState",
+            "name": "fundingParams",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "oraclePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "oracleTime",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ContractReader.PerpetualStorage",
+        "name": "params",
         "type": "tuple"
       }
     ],

@@ -58,6 +58,8 @@ export interface PerpetualStorage extends FundingParams {
   isEmergency: boolean
   isGlobalSettled: boolean
   globalSettlePrice: BigNumber
+  isPaused: boolean
+  isWithdrawDisabled: boolean
 }
 
 export interface FundingParams {

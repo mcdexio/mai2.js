@@ -6,12 +6,12 @@ import { extendExpect, getBN } from './helper'
 
 extendExpect()
 
-describe('funding', function() {
+describe('funding', function () {
   const emaAlpha = '3327787021630616' // 2 / (600 + 1)
   const markPremiumLimit = '5000000000000000' // 0.5%
   const fundingDampener = '500000000000000' // 0.05%
 
-  it(`timeOnFundingCurve - upward`, function() {
+  it(`timeOnFundingCurve - upward`, function () {
     const a2 = _1.minus(getBN(emaAlpha))
     // y = -0.5% = -35 => t = 86.3
     let r = _tFunc(getBN('-35000000000000000000'), a2, getBN('70000000000000000000'), getBN('-70000000000000000000'))
@@ -21,7 +21,7 @@ describe('funding', function() {
     expect(r.toString()).toEqual('416')
   })
 
-  it(`timeOnFundingCurve - critical`, function() {
+  it(`timeOnFundingCurve - critical`, function () {
     // y is very close to lastPremium
     // index -> 1
     // lastEMAPremium(v0) -> 0
@@ -44,7 +44,7 @@ describe('funding', function() {
   // lastEMAPremium(v0) -> 7000 * 99% - 7000 (* markPrice = index * 99% *)
   // lastPremium -> 7000 * 1% (* markPrice = index * 101% *)
   // the curve is upward
-  it('integrateOnFundingCurve - upward', function() {
+  it('integrateOnFundingCurve - upward', function () {
     const a = getBN(emaAlpha)
     const a2 = _1.minus(a)
 
@@ -66,7 +66,7 @@ describe('funding', function() {
   // lastEMAPremium(v0) -> 7000 * 101% - 7000 (* markPrice = index * 101% *)
   // lastPremium -> -7000 * 1% (* markPrice = index * 99% *)
   // the curve is downward
-  it('integrateOnFundingCurve - downward', function() {
+  it('integrateOnFundingCurve - downward', function () {
     const a = getBN(emaAlpha)
     const a2 = _1.minus(a)
     // sum in [86, 100) = 460
@@ -208,7 +208,7 @@ describe('funding', function() {
     const expectedVT = getBN(element[3])
     const expectedAcc = getBN(element[4])
 
-    it(`computeAccumulatedFunding.${index}:"${lastEMAPremium} ${lastPremium} ${timestamp}"`, function() {
+    it(`computeAccumulatedFunding.${index}:"${lastEMAPremium} ${lastPremium} ${timestamp}"`, function () {
       fundingParams.lastEMAPremium = lastEMAPremium
       fundingParams.lastPremium = lastPremium
 
@@ -228,6 +228,8 @@ describe('funding', function() {
     isEmergency: false,
     isGlobalSettled: false,
     globalSettlePrice: new BigNumber(0),
+    isPaused: false,
+    isWithdrawDisabled: false,
     ...fundingParams,
     insuranceFundBalance: new BigNumber(0)
   }
@@ -241,7 +243,7 @@ describe('funding', function() {
     const newIndexPrice = new BigNumber('10000')
     const newFariPrice = new BigNumber('10100')
 
-    it(`funding.${index}:"${perpetualStorage.lastEMAPremium} ${perpetualStorage.lastPremium} ${timestamp}"`, function() {
+    it(`funding.${index}:"${perpetualStorage.lastEMAPremium} ${perpetualStorage.lastPremium} ${timestamp}"`, function () {
       perpetualStorage.lastEMAPremium = lastEMAPremium
       perpetualStorage.lastPremium = lastPremium
 

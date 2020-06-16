@@ -57,6 +57,8 @@ export async function getPerpetualStorage(
     isEmergency: p.isEmergency,
     isGlobalSettled: p.isGlobalSettled,
     globalSettlePrice: normalizeBigNumberish(p.globalSettlePrice).shiftedBy(-DECIMALS),
+    isPaused: p.isPaused,
+    isWithdrawDisabled: p.isWithdrawDisabled,
     accumulatedFundingPerContract: normalizeBigNumberish(p.fundingParams.accumulatedFundingPerContract).shiftedBy(
       -DECIMALS
     ),
@@ -83,6 +85,33 @@ export async function getAccountStorage(
   }
 }
 
+export async function getBetaPerpetualStorage(
+  contractReader: ethers.Contract,
+  perpetualContractAddress: string
+): Promise<PerpetualStorage> {
+  const p = await contractReader.getBetaPerpetualStorage(perpetualContractAddress)
+  return {
+    collateralTokenAddress: normalizeAddress(p.collateralTokenAddress),
+    shareTokenAddress: normalizeAddress(p.shareTokenAddress),
+    totalSize: normalizeBigNumberish(p.totalSize).shiftedBy(-DECIMALS),
+    longSocialLossPerContract: normalizeBigNumberish(p.longSocialLossPerContract).shiftedBy(-DECIMALS),
+    shortSocialLossPerContract: normalizeBigNumberish(p.shortSocialLossPerContract).shiftedBy(-DECIMALS),
+    insuranceFundBalance: normalizeBigNumberish(p.insuranceFundBalance).shiftedBy(-DECIMALS),
+    isEmergency: p.isEmergency,
+    isGlobalSettled: p.isGlobalSettled,
+    globalSettlePrice: normalizeBigNumberish(p.globalSettlePrice).shiftedBy(-DECIMALS),
+    isPaused: false,
+    isWithdrawDisabled: false,
+    accumulatedFundingPerContract: normalizeBigNumberish(p.fundingParams.accumulatedFundingPerContract).shiftedBy(
+      -DECIMALS
+    ),
+    lastEMAPremium: normalizeBigNumberish(p.fundingParams.lastEMAPremium).shiftedBy(-DECIMALS),
+    lastPremium: normalizeBigNumberish(p.fundingParams.lastPremium).shiftedBy(-DECIMALS),
+    lastIndexPrice: normalizeBigNumberish(p.fundingParams.lastIndexPrice).shiftedBy(-DECIMALS),
+    lastFundingTimestamp: p.fundingParams.lastFundingTime.toNumber()
+  }
+}
+
 export async function getBetaAccountStorage(
   contractReader: ethers.Contract,
   perpetualContractAddress: string,
@@ -98,4 +127,3 @@ export async function getBetaAccountStorage(
     entryFundingLoss: normalizeBigNumberish(p.entryFundingLoss).shiftedBy(-DECIMALS)
   }
 }
-
