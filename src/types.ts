@@ -97,8 +97,6 @@ export interface AccountComputed {
   liquidationPrice: BigNumber
   marginBalance: BigNumber
   availableMargin: BigNumber
-  maxWithdrawable: BigNumber
-  withdrawableBalance: BigNumber
   leverage: BigNumber
   isSafe: boolean
   inverseSide: SIDE

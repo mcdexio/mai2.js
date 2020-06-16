@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 
 import { getContract } from '../src/utils'
 import { getPerpetualContract, getAMMContract } from '../src/transact'
-import { perpetualDepositAndSetBroker, perpetualDepositEtherAndSetBroker, ammCreatePool } from '../src/transact'
+import { ammCreatePool } from '../src/transact'
 
 import { testU2, testU7, testDev } from './eth_address'
 
@@ -53,7 +53,6 @@ export const createPoolForTestToken = async (addresses: any, operator: string, r
   amm = amm.connect(rpcProvider.getSigner(operator))
 
   await approvePerp(addresses, operator, rpcProvider)
-  await perpetualDepositAndSetBroker(perp, 1000000 * 3 * (1 / 120), 18, addresses.amm)
   await ammCreatePool(amm, 1000000)
 
   console.log('> pool created')
@@ -66,7 +65,6 @@ export const createPoolForETH = async (addresses: any, operator: string, rpcProv
   let amm = await getAMMContract(addresses.amm, rpcProvider)
   amm = amm.connect(rpcProvider.getSigner(operator))
 
-  await perpetualDepositEtherAndSetBroker(perp, 1000000 * 3 * (1 / 120), addresses.amm)
   await ammCreatePool(amm, 1000000)
 
   console.log('   > pool created')

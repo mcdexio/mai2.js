@@ -1,5 +1,5 @@
 import { getPerpetualContract, getAMMContract } from '../src/transact'
-import { perpetualDepositEther, perpetualDepositEtherAndSetBroker } from '../src/transact'
+import { perpetualDepositEther } from '../src/transact'
 import { ammDepositEtherAndBuy, ammDepositEtherAndSell, ammDepositEtherAndAddLiquidity } from '../src/transact'
 import { extendExpect } from './helper'
 import { ethers } from 'ethers'
@@ -32,7 +32,7 @@ beforeAll(async done => {
   done()
 })
 
-it('amm.depositAndBuy', async function() {
+it('amm.depositAndBuy', async function () {
   const c = await getAMMContract(transactEthTestAddress.amm, walletWithProvider)
   const depositAmount = new BigNumber('0.005') // 1 / 200
   const buyAmount = new BigNumber('1')
@@ -44,7 +44,7 @@ it('amm.depositAndBuy', async function() {
   await tx.wait()
 })
 
-it('amm.depositAndBuy.zeroDeposit', async function() {
+it('amm.depositAndBuy.zeroDeposit', async function () {
   const c = await getAMMContract(transactEthTestAddress.amm, walletWithProvider)
   const depositAmount = 0
   const buyAmount = new BigNumber('1')
@@ -55,7 +55,7 @@ it('amm.depositAndBuy.zeroDeposit', async function() {
   expect(tx.gasPrice.toString()).toEqual('12345')
 })
 
-it('amm.depositAndSell', async function() {
+it('amm.depositAndSell', async function () {
   const c = await getAMMContract(transactEthTestAddress.amm, walletWithProvider)
   const depositAmount = new BigNumber('0.005') // 1 / 200
   const amount = new BigNumber('1')
@@ -67,7 +67,7 @@ it('amm.depositAndSell', async function() {
   await tx.wait()
 })
 
-it('amm.depositAndAddLiquidity', async function() {
+it('amm.depositAndAddLiquidity', async function () {
   const c = await getAMMContract(transactEthTestAddress.amm, walletWithProvider)
   const depositAmount = new BigNumber('0.21') // 1 / 200
   const collateralAmount = new BigNumber('0.1')
@@ -77,15 +77,7 @@ it('amm.depositAndAddLiquidity', async function() {
   await tx.wait()
 })
 
-it('perp.depositAndSetBroker', async function() {
-  const c = await getPerpetualContract(transactEthTestAddress.perp, walletWithProvider)
-  const tx = await perpetualDepositEtherAndSetBroker(c, new BigNumber('2'), transactEthTestAddress.perpProxy, testGas)
-  expect(tx.gasLimit.toString()).toEqual('1234567')
-  expect(tx.gasPrice.toString()).toEqual('12345')
-  await tx.wait()
-})
-
-it('perp.deposit', async function() {
+it('perp.deposit', async function () {
   const c = await getPerpetualContract(transactEthTestAddress.perp, walletWithProvider)
   const tx = await perpetualDepositEther(c, new BigNumber('2'), testGas)
   expect(tx.gasLimit.toString()).toEqual('1234567')

@@ -143,9 +143,7 @@ describe('computeAccount', function () {
     roe: new BigNumber('1.369544634375'),
     liquidationPrice: _0,
     marginBalance: new BigNumber('23695.44634375'),
-    maxWithdrawable: new BigNumber('22093.49634375'),
-    availableMargin: new BigNumber('22083.49634375'),
-    withdrawableBalance: new BigNumber('10'),
+    availableMargin: new BigNumber('22093.49634375'),
     leverage: new BigNumber('0.67605816609676835812'),
     isSafe: true,
     inverseSide: SIDE.Sell,
@@ -165,9 +163,7 @@ describe('computeAccount', function () {
     roe: new BigNumber('13.69544634375'),
     liquidationPrice: new BigNumber('605.97421338672768878719'),
     marginBalance: new BigNumber('14695.44634375'),
-    maxWithdrawable: new BigNumber('13093.49634375'),
-    availableMargin: new BigNumber('13083.49634375'),
-    withdrawableBalance: new BigNumber('10'),
+    availableMargin: new BigNumber('13093.49634375'),
     leverage: new BigNumber('1.09009958767350557018'),
     isSafe: true,
     inverseSide: SIDE.Sell,
@@ -187,9 +183,7 @@ describe('computeAccount', function () {
     roe: new BigNumber('-0.978330453125'),
     liquidationPrice: new BigNumber('6758.95389492753623188406'),
     marginBalance: new BigNumber('303.37365625'),
-    maxWithdrawable: _0,
     availableMargin: _0,
-    withdrawableBalance: _0,
     leverage: new BigNumber('52.80451901465983007547'),
     isSafe: false,
     inverseSide: SIDE.Buy,
@@ -209,9 +203,7 @@ describe('computeAccount', function () {
     roe: _0,
     liquidationPrice: _0,
     marginBalance: new BigNumber('10000'),
-    availableMargin: new BigNumber('9990'),
-    maxWithdrawable: new BigNumber('10000'),
-    withdrawableBalance: new BigNumber('10'),
+    availableMargin: new BigNumber('10000'),
     leverage: _0,
     isSafe: true,
     inverseSide: SIDE.Flat,
@@ -256,8 +248,6 @@ describe('computeAccount', function () {
       expect(computed.liquidationPrice).toApproximate(expectedOutput.liquidationPrice)
       expect(computed.marginBalance).toBeBigNumber(expectedOutput.marginBalance)
       expect(computed.availableMargin).toBeBigNumber(expectedOutput.availableMargin)
-      expect(computed.maxWithdrawable).toBeBigNumber(expectedOutput.maxWithdrawable)
-      expect(computed.withdrawableBalance).toBeBigNumber(expectedOutput.withdrawableBalance)
       expect(computed.leverage).toApproximate(expectedOutput.leverage)
       expect(computed.isSafe).toEqual(expectedOutput.isSafe)
       expect(computed.inverseSide).toEqual(expectedOutput.inverseSide)
