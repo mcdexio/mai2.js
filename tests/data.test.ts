@@ -71,6 +71,8 @@ it('perp', async function () {
   expect(p.isPaused).toBeFalsy()
   expect(p.isWithdrawDisabled).toBeFalsy()
   expect(p.accumulatedFundingPerContract).toBeBigNumber(normalizeBigNumberish('0'))
+  expect(p.oraclePrice).toBeBigNumber(normalizeBigNumberish('0.005')) // price = 1 / $200
+  expect(p.oracleTimestamp).not.toEqual(0)
   expect(p.lastEMAPremium).toBeBigNumber(normalizeBigNumberish('0'))
   expect(p.lastPremium).toBeBigNumber(normalizeBigNumberish('0'))
   expect(p.lastIndexPrice).toBeBigNumber(normalizeBigNumberish('0.005')) // price = 1 / $200

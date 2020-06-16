@@ -230,6 +230,8 @@ describe('funding', function () {
     globalSettlePrice: new BigNumber(0),
     isPaused: false,
     isWithdrawDisabled: false,
+    oraclePrice: getBN(getAccumulatedFundingCase1IndexPrice),
+    oracleTimestamp: 0,
     ...fundingParams,
     insuranceFundBalance: new BigNumber(0)
   }

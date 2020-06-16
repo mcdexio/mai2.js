@@ -78,6 +78,8 @@ const perpetualStorage: PerpetualStorage = {
   globalSettlePrice: new BigNumber(0),
   isPaused: false,
   isWithdrawDisabled: false,
+  oraclePrice: getBN('7000000000000000000000'),
+  oracleTimestamp: 1579601290,
   shareTokenAddress: '',
   ...fundingParams
 }

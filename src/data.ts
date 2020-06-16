@@ -59,6 +59,8 @@ export async function getPerpetualStorage(
     globalSettlePrice: normalizeBigNumberish(p.globalSettlePrice).shiftedBy(-DECIMALS),
     isPaused: p.isPaused,
     isWithdrawDisabled: p.isWithdrawDisabled,
+    oraclePrice: normalizeBigNumberish(p.oraclePrice).shiftedBy(-DECIMALS),
+    oracleTimestamp: p.oracleTime.toNumber(),
     accumulatedFundingPerContract: normalizeBigNumberish(p.fundingParams.accumulatedFundingPerContract).shiftedBy(
       -DECIMALS
     ),

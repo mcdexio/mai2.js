@@ -60,6 +60,8 @@ export interface PerpetualStorage extends FundingParams {
   globalSettlePrice: BigNumber
   isPaused: boolean
   isWithdrawDisabled: boolean
+  oraclePrice: BigNumber
+  oracleTimestamp: number
 }
 
 export interface FundingParams {
