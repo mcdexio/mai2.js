@@ -102,8 +102,10 @@ export async function getBetaPerpetualStorage(
     isEmergency: p.isEmergency,
     isGlobalSettled: p.isGlobalSettled,
     globalSettlePrice: normalizeBigNumberish(p.globalSettlePrice).shiftedBy(-DECIMALS),
-    isPaused: false,
-    isWithdrawDisabled: false,
+    isPaused: p.isPaused,
+    isWithdrawDisabled: p.isWithdrawDisabled,
+    oraclePrice: normalizeBigNumberish(p.oraclePrice).shiftedBy(-DECIMALS),
+    oracleTimestamp: p.oracleTime.toNumber(),
     accumulatedFundingPerContract: normalizeBigNumberish(p.fundingParams.accumulatedFundingPerContract).shiftedBy(
       -DECIMALS
     ),
