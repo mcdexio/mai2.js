@@ -238,7 +238,6 @@ export function computeFunding(f: PerpetualStorage, g: FundingGovParams, timesta
 
   let acc: BigNumber = _0
   let emaPremium: BigNumber = f.lastEMAPremium
-  console.log('MAI2', f.isEmergency, f.isGlobalSettled)
   if (f.isEmergency || f.isGlobalSettled) {
   } else {
     const fundingInfo = computeAccumulatedFunding(f, g, timestamp)
