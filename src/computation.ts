@@ -228,8 +228,7 @@ export function computeAccumulatedFunding(
   return { acc, emaPremium }
 }
 
-// NOTE: do not call this function if perpetualStorage.isEmergency or perpetualStorage.isGlobalSettled
-export function computeFunding(f: FundingParams, g: FundingGovParams, timestamp: number): FundingResult {
+export function computeFunding(f: PerpetualStorage, g: FundingGovParams, timestamp: number): FundingResult {
   if (timestamp < f.lastFundingTimestamp) {
     console.log(
       `warn: funding timestamp '${timestamp}' is earlier than last funding timestamp '${f.lastFundingTimestamp}'`
@@ -237,8 +236,16 @@ export function computeFunding(f: FundingParams, g: FundingGovParams, timestamp:
     timestamp = f.lastFundingTimestamp
   }
 
-  let { acc, emaPremium } = computeAccumulatedFunding(f, g, timestamp)
-  acc = acc.div(FUNDING_TIME)
+  let acc: BigNumber = _0
+  let emaPremium: BigNumber = f.lastEMAPremium
+  console.log('MAI2', f.isEmergency, f.isGlobalSettled)
+  if (f.isEmergency || f.isGlobalSettled) {
+  } else {
+    const fundingInfo = computeAccumulatedFunding(f, g, timestamp)
+    acc = fundingInfo.acc
+    emaPremium = fundingInfo.emaPremium
+    acc = acc.div(FUNDING_TIME)
+  }
 
   const accumulatedFundingPerContract = f.accumulatedFundingPerContract.plus(acc)
   let markPrice = f.lastIndexPrice.plus(emaPremium)
