@@ -15,7 +15,8 @@ import {
   BigNumberish,
   FundingGovParams,
   AccountComputed,
-  TradeCost
+  TradeCost,
+  LiquidateResult
 } from './types'
 import { _0, _1, _0_1, FUNDING_TIME, SIDE, TRADE_SIDE } from './constants'
 import { bigLog, normalizeBigNumberish } from './utils'
@@ -766,9 +767,14 @@ export function computeAMMRemoveLiquidity(
   return { amm: amm2, user: user2 }
 }
 
-export function calculateLiquidateAmount(s: AccountStorage, g: GovParams, p: PerpetualStorage, f: FundingResult, liquidationPrice: BigNumber): BigNumber {
-  if (liquidationPrice.lte(_0)) {
-    throw Error(`invalid price '${liquidationPrice}'`)
+export function isValidLotSize(g: GovParams, amount: BigNumber): boolean {
+  return amount.gt(0) && amount.mod(g.lotSize).isZero()
+}
+
+export function calculateLiquidateAmount(s: AccountStorage, g: GovParams, p: PerpetualStorage, f: FundingResult, liquidationPrice: BigNumberish): BigNumber {
+  const normalizedPrice = normalizeBigNumberish(liquidationPrice)
+  if (normalizedPrice.lte(_0)) {
+    throw Error(`invalid price '${normalizedPrice}'`)
   }
   if (s.positionSize.isZero()) {
     return _0
@@ -777,12 +783,12 @@ export function calculateLiquidateAmount(s: AccountStorage, g: GovParams, p: Per
   const socialLossPerContract: BigNumber = s.positionSide === SIDE.Buy ? p.longSocialLossPerContract : p.shortSocialLossPerContract
   let liquidationAmount: BigNumber = s.cashBalance.plus(s.entrySocialLoss)
   liquidationAmount = liquidationAmount
-    .minus(liquidationPrice.times(s.positionSize).times(g.initialMargin))
+    .minus(normalizedPrice.times(s.positionSize).times(g.initialMargin))
     .minus(socialLossPerContract.times(s.positionSize))
   const tmp: BigNumber = s.entryValue
     .minus(s.entryFundingLoss)
     .plus(accumulatedFundingPerContract.times(s.positionSize))
-    .minus(s.positionSize.times(liquidationPrice))
+    .minus(s.positionSize.times(normalizedPrice))
   if (s.positionSide == SIDE.Buy) {
     liquidationAmount = liquidationAmount.minus(tmp)
   } else if (s.positionSide == SIDE.Sell) {
@@ -793,9 +799,83 @@ export function calculateLiquidateAmount(s: AccountStorage, g: GovParams, p: Per
   const denominator: BigNumber = g.liquidationPenaltyRate
     .plus(g.penaltyFundRate)
     .minus(g.initialMargin)
-    .times(liquidationPrice)
+    .times(normalizedPrice)
   liquidationAmount = liquidationAmount.div(denominator)
   liquidationAmount = BigNumber.max(_0, liquidationAmount)
   liquidationAmount = BigNumber.min(liquidationAmount, s.positionSize)
   return liquidationAmount
+}
+
+function ceil(x: BigNumber, m: BigNumber): BigNumber {
+  return x.div(m).integerValue(BigNumber.ROUND_CEIL).times(m)
+}
+
+export function computeLiquidate(l: LiquidateResult, g: GovParams, f: FundingResult, maxAmount: BigNumber): LiquidateResult {
+  let newP: PerpetualStorage = { ...l.perpetualStorage }
+  let newL: AccountStorage = { ...l.liquidated }
+  let newK: AccountStorage = { ...l.keeper }
+  const markPrice = newP.isEmergency || newP.isGlobalSettled ? newP.globalSettlePrice : f.markPrice
+  const liquidationPrice = markPrice
+
+  // size
+  if (!isValidLotSize(g, maxAmount)) {
+    throw Error(`amount(${maxAmount}) must be divisible by lotSize(${g.lotSize.toFixed()})`)
+  }
+  if (newP.isGlobalSettled) {
+    throw Error(`wrong perpetual status`)
+  }
+  let calculatedLiquidationAmount = calculateLiquidateAmount(newL, g, newP, f, liquidationPrice)
+  const totalPositionSize = newL.positionSize
+  const liquidatableAmount = totalPositionSize.minus(totalPositionSize.mod(g.lotSize))
+  let liquidationAmount = ceil(calculatedLiquidationAmount, g.lotSize)
+  liquidationAmount = BigNumber.min(liquidationAmount, maxAmount)
+  liquidationAmount = BigNumber.min(liquidationAmount, liquidatableAmount)
+  if (liquidationAmount.lte(0)) {
+    throw Error(`nothing to liquidate`)
+  }
+
+  // liquidated trader
+  if (newL.positionSide !== SIDE.Buy && newL.positionSide !== SIDE.Sell) {
+    throw Error(`liquidated trader is neither LONG nor SHORT`)
+  }
+  const liquidationSide = newL.positionSide === SIDE.Buy ? TRADE_SIDE.Buy : TRADE_SIDE.Sell
+  const inverseSide = liquidationSide === TRADE_SIDE.Buy ? TRADE_SIDE.Sell : TRADE_SIDE.Buy
+  const liquidationValue = liquidationPrice.times(liquidationAmount)
+  const penaltyToLiquidator = g.liquidationPenaltyRate.times(liquidationValue)
+  const penaltyToFund = g.penaltyFundRate.times(liquidationValue)
+
+  // position: trader => liquidator
+  newL = computeTrade(newP, f, newL, inverseSide, liquidationPrice, liquidationAmount, _0)
+  newK = computeTrade(newP, f, newK, liquidationSide, liquidationPrice, liquidationAmount, _0)
+
+  // penalty: trader => liquidator, trader => insuranceFundBalance
+  newL.cashBalance = newL.cashBalance.minus(penaltyToLiquidator.plus(penaltyToFund))
+  newK.cashBalance = newK.cashBalance.plus(penaltyToLiquidator)
+  newP.insuranceFundBalance = newP.insuranceFundBalance.plus(penaltyToFund)
+
+  // loss
+  let liquidationLoss = _0
+  if (newL.cashBalance.lt(0)) {
+    liquidationLoss = newL.cashBalance.negated()
+    newL.cashBalance = _0
+  }
+  // fund, fund penalty - possible social loss
+  if (newP.insuranceFundBalance.gte(liquidationLoss)) {
+    // insurance covers the loss
+    newP.insuranceFundBalance = newP.insuranceFundBalance.minus(liquidationLoss)
+  } else {
+    // insurance cannot covers the loss, overflow part become socialloss of counter side.
+    const loss = liquidationLoss.minus(newP.insuranceFundBalance)
+    newP.insuranceFundBalance = _0
+    const newSocialLossPerContract = loss.div(newP.totalSize)
+    if (inverseSide === TRADE_SIDE.Buy) {
+      newP.longSocialLossPerContract = newP.longSocialLossPerContract.plus(newSocialLossPerContract)
+    } else {
+      newP.shortSocialLossPerContract = newP.shortSocialLossPerContract.plus(newSocialLossPerContract)
+    }
+  }
+  if (newP.insuranceFundBalance.lt(0)) {
+    throw Error(`negative insurance fund`)
+  }
+  return { perpetualStorage: newP, liquidated: newL, keeper: newK }
 }

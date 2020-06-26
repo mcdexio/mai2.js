@@ -14,7 +14,8 @@ import {
   computeDepositByLeverage,
   computeAMMAmount,
   computeAMMInverseAmount,
-  calculateLiquidateAmount
+  calculateLiquidateAmount,
+  computeLiquidate
 } from '../src/computation'
 import { _0, _1, SIDE, _1000, _0_1, _0_01, TRADE_SIDE } from '../src/constants'
 import {
@@ -1101,5 +1102,138 @@ describe('calculateLiquidateAmount', function () {
         normalizeBigNumberish(expectedOutput)
       )
     })
+  })
+})
+
+
+describe('calculateLiquidate', function () {
+  it(`partial liquidate & add social loss`, function () {
+    const govParams2 = {
+      ...govParams
+    }
+    govParams2.lotSize = new BigNumber('0.5')
+    const fundingParams = {
+      accumulatedFundingPerContract: _0,
+      lastEMAPremium: _0,
+      lastPremium: _0,
+      lastIndexPrice: new BigNumber('5000'),
+      lastFundingTimestamp: timestamp
+    }
+    const perpetualStorage = {
+      collateralTokenAddress: 'xxxx',
+      totalSize: new BigNumber('1'),
+      longSocialLossPerContract: _0,
+      shortSocialLossPerContract: _0,
+      insuranceFundBalance: _0,
+      isEmergency: false,
+      isGlobalSettled: false,
+      globalSettlePrice: _0,
+      isPaused: false,
+      isWithdrawDisabled: false,
+      oraclePrice: new BigNumber('5000'),
+      oracleTimestamp: timestamp,
+      shareTokenAddress: '',
+      ...fundingParams
+    }
+    const fundingResult = computeFunding(perpetualStorage, govParams2, timestamp)
+    const r1 = computeLiquidate(
+      {
+        perpetualStorage,
+        liquidated: {
+          cashBalance: new BigNumber('1000'),
+          positionSide: SIDE.Buy,
+          positionSize: new BigNumber('1'),
+          entryValue: new BigNumber('7000'),
+          entrySocialLoss: _0,
+          entryFundingLoss: _0,
+        },
+        keeper: {
+          cashBalance: new BigNumber('1000'),
+          positionSide: SIDE.Flat,
+          positionSize: _0,
+          entryValue: _0,
+          entrySocialLoss: _0,
+          entryFundingLoss: _0,
+        }
+      },
+      govParams2,
+      fundingResult,
+      new BigNumber('0.5')
+    )
+    expect(r1.perpetualStorage.insuranceFundBalance).toEqual(_0)
+    expect(r1.perpetualStorage.longSocialLossPerContract).toEqual(_0)
+    expect(r1.perpetualStorage.shortSocialLossPerContract).toEqual(new BigNumber('12.5'))
+    expect(r1.liquidated.cashBalance).toEqual(_0)
+    expect(r1.liquidated.positionSize).toEqual(new BigNumber('0.5'))
+    expect(r1.keeper.cashBalance).toEqual(new BigNumber('1012.5'))
+    expect(r1.keeper.positionSize).toEqual(new BigNumber('0.5'))
+
+    const r2 = computeLiquidate(r1, govParams2, fundingResult, new BigNumber('0.5'))
+    expect(r2.perpetualStorage.insuranceFundBalance).toEqual(_0)
+    expect(r2.perpetualStorage.shortSocialLossPerContract).toEqual(new BigNumber('1025'))
+    expect(r2.liquidated.cashBalance).toEqual(_0)
+    expect(r2.liquidated.positionSize).toEqual(_0)
+    expect(r2.keeper.cashBalance).toEqual(new BigNumber('1025'))
+    expect(r2.keeper.positionSize).toEqual(new BigNumber('1'))
+  })
+
+  it(`normal - short position`, function () {
+    const govParams2 = {
+      ...govParams
+    }
+    govParams2.lotSize = new BigNumber('0.5')
+    const fundingParams = {
+      accumulatedFundingPerContract: _0,
+      lastEMAPremium: _0,
+      lastPremium: _0,
+      lastIndexPrice: new BigNumber('7800'),
+      lastFundingTimestamp: timestamp
+    }
+    const perpetualStorage = {
+      collateralTokenAddress: 'xxxx',
+      totalSize: new BigNumber('1'),
+      longSocialLossPerContract: _0,
+      shortSocialLossPerContract: _0,
+      insuranceFundBalance: _0,
+      isEmergency: false,
+      isGlobalSettled: false,
+      globalSettlePrice: _0,
+      isPaused: false,
+      isWithdrawDisabled: false,
+      oraclePrice: new BigNumber('7800'),
+      oracleTimestamp: timestamp,
+      shareTokenAddress: '',
+      ...fundingParams
+    }
+    const fundingResult = computeFunding(perpetualStorage, govParams2, timestamp)
+    const r1 = computeLiquidate(
+      {
+        perpetualStorage,
+        liquidated: {
+          cashBalance: new BigNumber('1000'),
+          positionSide: SIDE.Sell,
+          positionSize: new BigNumber('1'),
+          entryValue: new BigNumber('7000'),
+          entrySocialLoss: _0,
+          entryFundingLoss: _0,
+        },
+        keeper: {
+          cashBalance: new BigNumber('2000'),
+          positionSide: SIDE.Buy,
+          positionSize: new BigNumber('0.5'),
+          entryValue: new BigNumber('3500'),
+          entrySocialLoss: _0,
+          entryFundingLoss: _0,
+        }
+      },
+      govParams2,
+      fundingResult,
+      new BigNumber('0.5')
+    )
+    expect(r1.perpetualStorage.insuranceFundBalance).toEqual(new BigNumber(19.5))
+    expect(r1.perpetualStorage.longSocialLossPerContract).toEqual(_0)
+    expect(r1.perpetualStorage.shortSocialLossPerContract).toEqual(_0)
+    expect(r1.keeper.cashBalance).toEqual(new BigNumber('2419.5'))
+    expect(r1.keeper.positionSize).toEqual(_0)
   })
 })

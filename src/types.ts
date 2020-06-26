@@ -136,3 +136,9 @@ export interface NetworkIdAndProvider {
   networkId: number
   provider: ethers.providers.Provider
 }
+
+export interface LiquidateResult {
+  perpetualStorage: PerpetualStorage
+  liquidated: AccountStorage
+  keeper: AccountStorage
+}
