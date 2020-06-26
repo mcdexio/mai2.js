@@ -13,7 +13,8 @@ import {
   computeAMMInverseTradeCost,
   computeDepositByLeverage,
   computeAMMAmount,
-  computeAMMInverseAmount
+  computeAMMInverseAmount,
+  calculateLiquidateAmount
 } from '../src/computation'
 import { _0, _1, SIDE, _1000, _0_1, _0_01, TRADE_SIDE } from '../src/constants'
 import {
@@ -33,8 +34,8 @@ extendExpect()
 const govParams: GovParams = {
   initialMargin: new BigNumber(0.1),
   maintenanceMargin: new BigNumber(0.05),
-  liquidationPenaltyRate: new BigNumber(0.01),
-  penaltyFundRate: new BigNumber(0.2),
+  liquidationPenaltyRate: new BigNumber(0.005),
+  penaltyFundRate: new BigNumber(0.005),
   makerDevRate: new BigNumber(-0.0005),
   takerDevRate: new BigNumber(0.0015),
   lotSize: new BigNumber(1),
@@ -57,8 +58,8 @@ const fundingParams: FundingParams = {
   lastFundingTimestamp: 1579601290
 }
 
-const duration = 86
-const timestamp = fundingParams.lastFundingTimestamp + duration
+const timestamp = fundingParams.lastFundingTimestamp + 86
+const timestamp2 = fundingParams.lastFundingTimestamp + 500
 
 //const expectedEMAPremium = getBN('-35106643857103393523')
 //const expectedACC = getBN('-2709000000000000000000')
@@ -85,6 +86,7 @@ const perpetualStorage: PerpetualStorage = {
 }
 
 const fundingResult = computeFunding(perpetualStorage, govParams, timestamp)
+const fundingResult2 = computeFunding(perpetualStorage, govParams, timestamp2)
 
 const accountStorage1: AccountStorage = {
   cashBalance: new BigNumber('10000'),
@@ -128,6 +130,22 @@ const accountDetails2 = computeAccount(accountStorage2, govParams, perpetualStor
 */
 const accountDetails3 = computeAccount(accountStorage3, govParams, perpetualStorage, fundingResult)
 const accountDetails4 = computeAccount(accountStorage4, govParams, perpetualStorage, fundingResult)
+
+it('computeFunding', function () {
+  expect(fundingResult.accumulatedFundingPerContract).toApproximate(new BigNumber('9.9059375'))
+  expect(fundingResult.emaPremium).toApproximate(new BigNumber('-35.106643857103393523'))
+  expect(fundingResult.fundingRate).toApproximate(new BigNumber('-0.0045'))
+  expect(fundingResult.markPrice).toApproximate(new BigNumber('6965'))
+  expect(fundingResult.premiumRate).toApproximate(new BigNumber('-0.005'))
+  expect(fundingResult.timestamp).toEqual(timestamp)
+
+  expect(fundingResult2.accumulatedFundingPerContract).toApproximate(new BigNumber('10.057955400119555507'))
+  expect(fundingResult2.emaPremium).toApproximate(new BigNumber('43.557456409235274904'))
+  expect(fundingResult2.fundingRate).toApproximate(new BigNumber('0.0045'))
+  expect(fundingResult2.markPrice).toApproximate(new BigNumber('7035'))
+  expect(fundingResult2.premiumRate).toApproximate(new BigNumber('0.005'))
+  expect(fundingResult2.timestamp).toEqual(timestamp2)
+})
 
 describe('computeAccount', function () {
   interface ComputeAccountCase {
@@ -1015,8 +1033,73 @@ describe('computeDepositByLeverage', function () {
     expect(deposit).toApproximate(new BigNumber('8343.55365625'))
   })
 
-  it('nagetive', function () {
+  it('negative', function () {
     const deposit = computeDepositByLeverage(accountDetails1, fundingResult, 10)
     expect(deposit).toApproximate(new BigNumber('-22093.49634375'))
+  })
+})
+
+describe('calculateLiquidateAmount', function () {
+  interface LiquidateAmountCase {
+    name: string
+    input: {
+      accountStorage: AccountStorage
+      liquidationPrice: BigNumber
+    }
+    expectedOutput: BigNumberish
+  }
+
+  const cases: Array<LiquidateAmountCase> = [
+    {
+      name: 'long - price 1',
+      input: { accountStorage: accountStorage2, liquidationPrice: new BigNumber('700') },
+      expectedOutput: new BigNumber('0')
+    },
+    {
+      name: 'long - price 2',
+      input: { accountStorage: accountStorage2, liquidationPrice: new BigNumber('600') },
+      expectedOutput: new BigNumber('1.519512152777780224')
+
+    },
+    {
+      name: 'long - price 3',
+      input: { accountStorage: accountStorage2, liquidationPrice: new BigNumber('550') },
+      expectedOutput: new BigNumber('2.3')
+    },
+    {
+      name: 'short - price 1',
+      input: { accountStorage: accountStorage3, liquidationPrice: new BigNumber('6000') },
+      expectedOutput: new BigNumber('0')
+    },
+    {
+      name: 'short - price 2',
+      input: { accountStorage: accountStorage3, liquidationPrice: new BigNumber('6700') },
+      expectedOutput: new BigNumber('1.11723657752902156')
+
+    },
+    {
+      name: 'short - price 3',
+      input: { accountStorage: accountStorage3, liquidationPrice: new BigNumber('7500') },
+      expectedOutput: new BigNumber('2.3')
+    },
+  ]
+
+  cases.forEach(element => {
+    const input = element.input
+    const name = element.name
+    const expectedOutput = element.expectedOutput
+
+    it(`calculateLiquidateAmount[${name}]`, function () {
+      const liquidateAmount = calculateLiquidateAmount(
+        input.accountStorage,
+        govParams,
+        perpetualStorage,
+        fundingResult,
+        input.liquidationPrice,
+      )
+      expect(liquidateAmount).toApproximate(
+        normalizeBigNumberish(expectedOutput)
+      )
+    })
   })
 })

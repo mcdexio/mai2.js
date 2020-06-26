@@ -765,3 +765,37 @@ export function computeAMMRemoveLiquidity(
 
   return { amm: amm2, user: user2 }
 }
+
+export function calculateLiquidateAmount(s: AccountStorage, g: GovParams, p: PerpetualStorage, f: FundingResult, liquidationPrice: BigNumber): BigNumber {
+  if (liquidationPrice.lte(_0)) {
+    throw Error(`invalid price '${liquidationPrice}'`)
+  }
+  if (s.positionSize.isZero()) {
+    return _0
+  }
+  const accumulatedFundingPerContract: BigNumber = s.positionSide === SIDE.Buy ? f.accumulatedFundingPerContract : f.accumulatedFundingPerContract.negated()
+  const socialLossPerContract: BigNumber = s.positionSide === SIDE.Buy ? p.longSocialLossPerContract : p.shortSocialLossPerContract
+  let liquidationAmount: BigNumber = s.cashBalance.plus(s.entrySocialLoss)
+  liquidationAmount = liquidationAmount
+    .minus(liquidationPrice.times(s.positionSize).times(g.initialMargin))
+    .minus(socialLossPerContract.times(s.positionSize))
+  const tmp: BigNumber = s.entryValue
+    .minus(s.entryFundingLoss)
+    .plus(accumulatedFundingPerContract.times(s.positionSize))
+    .minus(s.positionSize.times(liquidationPrice))
+  if (s.positionSide == SIDE.Buy) {
+    liquidationAmount = liquidationAmount.minus(tmp)
+  } else if (s.positionSide == SIDE.Sell) {
+    liquidationAmount = liquidationAmount.plus(tmp)
+  } else {
+    return _0
+  }
+  const denominator: BigNumber = g.liquidationPenaltyRate
+    .plus(g.penaltyFundRate)
+    .minus(g.initialMargin)
+    .times(liquidationPrice)
+  liquidationAmount = liquidationAmount.div(denominator)
+  liquidationAmount = BigNumber.max(_0, liquidationAmount)
+  liquidationAmount = BigNumber.min(liquidationAmount, s.positionSize)
+  return liquidationAmount
+}
