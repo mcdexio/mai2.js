@@ -13,7 +13,7 @@ export async function getContractReader(
   return getContract(address, CONTRACT_READER_ABI, generalProvider)
 }
 
-export async function getGlobalConfigContract(
+export async function getGlobalConfigReader(
   globalConfigAddress: string,
   generalProvider: GeneralProvider = SUPPORTED_NETWORK_ID.Mainnet
 ): Promise<ethers.Contract> {
@@ -140,6 +140,6 @@ export async function getBetaAccountStorage(
   }
 }
 
-export async function getGlobalConfigOwner(globalConfigContract: ethers.Contract): Promise<string> {
-  return await globalConfigContract.owner()
+export async function getGlobalConfigOwner(globalConfigReader: ethers.Contract): Promise<string> {
+  return await globalConfigReader.owner()
 }
