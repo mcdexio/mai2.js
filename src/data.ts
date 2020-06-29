@@ -1,7 +1,8 @@
 import { ethers } from 'ethers'
 
 import { GeneralProvider, GovParams, PerpetualStorage, AccountStorage } from './types'
-import { SUPPORTED_NETWORK_ID, CONTRACT_READER_ADDRESS, CONTRACT_READER_ABI, SIDE, _0, _1, DECIMALS } from './constants'
+import { CONTRACT_READER_ADDRESS, CONTRACT_READER_ABI, GLOBAL_CONFIG_ABI } from './constants'
+import { SUPPORTED_NETWORK_ID, SIDE, _0, _1, DECIMALS } from './constants'
 import { getNetworkIdAndProvider, normalizeBigNumberish, getContract, normalizeAddress } from './utils'
 
 export async function getContractReader(
@@ -10,6 +11,13 @@ export async function getContractReader(
   const networkIdAndProvider = await getNetworkIdAndProvider(generalProvider)
   const address: string = CONTRACT_READER_ADDRESS[networkIdAndProvider.networkId]
   return getContract(address, CONTRACT_READER_ABI, generalProvider)
+}
+
+export async function getGlobalConfigContract(
+  globalConfigAddress: string,
+  generalProvider: GeneralProvider = SUPPORTED_NETWORK_ID.Mainnet
+): Promise<ethers.Contract> {
+  return getContract(globalConfigAddress, GLOBAL_CONFIG_ABI, generalProvider)
 }
 
 export async function getGovParams(
@@ -130,4 +138,8 @@ export async function getBetaAccountStorage(
     entrySocialLoss: normalizeBigNumberish(p.entrySocialLoss).shiftedBy(-DECIMALS),
     entryFundingLoss: normalizeBigNumberish(p.entryFundingLoss).shiftedBy(-DECIMALS)
   }
+}
+
+export async function getGlobalConfigOwner(globalConfigContract: ethers.Contract): Promise<string> {
+  return await globalConfigContract.owner()
 }
