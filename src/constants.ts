@@ -1,7 +1,9 @@
 import BigNumber from 'bignumber.js'
-import ContractReaderABI from './abi/ContractReader.json'
-import PerpetualABI from './abi/Perpetual.json'
 import AMMABI from './abi/AMM.json'
+import ContractReaderABI from './abi/ContractReader.json'
+import ExchangeABI from './abi/Exchange.json'
+import GlobalConfigABI from './abi/GlobalConfig.json'
+import PerpetualABI from './abi/Perpetual.json'
 
 export enum SUPPORTED_NETWORK_ID {
   Mainnet = 1,
@@ -12,9 +14,11 @@ export enum SUPPORTED_NETWORK_ID {
 
 export const DECIMALS = 18
 export const FUNDING_TIME = 28800
-export const CONTRACT_READER_ABI: string = JSON.stringify(ContractReaderABI)
-export const PERPETUAL_ABI: string = JSON.stringify(PerpetualABI)
 export const AMM_ABI: string = JSON.stringify(AMMABI)
+export const CONTRACT_READER_ABI: string = JSON.stringify(ContractReaderABI)
+export const EXCHANGE_ABI: string = JSON.stringify(ExchangeABI)
+export const GLOBAL_CONFIG_ABI: string = JSON.stringify(GlobalConfigABI)
+export const PERPETUAL_ABI: string = JSON.stringify(PerpetualABI)
 export const ETH_COLLATERAL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 export enum SIDE {

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import { SignerOrProvider, GovParams } from './types'
-import { PERPETUAL_ABI, AMM_ABI, DECIMALS } from './constants'
+import { AMM_ABI, GLOBAL_CONFIG_ABI, PERPETUAL_ABI, DECIMALS } from './constants'
 import { BigNumberish } from './types'
 import { normalizeBigNumberish } from './utils'
 import BigNumber from 'bignumber.js'
@@ -23,6 +23,13 @@ export async function getAMMContract(
     address = (ammAddressOrGovParams as GovParams).amm
   }
   return new ethers.Contract(address, AMM_ABI, signerOrProvider)
+}
+
+export async function getGlobalConfigContract(
+  globalConfigAddress: string,
+  signerOrProvider: SignerOrProvider
+): Promise<ethers.Contract> {
+  return new ethers.Contract(globalConfigAddress, GLOBAL_CONFIG_ABI, signerOrProvider)
 }
 
 export async function perpetualDeposit(
@@ -347,3 +354,10 @@ export async function ammSettleShare(
   return await ammContract.settleShare(gas)
 }
 
+export async function globalConfigTransferOwnership(
+  globalConfigContract: ethers.Contract,
+  newOwnerAddress: string,
+  gas: ethers.providers.TransactionRequest = {}
+): Promise<ethers.providers.TransactionResponse> {
+  return await globalConfigContract.transferOwnership(newOwnerAddress, gas)
+}
