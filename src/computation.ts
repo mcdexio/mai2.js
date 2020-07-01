@@ -779,7 +779,6 @@ export function calculateLiquidateAmount(s: AccountStorage, g: GovParams, p: Per
   if (s.positionSize.isZero()) {
     return _0
   }
-  const accumulatedFundingPerContract: BigNumber = s.positionSide === SIDE.Buy ? f.accumulatedFundingPerContract : f.accumulatedFundingPerContract.negated()
   const socialLossPerContract: BigNumber = s.positionSide === SIDE.Buy ? p.longSocialLossPerContract : p.shortSocialLossPerContract
   let liquidationAmount: BigNumber = s.cashBalance.plus(s.entrySocialLoss)
   liquidationAmount = liquidationAmount
@@ -787,7 +786,7 @@ export function calculateLiquidateAmount(s: AccountStorage, g: GovParams, p: Per
     .minus(socialLossPerContract.times(s.positionSize))
   const tmp: BigNumber = s.entryValue
     .minus(s.entryFundingLoss)
-    .plus(accumulatedFundingPerContract.times(s.positionSize))
+    .plus(f.accumulatedFundingPerContract.times(s.positionSize))
     .minus(s.positionSize.times(normalizedPrice))
   if (s.positionSide == SIDE.Buy) {
     liquidationAmount = liquidationAmount.minus(tmp)
