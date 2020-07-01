@@ -1076,7 +1076,6 @@ describe('calculateLiquidateAmount', function () {
       name: 'short - price 2',
       input: { accountStorage: accountStorage3, liquidationPrice: new BigNumber('6700') },
       expectedOutput: new BigNumber('1.11723657752902156')
-
     },
     {
       name: 'short - price 3',
