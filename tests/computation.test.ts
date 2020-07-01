@@ -151,7 +151,7 @@ it('computeFunding', function () {
 describe('computeAccount', function () {
   interface ComputeAccountCase {
     accountStorage: AccountStorage
-    expectedOuput: AccountComputed
+    expectedOutput: AccountComputed
   }
 
   const expectOutput1: AccountComputed = {
@@ -245,26 +245,26 @@ describe('computeAccount', function () {
   const successCases: Array<ComputeAccountCase> = [
     {
       accountStorage: accountStorage1,
-      expectedOuput: expectOutput1
+      expectedOutput: expectOutput1
     },
     {
       accountStorage: accountStorage2,
-      expectedOuput: expectOutput2
+      expectedOutput: expectOutput2
     },
     {
       accountStorage: accountStorage3,
-      expectedOuput: expectOutput3
+      expectedOutput: expectOutput3
     },
     {
       accountStorage: accountStorage4,
-      expectedOuput: expectOutput4
+      expectedOutput: expectOutput4
     }
   ]
 
   successCases.forEach((element, index) => {
     it(`computeAccount.${index}`, function () {
       const accountStorage = element.accountStorage
-      const expectedOutput = element.expectedOuput
+      const expectedOutput = element.expectedOutput
       const accountDetails = computeAccount(accountStorage, govParams, perpetualStorage, fundingResult)
       const computed = accountDetails.accountComputed
       expect(computed.entryPrice).toBeBigNumber(expectedOutput.entryPrice)
@@ -1075,7 +1075,7 @@ describe('calculateLiquidateAmount', function () {
     {
       name: 'short - price 2',
       input: { accountStorage: accountStorage3, liquidationPrice: new BigNumber('6700') },
-      expectedOutput: new BigNumber('1.11723657752902156')
+      expectedOutput: new BigNumber('1.041668895107794361')
     },
     {
       name: 'short - price 3',
