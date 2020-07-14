@@ -739,6 +739,7 @@ export function computeAMMAddLiquidity(
 }
 
 export function computeAMMRemoveLiquidity(
+  gov: GovParams,
   perp: PerpetualStorage,
   funding: FundingResult,
   amm: AMMDetails,
@@ -749,7 +750,7 @@ export function computeAMMRemoveLiquidity(
   const normalizedTotalShare = normalizeBigNumberish(totalShare)
   const normalizedShare = normalizeBigNumberish(shareAmount)
   const percent = normalizedShare.div(normalizedTotalShare)
-  const transferSize = amm.accountStorage.positionSize.times(percent)
+  const transferSize = amm.accountStorage.positionSize.times(percent).idiv(gov.lotSize).times(gov.lotSize)
   const transferCollateral = amm.ammComputed.fairPrice.times(transferSize).times(2)
   const ammAccount = computeTrade(
     perp,
