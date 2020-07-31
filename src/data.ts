@@ -1,4 +1,5 @@
 import { ethers } from 'ethers'
+import { BigNumber } from 'bignumber.js'
 
 import { GeneralProvider, GovParams, PerpetualStorage, AccountStorage } from './types'
 import { CONTRACT_READER_ADDRESS, CONTRACT_READER_ABI } from './constants'
@@ -131,4 +132,22 @@ export async function getBetaAccountStorage(
     entrySocialLoss: normalizeBigNumberish(p.entrySocialLoss).shiftedBy(-DECIMALS),
     entryFundingLoss: normalizeBigNumberish(p.entryFundingLoss).shiftedBy(-DECIMALS)
   }
+}
+
+// This is a simplified version of computeAccount() to help programmers who just want to know the account balance
+export async function getMarginBalance(
+  contractReader: ethers.Contract,
+  perpetualContractAddress: string,
+  userAddress: string
+): Promise<BigNumber> {
+  // view-function hack. because ethers.js does not support this
+  const callableMarginBalanceAbi : any = [{
+    "name": "marginBalance",
+    "inputs": [ { "internalType": "address", "name": "trader", "type": "address" } ],
+    "outputs": [ { "internalType": "int256", "name": "", "type": "int256" }],
+    "constant": true, "payable": false, "stateMutability": "view", "type": "function"
+  }]
+  let callableMarginBalance = new ethers.Contract(perpetualContractAddress, callableMarginBalanceAbi, contractReader.provider)
+  const m = await callableMarginBalance.functions.marginBalance(userAddress)
+  return normalizeBigNumberish(m).shiftedBy(-DECIMALS)
 }

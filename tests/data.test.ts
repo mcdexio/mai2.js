@@ -1,4 +1,7 @@
-import { getContractReader, getGovParams, getPerpetualStorage, getAccountStorage } from '../src/data'
+import { BigNumber } from 'bignumber.js'
+
+import { getContractReader } from '../src/data'
+import { getGovParams, getPerpetualStorage, getAccountStorage, getMarginBalance } from '../src/data'
 import { SIDE, _0, _1, _1000, _0_1, _0_01 } from '../src/constants'
 import { GovParams, PerpetualStorage, AccountStorage } from '../src/types'
 import { normalizeBigNumberish } from '../src/utils'
@@ -29,7 +32,7 @@ beforeAll(async done => {
 
 extendExpect()
 
-it('param', async function () {
+it('gov', async function () {
   const contractReader: ethers.Contract = await getContractReader(rpcProvider)
   const p: GovParams = await getGovParams(contractReader, dataTestAddress.perp)
   expect(p.amm).toEqual(dataTestAddress.amm)
@@ -88,4 +91,10 @@ it('account', async function () {
   expect(p.entryValue).toBeBigNumber(normalizeBigNumberish('5000')) // position * price
   expect(p.entrySocialLoss).toBeBigNumber(normalizeBigNumberish('0'))
   expect(p.entryFundingLoss).toBeBigNumber(normalizeBigNumberish('0'))
+})
+
+it('marginBalance', async function () {
+  const contractReader: ethers.Contract = await getContractReader(rpcProvider)
+  const m: BigNumber = await getMarginBalance(contractReader, dataTestAddress.perp, testUser)
+  expect(m).toBeBigNumber(normalizeBigNumberish('15000'))
 })
