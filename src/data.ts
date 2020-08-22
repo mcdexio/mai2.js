@@ -141,10 +141,10 @@ export async function getMarginBalance(
   userAddress: string
 ): Promise<BigNumber> {
   // view-function hack. because ethers.js does not support this
-  const callableMarginBalanceAbi : any = [{
+  const callableMarginBalanceAbi: any = [{
     "name": "marginBalance",
-    "inputs": [ { "internalType": "address", "name": "trader", "type": "address" } ],
-    "outputs": [ { "internalType": "int256", "name": "", "type": "int256" }],
+    "inputs": [{ "internalType": "address", "name": "trader", "type": "address" }],
+    "outputs": [{ "internalType": "int256", "name": "", "type": "int256" }],
     "constant": true, "payable": false, "stateMutability": "view", "type": "function"
   }]
   let callableMarginBalance = new ethers.Contract(perpetualContractAddress, callableMarginBalanceAbi, contractReader.provider)
