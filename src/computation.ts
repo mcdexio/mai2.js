@@ -230,28 +230,28 @@ export function computeAccumulatedFunding(
 }
 
 export function computeFunding(f: PerpetualStorage, g: FundingGovParams, timestamp: number): FundingResult {
-  if (timestamp < f.lastFundingTimestamp) {
-    console.log(
-      `warn: funding timestamp '${timestamp}' is earlier than last funding timestamp '${f.lastFundingTimestamp}'`
-    )
-    timestamp = f.lastFundingTimestamp
-  }
-
-  let acc: BigNumber = _0
-  let emaPremium: BigNumber = f.lastEMAPremium
+  let fundingResult: FundingParams = f
   if (f.isEmergency || f.isGlobalSettled) {
+    // do nothing
   } else {
-    const fundingInfo = computeAccumulatedFunding(f, g, timestamp)
-    acc = fundingInfo.acc
-    emaPremium = fundingInfo.emaPremium
-    acc = acc.div(FUNDING_TIME)
+    if (f.oracleTimestamp > fundingResult.lastFundingTimestamp) {
+      // the 1st update
+      fundingResult = computeFundingWithTimeSpan(fundingResult, g, f.oraclePrice, f.oracleTimestamp)
+    }
+    // the 2nd update
+    if (timestamp < fundingResult.lastFundingTimestamp) {
+      console.log(
+        `warn: funding timestamp '${timestamp}' is earlier than last funding timestamp '${fundingResult.lastFundingTimestamp}'`
+      )
+      timestamp = fundingResult.lastFundingTimestamp
+    }
+    fundingResult = computeFundingWithTimeSpan(fundingResult, g, f.oraclePrice, timestamp)
   }
 
-  const accumulatedFundingPerContract = f.accumulatedFundingPerContract.plus(acc)
-  let markPrice = f.lastIndexPrice.plus(emaPremium)
-  markPrice = BigNumber.min(f.lastIndexPrice.times(_1.plus(g.markPremiumLimit)), markPrice)
-  markPrice = BigNumber.max(f.lastIndexPrice.times(_1.minus(g.markPremiumLimit)), markPrice)
-  let premiumRate = markPrice.minus(f.lastIndexPrice).div(f.lastIndexPrice)
+  let markPrice = fundingResult.lastIndexPrice.plus(fundingResult.lastEMAPremium)
+  markPrice = BigNumber.min(fundingResult.lastIndexPrice.times(_1.plus(g.markPremiumLimit)), markPrice)
+  markPrice = BigNumber.max(fundingResult.lastIndexPrice.times(_1.minus(g.markPremiumLimit)), markPrice)
+  let premiumRate = markPrice.minus(fundingResult.lastIndexPrice).div(fundingResult.lastIndexPrice)
   let fundingRate = _0
   if (premiumRate.isGreaterThan(g.fundingDampener)) {
     fundingRate = premiumRate.minus(g.fundingDampener)
@@ -259,7 +259,31 @@ export function computeFunding(f: PerpetualStorage, g: FundingGovParams, timesta
     fundingRate = premiumRate.plus(g.fundingDampener)
   }
 
-  return { timestamp, accumulatedFundingPerContract, emaPremium, markPrice, premiumRate, fundingRate }
+  return {
+    timestamp,
+    accumulatedFundingPerContract: fundingResult.accumulatedFundingPerContract,
+    emaPremium: fundingResult.lastEMAPremium,
+    markPrice,
+    premiumRate,
+    fundingRate
+  }
+}
+
+// NOTE: require timestamp >= f.lastFundingTimestamp
+// NOTE: require !isEmergency
+// NOTE: require !isGlobalSettled
+export function computeFundingWithTimeSpan(f: FundingParams, g: FundingGovParams, oraclePrice: BigNumber, timestamp: number): FundingParams {
+  if (timestamp < f.lastFundingTimestamp) {
+    throw Error(`FATAL: funding timestamp '${timestamp}' < last funding timestamp '${f.lastFundingTimestamp}'`)
+  }
+  const fundingInfo = computeAccumulatedFunding(f, g, timestamp)
+  const accumulatedFundingPerContract = f.accumulatedFundingPerContract.plus(fundingInfo.acc.div(FUNDING_TIME))
+  const lastEMAPremium = fundingInfo.emaPremium
+  const lastFairPrice = f.lastPremium.plus(f.lastIndexPrice)
+  const lastPremium = lastFairPrice.minus(oraclePrice)
+  const lastIndexPrice = oraclePrice
+  const lastFundingTimestamp = timestamp
+  return { accumulatedFundingPerContract, lastEMAPremium, lastPremium, lastIndexPrice, lastFundingTimestamp }
 }
 
 export function funding(
