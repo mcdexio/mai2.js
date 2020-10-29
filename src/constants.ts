@@ -10,7 +10,7 @@ export enum SUPPORTED_NETWORK_ID {
   Ropsten = 3,
   S1 = 66,
   S10POA = 1337,
-  ArbitrumTest = 215728282823301
+  ArbitrumTestNet = 215728282823301
 }
 
 export const DECIMALS = 18
@@ -38,7 +38,7 @@ export const _NETWORK_ID_NAME: { [key: number]: string } = {
   [SUPPORTED_NETWORK_ID.Ropsten]: 'ropsten',
   [SUPPORTED_NETWORK_ID.S1]: 's1',
   [SUPPORTED_NETWORK_ID.S10POA]: 's10poa',
-  [SUPPORTED_NETWORK_ID.ArbitrumTest]: 'arbitrum-testnet'
+  [SUPPORTED_NETWORK_ID.ArbitrumTestNet]: 'arbitrum-testnet'
 }
 
 export const CONTRACT_READER_ADDRESS: { [key: number]: string } = {
@@ -46,7 +46,7 @@ export const CONTRACT_READER_ADDRESS: { [key: number]: string } = {
   [SUPPORTED_NETWORK_ID.Ropsten]: '0x15Ed38e2f35F84C7811116ab7C30B4d5ab0E04B6',
   [SUPPORTED_NETWORK_ID.S1]: '0xe71Be0BA1D77bA933B0e55081D7c62b3239963Be',
   [SUPPORTED_NETWORK_ID.S10POA]: '0xEF73D826c48487523165b0d275de3479b43ab858',
-  [SUPPORTED_NETWORK_ID.ArbitrumTest]: '0xFBC570bC15Fe1f6F0ad2f490a7baebAe1D05a6eA'
+  [SUPPORTED_NETWORK_ID.ArbitrumTestNet]: '0xFBC570bC15Fe1f6F0ad2f490a7baebAe1D05a6eA'
 }
 
 export const _E = new BigNumber('2.718281828459045235')
