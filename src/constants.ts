@@ -10,7 +10,7 @@ export enum SUPPORTED_NETWORK_ID {
   Ropsten = 3,
   S1 = 66,
   S10POA = 1337,
-  ArbitrumTestNet = 215728282823301
+  ArbitrumTestNet = 152709604825713 
 }
 
 export const DECIMALS = 18
